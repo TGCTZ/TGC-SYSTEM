@@ -1,0 +1,4 @@
+# Runtime dependencies needed in every environment.
+Django>=5.1,<6.0
+psycopg[binary]>=3.2          # PostgreSQL driver (psycopg 3)
+python-decouple>=3.8          # env-var configuration

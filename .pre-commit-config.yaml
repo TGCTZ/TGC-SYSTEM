@@ -1,0 +1,48 @@
+# ============================================================
+# Pre-commit hooks for TGC-SYSTEM
+#
+# Runs automatically before each `git commit` so violations never
+# land in history. Configured to match docs/conventions.md and
+# the Ruff settings in pyproject.toml.
+#
+# Setup (once per clone):
+#   pip install pre-commit
+#   pre-commit install
+#
+# Run manually against all files:
+#   pre-commit run --all-files
+# ============================================================
+
+repos:
+  # --- General hygiene ---------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files      # blocks accidental big files (DB dumps!)
+        args: ["--maxkb=1024"]
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: detect-private-key           # blocks committing keys/certs
+      - id: debug-statements             # blocks stray breakpoint()/pdb
+
+  # --- Ruff: lint + format (reads pyproject.toml) ------------
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.4
+    hooks:
+      - id: ruff                         # lint
+        args: ["--fix"]                  # auto-fix what it safely can
+      - id: ruff-format                  # format
+
+  # --- Django-specific safety net ----------------------------
+  - repo: local
+    hooks:
+      - id: django-check
+        name: django system check
+        entry: python manage.py check
+        language: system
+        pass_filenames: false
+        stages: [pre-push]               # heavier — run on push, not every commit

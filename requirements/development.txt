@@ -1,0 +1,9 @@
+# Development dependencies. Installs base + dev-only tooling.
+-r base.txt
+
+ruff>=0.8                      # lint + format
+pytest>=8.0
+pytest-django>=4.9
+factory-boy>=3.3              # test data & seeding
+django-debug-toolbar>=4.4
+pre-commit>=4.0

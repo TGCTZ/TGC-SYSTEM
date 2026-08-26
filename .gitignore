@@ -1,0 +1,71 @@
+# ============================================================
+# .gitignore for TGC-SYSTEM (Django)
+# Curated to fit this project. Mirrors the "never commit" rules
+# in docs/conventions.md §22.
+# ============================================================
+
+# --- Secrets & environment ---------------------------------
+.env
+.env.*
+!.env.example                # keep the template, ignore real env files
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+credentials.json
+
+# --- Python ------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.Python
+build/
+dist/
+
+# --- Virtual environments ----------------------------------
+.venv/
+venv/
+env/
+ENV/
+
+# --- Django ------------------------------------------------
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media/                      # user uploads (runtime)
+/staticfiles/                # collectstatic output (generated)
+
+# --- Translations (i18n) -----------------------------------
+*.mo                         # compiled translation binaries
+*.pot                        # translation templates
+
+# --- Database dumps (never commit — use factories/seeding) --
+*.sql
+*.sqlite
+*.dump
+# NOTE: intentional, curated fixtures should be committed explicitly.
+# If you add one, force-add it: git add -f apps/<app>/fixtures/<name>.json
+
+# --- Celery (uncomment if/when you add a task queue) -------
+# celerybeat-schedule
+# celerybeat.pid
+
+# --- Testing & coverage ------------------------------------
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.tox/
+
+# --- OS / editor -------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~

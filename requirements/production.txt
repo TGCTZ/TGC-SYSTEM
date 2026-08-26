@@ -1,0 +1,4 @@
+# Production dependencies. Installs base + prod-only extras.
+-r base.txt
+
+gunicorn>=23.0                # WSGI server
