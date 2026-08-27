@@ -5,8 +5,7 @@
 > vocabulary** — use these exact names in code, conversation, and tickets.
 >
 > Layering rule (imports point downward only) is defined in
-> [`conventions.md` §2](conventions.md). Legacy mapping is in
-> [`legacy-mifumo-modules.md`](../domain/legacy-mifumo-modules.md).
+> [`conventions.md` §2](conventions.md).
 
 ---
 
@@ -24,7 +23,7 @@
 | **L4** | `reports` | Management reports and exports (reads across domain modules). |
 | **L4** | `dashboard` | Landing pages and navigation shells (thin entrypoints). |
 
-**9 modules** — down from MIFUMO's 19 (12 active + 7 empty).
+**9 focused modules**, each with a single clear responsibility.
 
 ---
 

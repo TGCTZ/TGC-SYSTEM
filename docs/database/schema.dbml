@@ -1,0 +1,396 @@
+// ============================================================
+// TGC-SYSTEM — Database Schema (DBML)
+// Paste into https://dbdiagram.io to render the ERD.
+//
+// Tables are ordered by dependency: a table only references
+// tables defined ABOVE it. The schema is normalized; reference
+// data is modelled as lookup tables and workflow states as enums.
+//
+// AUDIT & SOFT DELETE:
+//   Every CRUD table inherits the six audit columns via the
+//   `audit` TablePartial (injected as `~audit`) — defined once,
+//   from core.BaseModel. Records are NEVER physically deleted;
+//   delete() sets deleted_at. Append-only log tables
+//   (status_history, certificate_access_log) are exceptions.
+//   (Requires a DBML v3 renderer, e.g. dbdiagram.io.)
+//
+// (open: Bn/Cn) = depends on a question in ../domain/domain-questions.md
+// ============================================================
+
+
+// ---------- Audit columns (shared by every CRUD table) ----------
+
+TablePartial audit {
+  created_at  timestamptz [not null]
+  created_by  bigint      [note: 'FK > user.id, SET_NULL']
+  updated_at  timestamptz [not null]
+  updated_by  bigint      [note: 'FK > user.id, SET_NULL']
+  deleted_at  timestamptz [note: 'null = live row; set = soft-deleted']
+  deleted_by  bigint      [note: 'FK > user.id, SET_NULL']
+}
+
+
+// ---------- Enums (code-defined; logic branches on these) ----------
+
+Enum stone_status {          // (open: B5 — exact list)
+  received
+  under_identification
+  in_production
+  billed
+  paid
+  certified
+  ready_for_collection
+  collected
+  on_hold
+  cancelled
+}
+
+Enum stone_category {
+  precious
+  semi_precious
+  diamond
+}
+
+Enum production_type {
+  sonara
+  carving
+  lapidary
+}
+
+Enum qa_result {
+  pending
+  passed
+  failed
+}
+
+Enum bill_status {           // (open: C2)
+  pending
+  partially_paid
+  paid
+  cancelled
+  expired
+}
+
+Enum certificate_status {    // (open: C3)
+  issued
+  revoked
+  reissued
+}
+
+// Reference values that are fixed/scientific — code enums, not tables.
+
+Enum transparency {
+  transparent
+  semi_transparent
+  translucent
+  opaque
+}
+
+Enum optic_character {
+  isotropic
+  uniaxial_positive
+  uniaxial_negative
+  biaxial_positive
+  biaxial_negative
+  aggregate
+}
+
+Enum weight_unit {           // legacy SiUnit; (open: B3)
+  carat                      // symbol: ct
+  gram                       // symbol: g
+}
+
+Enum color {                 // fixed set (draft — team to confirm values)
+  colorless
+  white
+  red
+  pink
+  orange
+  yellow
+  green
+  blue
+  violet
+  purple
+  brown
+  black
+  gray
+  multicolor
+}
+
+Enum treatment {             // fixed set (draft — team to confirm values)
+  none
+  heated
+  oiled
+  dyed
+  irradiated
+  fracture_filled
+  bleached
+  impregnated
+}
+
+
+// ============================================================
+// L2 — accounts
+// Roles & permissions use Django's built-in auth (Group = role);
+// no custom role table. auth_group / auth_permission omitted.
+// ============================================================
+
+Table user {                 // extends Django AbstractUser
+  id            bigint       [pk, increment]
+  username      varchar(150) [not null, unique]
+  email         varchar(254) [not null]
+  password      varchar(128) [not null]
+  first_name    varchar(150)
+  last_name     varchar(150)
+  is_active     boolean      [not null, default: true]
+  is_staff      boolean      [not null, default: false]
+  date_joined   timestamptz  [not null]
+  ~audit
+}
+
+
+// ============================================================
+// L1 — core (reference/master data + pricing)
+// ============================================================
+
+Table stone_type {
+  id            bigint         [pk, increment]
+  name          varchar(100)   [not null]
+  category      stone_category [not null, note: 'drives pricing (A6)']
+  is_active     boolean        [not null, default: true]
+  ~audit
+  indexes { (name) [unique, note: 'partial: WHERE deleted_at IS NULL'] }
+}
+
+Table species {
+  id            bigint       [pk, increment]
+  name          varchar(100) [not null]
+  is_active     boolean      [not null, default: true]
+  ~audit
+}
+
+Table variety {
+  id            bigint       [pk, increment]
+  name          varchar(100) [not null]
+  species_id    bigint       [ref: > species.id, note: 'PROTECT']
+  is_active     boolean      [not null, default: true]
+  ~audit
+}
+
+Table origin {
+  id            bigint       [pk, increment]
+  name          varchar(100) [not null]
+  is_active     boolean      [not null, default: true]
+  ~audit
+}
+
+Table shape_cut {
+  id            bigint       [pk, increment]
+  name          varchar(100) [not null]
+  is_active     boolean      [not null, default: true]
+  ~audit
+}
+
+Table instrument {
+  id            bigint       [pk, increment]
+  name          varchar(150) [not null]
+  is_active     boolean      [not null, default: true]
+  ~audit
+}
+
+Table stone_price {          // (open: B2 — flat vs tiered)
+  id             bigint        [pk, increment]
+  stone_type_id  bigint        [not null, ref: > stone_type.id, note: 'PROTECT']
+  price_per_unit decimal(15,2) [not null]
+  unit           weight_unit   [not null]
+  is_active      boolean       [not null, default: true]
+  ~audit
+}
+
+
+// ============================================================
+// L3 — orders (intake: customer -> order -> stone)
+// ============================================================
+
+Table customer {             // (open: C1)
+  id            bigint       [pk, increment]
+  first_name    varchar(100) [not null]
+  middle_name   varchar(100)
+  last_name     varchar(100) [not null]
+  phone         varchar(20)  [not null]
+  email         varchar(254)
+  company_name  varchar(255)
+  region        varchar(100)
+  id_number     varchar(50)
+  address       varchar(255)
+  ~audit
+}
+
+Table "order" {
+  id            bigint       [pk, increment]
+  reference_no  varchar(30)  [not null, note: 'unique (live); (open: C6)']
+  customer_id   bigint       [not null, ref: > customer.id, note: 'PROTECT']
+  received_date date         [not null]
+  ~audit
+  Note: 'No status column — status lives on each Stone (A7). Progress figures (identified count, remaining) are derived from the stones, not stored.'
+}
+
+Table stone {
+  id             bigint        [pk, increment]
+  order_id       bigint        [not null, ref: > "order".id, note: 'CASCADE (soft, via service)']
+  label          varchar(20)   [not null, note: 'e.g. A, B within the order']
+  stone_type_id  bigint        [not null, ref: > stone_type.id, note: 'PROTECT']
+  weight         decimal(10,3) [not null, note: '(open: B3)']
+  weight_unit    weight_unit   [not null]
+  quantity       integer       [not null, default: 1]
+  status         stone_status  [not null, default: 'received']
+  ~audit
+  indexes { (status) }
+}
+
+Table status_history {       // APPEND-ONLY audit record (A9) — no soft delete
+  id            bigint       [pk, increment]
+  stone_id      bigint       [not null, ref: > stone.id, note: 'CASCADE']
+  from_status   stone_status [note: 'null on first entry']
+  to_status     stone_status [not null]
+  changed_by    bigint       [note: 'FK > user.id, SET_NULL']
+  changed_at    timestamptz  [not null]
+  note          varchar(255)
+  indexes { (stone_id, changed_at) }
+}
+
+
+// ============================================================
+// L3 — identification (one report per stone; A2)
+// ============================================================
+
+Table identification_report {
+  id                 bigint      [pk, increment]
+  stone_id           bigint      [not null, unique, ref: - stone.id, note: 'OneToOne']
+  report_number      varchar(50) [not null, note: 'unique (live)']
+  species_id         bigint      [ref: > species.id, note: 'PROTECT']
+  variety_id         bigint      [ref: > variety.id, note: 'PROTECT']
+  origin_id          bigint      [ref: > origin.id, note: 'PROTECT']
+  shape_cut_id       bigint      [ref: > shape_cut.id, note: 'PROTECT']
+  color              color           [note: 'enum']
+  transparency       transparency    [note: 'enum']
+  treatment          treatment       [note: 'enum']
+  optic_character    optic_character [note: 'enum']
+  refractive_index   varchar(50) [note: 'refractive index']
+  specific_gravity   decimal(10,3)
+  is_polished        boolean     [not null, default: false]
+  conclusion         text
+  is_finalized       boolean     [not null, default: false, note: 'locks report; (open: C4)']
+  identified_at      timestamptz
+  ~audit
+}
+
+Table instrument_used {
+  id            bigint       [pk, increment]
+  report_id     bigint       [not null, ref: > identification_report.id, note: 'CASCADE (soft)']
+  instrument_id bigint       [not null, ref: > instrument.id, note: 'PROTECT']
+  reading       varchar(100)
+  ~audit
+}
+
+
+// ============================================================
+// L3 — production (one model, type field; A10)
+// ============================================================
+
+Table production {
+  id             bigint          [pk, increment]
+  stone_id       bigint          [not null, ref: > stone.id, note: 'CASCADE (soft); many steps? (open: B1)']
+  type           production_type [not null]
+  assigned_to    bigint          [note: 'FK > user.id, SET_NULL']
+  started_at     timestamptz
+  finished_at    timestamptz
+  qa_result      qa_result       [not null, default: 'pending']
+  qa_by          bigint          [note: 'FK > user.id, SET_NULL']
+  notes          text
+  ~audit
+}
+
+
+// ============================================================
+// L3 — billing (one bill per order; A4)
+// ============================================================
+
+Table service_provider {
+  id            bigint       [pk, increment]
+  sp_code       varchar(20)  [not null, note: 'unique (live)']
+  name          varchar(255) [not null]
+  group_code    varchar(20)
+  sys_code      varchar(20)
+  is_active     boolean      [not null, default: true]
+  ~audit
+}
+
+Table bill {
+  id                  bigint        [pk, increment]
+  order_id            bigint        [not null, unique, ref: - "order".id, note: 'OneToOne, PROTECT']
+  bill_number         varchar(50)   [not null, note: 'unique (live)']
+  control_number      varchar(50)   [note: 'unique (live); from GePG']
+  service_provider_id bigint        [ref: > service_provider.id, note: 'PROTECT']
+  total_amount        decimal(15,2) [not null, note: 'Σ bill_item.amount']
+  currency            varchar(3)    [not null, default: 'TZS']
+  status              bill_status   [not null, default: 'pending']
+  issued_at           timestamptz
+  due_date            date
+  ~audit
+}
+
+Table bill_item {            // one per stone; prices SNAPSHOTTED
+  id            bigint        [pk, increment]
+  bill_id       bigint        [not null, ref: > bill.id, note: 'CASCADE (soft)']
+  stone_id      bigint        [not null, ref: > stone.id, note: 'PROTECT']
+  description   varchar(255)  [not null]
+  unit_price    decimal(15,2) [not null, note: 'SNAPSHOT of rate']
+  weight        decimal(10,3) [not null, note: 'SNAPSHOT at billing']
+  amount        decimal(15,2) [not null, note: 'SNAPSHOT = unit_price × weight']
+  gfs_code      varchar(20)   [note: 'GePG']
+  item_ref      varchar(50)   [note: 'GePG']
+  ~audit
+}
+
+Table payment {
+  id            bigint        [pk, increment]
+  bill_id       bigint        [not null, ref: > bill.id, note: 'PROTECT']
+  amount        decimal(15,2) [not null, note: 'supports partial (open: C2)']
+  paid_at       timestamptz   [not null]
+  channel       varchar(50)   [note: 'GePG / bank / cash']
+  reference     varchar(100)
+  ~audit
+}
+
+
+// ============================================================
+// L3 — certificates (one per stone; A5)
+// Snapshot fields are intentional — a certificate freezes its data.
+// ============================================================
+
+Table certificate {
+  id                 bigint      [pk, increment]
+  stone_id           bigint      [not null, unique, ref: - stone.id, note: 'OneToOne, PROTECT']
+  report_id          bigint      [not null, ref: > identification_report.id, note: 'PROTECT (source)']
+  certificate_no     varchar(30) [not null, note: 'unique (live); (open: C6)']
+  verification_token varchar(64) [not null, note: 'unique (live); public QR URL']
+  stone_type_snapshot varchar(100) [not null]
+  weight_snapshot     decimal(10,3) [not null]
+  color_snapshot      varchar(100)
+  origin_snapshot     varchar(100)
+  gemmologist         varchar(100) [note: 'snapshot of report gemmologist name']
+  qr_code             varchar(100)
+  pdf_file            varchar(100)
+  status              certificate_status [not null, default: 'issued', note: '(open: C3)']
+  issued_at           timestamptz [not null]
+  ~audit
+}
+
+Table certificate_access_log {  // APPEND-ONLY log — no soft delete
+  id             bigint      [pk, increment]
+  certificate_id bigint      [not null, ref: > certificate.id, note: 'CASCADE']
+  accessed_at    timestamptz [not null]
+  ip_address     varchar(45)
+  user_agent     varchar(255)
+}

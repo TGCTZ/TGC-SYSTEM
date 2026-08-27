@@ -160,7 +160,11 @@ The system has a custom user model. What **roles** exist (receptionist,
 gemmologist, production staff, accountant, admin…), and which stages can each
 role act on? This drives the permissions layer.
 
-**Answer:**
+**Partly decided:** roles are implemented as **Django Groups** with attached
+permissions — no custom role table. **Still needed from the team:** the
+definitive list of roles and, for each, which stages/actions it may perform.
+
+**Answer (roles & their permitted actions):**
 
 ---
 

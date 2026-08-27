@@ -6,7 +6,8 @@ Docs are grouped by purpose. New folders are added as areas grow (e.g. `api/`,
 ```
 docs/
 ├── engineering/     how we build the system
-└── domain/          what the system does (business rules & process)
+├── domain/          what the system does (business rules & process)
+└── database/        the data model (schema + DBML diagram)
 ```
 
 ## Engineering
@@ -22,6 +23,14 @@ docs/
 | [domain/business-workflow.md](domain/business-workflow.md) | End-to-end process: stages, roles, stone status lifecycle. |
 | [domain/domain-questions.md](domain/domain-questions.md) | Business decisions — settled (Part A) and open (Parts B & C). |
 | [domain/legacy-mifumo-modules.md](domain/legacy-mifumo-modules.md) | Inventory of the old TGC-MIFUMO system — modules, submodules, and how they map to the new apps. |
+
+---
+
+## Database
+| Doc | Purpose |
+| --- | --- |
+| [database/data-model.md](database/data-model.md) | Human-readable schema — every table, column, type, relationship, and the normalization principles. |
+| [database/schema.dbml](database/schema.dbml) | Machine-readable schema (DBML) — paste into dbdiagram.io for the ERD. Dependency-ordered. |
 
 ---
 
