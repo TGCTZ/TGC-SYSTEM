@@ -2,7 +2,7 @@
 # Pre-commit hooks for TGC-SYSTEM
 #
 # Runs automatically before each `git commit` so violations never
-# land in history. Configured to match docs/conventions.md and
+# land in history. Configured to match docs/engineering/conventions.md and
 # the Ruff settings in pyproject.toml.
 #
 # Setup (once per clone):

@@ -9,13 +9,23 @@ strict conventions.
 
 ## Documentation
 
+See [`docs/README.md`](docs/README.md) for the full index. Highlights:
+
+**Engineering** — how we build
 | Document | What it covers |
 | --- | --- |
-| [`docs/conventions.md`](docs/conventions.md) | Django & Python coding standards — architecture rules, models, views/services, security, testing, and the pre-commit checklist. |
-| [`docs/project-structure.md`](docs/project-structure.md) | The annotated folder layout — the purpose of every folder and file. |
+| [`engineering/conventions.md`](docs/engineering/conventions.md) | Django & Python coding standards — architecture, models, services, security, testing. |
+| [`engineering/project-structure.md`](docs/engineering/project-structure.md) | The annotated folder layout — the purpose of every folder and file. |
 
-> New to the codebase? Read `project-structure.md` first to learn *where things
-> live*, then `conventions.md` for *how we write code here*.
+**Domain** — what we're building
+| Document | What it covers |
+| --- | --- |
+| [`domain/business-workflow.md`](docs/domain/business-workflow.md) | End-to-end process: stages, roles, and the stone status lifecycle. |
+| [`domain/domain-questions.md`](docs/domain/domain-questions.md) | Business decisions — settled and still open — that drive the data model. |
+
+> New to the codebase? Read `project-structure.md` to learn *where things live*,
+> `conventions.md` for *how we write code*, then the domain docs for *what the
+> system does*.
 
 ---
 

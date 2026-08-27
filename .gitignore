@@ -1,7 +1,7 @@
 # ============================================================
 # .gitignore for TGC-SYSTEM (Django)
 # Curated to fit this project. Mirrors the "never commit" rules
-# in docs/conventions.md §22.
+# in docs/engineering/conventions.md §22.
 # ============================================================
 
 # --- Secrets & environment ---------------------------------

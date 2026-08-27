@@ -7,7 +7,7 @@
 # our dev tools: Ruff, pytest, coverage, and mypy.
 #
 # The Ruff rules below enforce the "(Ruff)" conventions in
-# docs/conventions.md so they are checked automatically, not by hand.
+# docs/engineering/conventions.md so they are checked automatically, not by hand.
 # ============================================================
 
 
@@ -20,7 +20,7 @@ target-version = "py313"          # match the project's Python version
 extend-exclude = ["migrations"]   # generated code — don't lint it
 
 [tool.ruff.lint]
-# Rule families we enable. Each maps to conventions in docs/conventions.md.
+# Rule families we enable. Each maps to conventions in docs/engineering/conventions.md.
 select = [
     "E",    # pycodestyle errors        — PEP 8
     "W",    # pycodestyle warnings
