@@ -1,8 +1,16 @@
-"""Core models package.
+from .base import BaseModel
+from .lookups import Instrument, Origin, ShapeCut, Species, StoneType, Variety
+from .pricing import StonePrice
+from .reference import ReferenceModel
 
-Shared base models and reference data live here. Import concrete models into
-this namespace so `from apps.core.models import X` keeps working as the package
-grows, e.g.:
-
-    from .base import TimeStampedModel  # noqa: F401
-"""
+__all__ = [
+    "BaseModel",
+    "ReferenceModel",
+    "Instrument",
+    "Origin",
+    "ShapeCut",
+    "Species",
+    "StonePrice",
+    "StoneType",
+    "Variety",
+]
