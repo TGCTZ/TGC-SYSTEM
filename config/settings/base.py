@@ -39,7 +39,7 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS: list[str] = [
-    # e.g. "rest_framework", "django_htmx"
+    "auditlog",
 ]
 
 # Local apps, ordered by dependency layer (low -> high). See docs/conventions.md.
@@ -65,6 +65,8 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "apps.core.current_user.CurrentUserMiddleware",
+    "auditlog.middleware.AuditlogMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]

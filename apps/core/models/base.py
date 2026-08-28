@@ -8,6 +8,7 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
+from apps.core.current_user import get_current_user
 from apps.core.managers import SoftDeleteManager
 
 
@@ -51,10 +52,29 @@ class BaseModel(models.Model):
         """True if the row is soft-deleted."""
         return self.deleted_at is not None
 
+    def save(self, *args, **kwargs):
+        """Stamp created_by/updated_by from the current request user."""
+        user = get_current_user()
+        if user is not None:
+            if self._state.adding and self.created_by_id is None:
+                self.created_by = user
+            self.updated_by = user
+            update_fields = kwargs.get("update_fields")
+            if update_fields is not None:
+                update_fields = set(update_fields)
+                update_fields.add("updated_by")
+                if self._state.adding:
+                    update_fields.add("created_by")
+                kwargs["update_fields"] = update_fields
+        super().save(*args, **kwargs)
+
     def delete(self, using=None, keep_parents=False):
-        """Soft delete: stamp deleted_at instead of removing the row."""
+        """Soft delete: stamp deleted_at (and deleted_by) instead of removing."""
         self.deleted_at = timezone.now()
-        self.save(using=using, update_fields=["deleted_at", "updated_at"])
+        user = get_current_user()
+        if user is not None:
+            self.deleted_by = user
+        self.save(using=using, update_fields=["deleted_at", "deleted_by", "updated_at"])
 
     def hard_delete(self, using=None, keep_parents=False):
         """Permanent delete. Reserved for admin/maintenance only."""
