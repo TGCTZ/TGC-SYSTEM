@@ -1,13 +1,16 @@
 # ============================================================
 # .gitignore for TGC-SYSTEM (Django)
 # Curated to fit this project. Mirrors the "never commit" rules
-# in docs/engineering/conventions.md §22.
+# in docs/engineering/conventions.md section 22.
+# Note: git does not support trailing/inline comments — every
+# comment must be on its own line.
 # ============================================================
 
-# --- Secrets & environment ---------------------------------
+# --- Secrets & environment ---
 .env
 .env.*
-!.env.example                # keep the template, ignore real env files
+# keep the committed template; ignore real env files
+!.env.example
 *.pem
 *.key
 *.crt
@@ -15,7 +18,7 @@
 *.pfx
 credentials.json
 
-# --- Python ------------------------------------------------
+# --- Python ---
 __pycache__/
 *.py[cod]
 *$py.class
@@ -24,36 +27,38 @@ __pycache__/
 build/
 dist/
 
-# --- Virtual environments ----------------------------------
+# --- Virtual environments ---
 .venv/
 venv/
 env/
 ENV/
 
-# --- Django ------------------------------------------------
+# --- Django ---
 *.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-/media/                      # user uploads (runtime)
-/staticfiles/                # collectstatic output (generated)
+# user uploads (runtime)
+/media/
+# collectstatic output (generated)
+/staticfiles/
 
-# --- Translations (i18n) -----------------------------------
-*.mo                         # compiled translation binaries
-*.pot                        # translation templates
+# --- Translations (i18n) ---
+*.mo
+*.pot
 
-# --- Database dumps (never commit — use factories/seeding) --
+# --- Database dumps (use factories/seeding, never commit) ---
 *.sql
 *.sqlite
 *.dump
-# NOTE: intentional, curated fixtures should be committed explicitly.
-# If you add one, force-add it: git add -f apps/<app>/fixtures/<name>.json
+# Intentional, curated fixtures should be committed explicitly:
+#   git add -f apps/<app>/fixtures/<name>.json
 
-# --- Celery (uncomment if/when you add a task queue) -------
+# --- Celery (uncomment when a task queue is added) ---
 # celerybeat-schedule
 # celerybeat.pid
 
-# --- Testing & coverage ------------------------------------
+# --- Testing & coverage ---
 .pytest_cache/
 .coverage
 .coverage.*
@@ -62,7 +67,7 @@ htmlcov/
 .ruff_cache/
 .tox/
 
-# --- OS / editor -------------------------------------------
+# --- OS / editor ---
 .DS_Store
 Thumbs.db
 .idea/

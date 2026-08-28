@@ -46,6 +46,11 @@ THIRD_PARTY_APPS: list[str] = [
 LOCAL_APPS = [
     "apps.core",       # L1 — shared base models, reference data, utils
     "apps.accounts",   # L2 — custom user, roles, permissions
+    "apps.orders",     # L3 — customers, orders, stones
+    "apps.identification",  # L3 — identification reports
+    "apps.production",      # L3 — sonara, carving, lapidary
+    "apps.billing",         # L3 — bills, payments, GePG
+    "apps.certificates",    # L3 — certificates, verification
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
