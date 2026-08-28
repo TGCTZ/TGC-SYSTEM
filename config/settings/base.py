@@ -149,3 +149,34 @@ MEDIA_ROOT = BASE_DIR / "media"
 # Defaults
 # ------------------------------------------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# ------------------------------------------------------------
+# GePG (Government Electronic Payment Gateway)
+# Secrets come from the environment; never commit real values.
+# ------------------------------------------------------------
+GEPG_BILL_CREATE_URL = config("GEPG_BILL_CREATE_URL", default="")
+GEPG_BILL_CANCEL_URL = config("GEPG_BILL_CANCEL_URL", default="")
+GEPG_RECONCILIATION_URL = config("GEPG_RECONCILIATION_URL", default="")
+
+GEPG_SP_GRP_CODE = config("GEPG_SP_GRP_CODE", default="")
+GEPG_SYS_CODE = config("GEPG_SYS_CODE", default="")
+GEPG_SP_CODE = config("GEPG_SP_CODE", default="")
+GEPG_SUB_SP_CODE = config("GEPG_SUB_SP_CODE", default="")
+GEPG_COLL_CENT_CODE = config("GEPG_COLL_CENT_CODE", default="")
+GEPG_GFS_CODE = config("GEPG_GFS_CODE", default="")
+
+# Digital signature (PKCS#12 SHA256withRSA)
+GEPG_USE_DIGITAL_SIGNATURE = config(
+    "GEPG_USE_DIGITAL_SIGNATURE", default=False, cast=bool
+)
+GEPG_CERTIFICATE_PASSWORD = config("GEPG_CERTIFICATE_PASSWORD", default="")
+GEPG_PRIVATE_KEY_PATH = config(
+    "GEPG_PRIVATE_KEY_PATH", default=str(BASE_DIR / "certificates" / "private.pfx")
+)
+GEPG_PUBLIC_CERT_PATH = config(
+    "GEPG_PUBLIC_CERT_PATH", default=str(BASE_DIR / "certificates" / "public.pfx")
+)
+
+# Bill defaults
+GEPG_BILL_EXPIRY_DAYS = config("GEPG_BILL_EXPIRY_DAYS", default=365, cast=int)

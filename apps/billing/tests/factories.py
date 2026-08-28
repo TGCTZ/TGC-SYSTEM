@@ -44,12 +44,17 @@ class BillItemFactory(factory.django.DjangoModelFactory):
 
 
 class PaymentFactory(factory.django.DjangoModelFactory):
-    """Builds a payment against a new bill."""
+    """Builds a GePG payment notification against a new bill."""
 
     class Meta:
         model = Payment
 
     bill = factory.SubFactory(BillFactory)
-    amount = FuzzyDecimal(100_000, 5_000_000)
-    paid_at = factory.LazyFunction(timezone.now)
-    channel = "gepg"
+    gepg_bill_id = factory.LazyAttribute(lambda o: o.bill.bill_number)
+    trx_id = factory.Sequence(lambda n: f"TRX{n:08d}")
+    pay_ref_id = factory.Sequence(lambda n: f"REF{n:08d}")
+    psp_name = "M-Pesa"
+    paid_amount = FuzzyDecimal(100_000, 5_000_000)
+    currency = "TZS"
+    trx_dt_tm = factory.LazyFunction(timezone.now)
+    processed = True

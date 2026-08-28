@@ -3,3 +3,5 @@ Django>=5.1,<6.0
 psycopg[binary]>=3.2          # PostgreSQL driver (psycopg 3)
 python-decouple>=3.8          # env-var configuration
 django-auditlog>=3.0          # change-history audit trail
+requests>=2.31               # GePG HTTP calls
+cryptography>=42.0           # PKCS#12 digital signatures

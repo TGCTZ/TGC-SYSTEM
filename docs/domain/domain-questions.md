@@ -8,6 +8,22 @@
 > Please review Part B and Part C and fill in answers. Each answer directly
 > shapes the database schema.
 
+> **Service-layer assumptions (provisional).** The service layer is being built
+> on the defaults below pending team answers. Each is easy to change later.
+>
+> - **B1** — a stone may have **multiple** production steps.
+> - **B2** — pricing is **flat**: `price_per_unit × weight`.
+> - **B3** — default weight unit is **carat**.
+> - **B4** — a certificate can be issued **only after the bill is fully paid**.
+> - **B5** — the `StoneStatus` enum values as defined.
+> - **B6** — **production is optional**; a stone may go identification → billing.
+> - **C2** — **partial payments allowed**; bill is `paid` once payments cover the
+>   total, else `partially_paid`.
+> - **C3** — certificates **can be revoked**.
+> - **C4** — a **finalized** report is **locked** (no further edits).
+> - **C6** — reference formats: `ORD-YYYY-NNNN`, `RPT-YYYY-NNNN`,
+>   `BILL-YYYY-NNNN`, `CERT-YYYY-NNNN` (per-year sequence).
+
 ---
 
 ## The workflow (shared understanding)

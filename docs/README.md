@@ -7,7 +7,8 @@ Docs are grouped by purpose. New folders are added as areas grow (e.g. `api/`,
 docs/
 ├── engineering/     how we build the system
 ├── domain/          what the system does (business rules & process)
-└── database/        the data model (schema + DBML diagram)
+├── database/        the data model (schema + DBML diagram)
+└── gepg/            GePG payment-gateway integration guide
 ```
 
 ## Engineering
@@ -31,6 +32,14 @@ docs/
 | --- | --- |
 | [database/data-model.md](database/data-model.md) | Human-readable schema — every table, column, type, relationship, and the normalization principles. |
 | [database/schema.dbml](database/schema.dbml) | Machine-readable schema (DBML) — paste into dbdiagram.io for the ERD. Dependency-ordered. |
+
+## GePG integration
+| Doc | Purpose |
+| --- | --- |
+| [gepg/00_GEPG_INTEGRATION_OVERVIEW.md](gepg/00_GEPG_INTEGRATION_OVERVIEW.md) | Config, architecture, and index for the payment-gateway integration. |
+| [gepg/01_BILL_SUBMISSION.md](gepg/01_BILL_SUBMISSION.md) | Submitting bills and obtaining control numbers. |
+| [gepg/02_PAYMENT_NOTIFICATION.md](gepg/02_PAYMENT_NOTIFICATION.md) | Receiving and processing payment callbacks. |
+| [gepg/03_BILL_CANCELLATION.md](gepg/03_BILL_CANCELLATION.md) · [04_RECONCILIATION.md](gepg/04_RECONCILIATION.md) · [05_SMS_INTEGRATION.md](gepg/05_SMS_INTEGRATION.md) | Cancellation, reconciliation, and SMS. |
 
 ---
 

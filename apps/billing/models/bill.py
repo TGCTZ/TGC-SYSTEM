@@ -26,7 +26,16 @@ class Bill(BaseModel):
         max_length=20, choices=BillStatus.choices, default=BillStatus.PENDING
     )
     issued_at = models.DateTimeField(null=True, blank=True)
+    expiry_at = models.DateTimeField(null=True, blank=True)
     due_date = models.DateField(null=True, blank=True)
+
+    # GePG submission tracking (raw gateway state; `status` is the domain state).
+    bill_type = models.PositiveSmallIntegerField(default=1)
+    pay_type = models.PositiveSmallIntegerField(default=1)
+    status_code = models.CharField(max_length=30, blank=True, default="")
+    status_desc = models.CharField(max_length=255, blank=True, default="")
+    gepg_submitted = models.BooleanField(default=False)
+    gepg_submitted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ["-created_at"]
@@ -66,16 +75,53 @@ class BillItem(BaseModel):
 
 
 class Payment(BaseModel):
-    """A payment recorded against a bill; supports partial payments."""
+    """A payment notification received from GePG (one per transaction)."""
 
-    bill = models.ForeignKey(Bill, on_delete=models.PROTECT, related_name="payments")
-    amount = models.DecimalField(max_digits=15, decimal_places=2)
-    paid_at = models.DateTimeField()
-    channel = models.CharField(max_length=50, blank=True, default="")
-    reference = models.CharField(max_length=100, blank=True, default="")
+    bill = models.ForeignKey(
+        Bill, on_delete=models.PROTECT, related_name="payments", null=True, blank=True
+    )
+
+    # Payment header (PmtHdr)
+    req_id = models.CharField(max_length=100, blank=True, default="")
+    grp_bill_id = models.CharField(max_length=100, blank=True, default="")
+    sp_grp_code = models.CharField(max_length=10, blank=True, default="")
+    cust_cntr_num = models.CharField(max_length=12, blank=True, default="")
+    entry_count = models.PositiveIntegerField(null=True, blank=True)
+
+    # Transaction details (PmtTrxDtl)
+    sp_code = models.CharField(max_length=10, blank=True, default="")
+    gepg_bill_id = models.CharField(max_length=100, blank=True, default="")
+    bill_ctr_num = models.CharField(max_length=12, blank=True, default="")
+    psp_code = models.CharField(max_length=10, blank=True, default="")
+    psp_name = models.CharField(max_length=200, blank=True, default="")
+    trx_id = models.CharField(max_length=100, blank=True, default="")
+    pay_ref_id = models.CharField(max_length=100, blank=True, default="")
+    bill_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    paid_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    bill_pay_opt = models.CharField(max_length=1, blank=True, default="")
+    currency = models.CharField(max_length=3, blank=True, default="")
+    coll_acc_num = models.CharField(max_length=50, blank=True, default="")
+    trx_dt_tm = models.DateTimeField(null=True, blank=True)
+    usd_pay_chnl = models.CharField(max_length=50, blank=True, default="")
+    pyr_cell_num = models.CharField(max_length=15, blank=True, default="")
+    pyr_email = models.CharField(max_length=150, blank=True, default="")
+    pyr_name = models.CharField(max_length=200, blank=True, default="")
+
+    # Acknowledgement we returned + raw payload
+    ack_id = models.CharField(max_length=100, blank=True, default="")
+    ack_sts_code = models.CharField(max_length=10, blank=True, default="")
+    processed = models.BooleanField(default=False)
+    raw_request = models.TextField(blank=True, default="")
 
     class Meta:
-        ordering = ["-paid_at"]
+        ordering = ["-trx_dt_tm"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["trx_id"],
+                condition=Q(deleted_at__isnull=True) & ~Q(trx_id=""),
+                name="unique_active_trx_id",
+            ),
+        ]
 
     def __str__(self) -> str:
-        return f"{self.amount} on {self.bill}"
+        return f"{self.paid_amount or 0} on {self.gepg_bill_id} ({self.trx_id})"

@@ -3,12 +3,11 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # App URLs are included here as apps are built, e.g.:
-    # path("", include("apps.dashboard.urls")),
+    path("billing/", include("apps.billing.urls")),
 ]
 
 # Serve media from the dev server only. Static files are handled by the

@@ -20,7 +20,8 @@ class PaymentInline(admin.TabularInline):
 
     model = Payment
     extra = 0
-    fields = ("amount", "paid_at", "channel", "reference")
+    fields = ("trx_id", "paid_amount", "psp_name", "trx_dt_tm", "processed")
+    readonly_fields = fields
 
 
 @admin.register(ServiceProvider)
