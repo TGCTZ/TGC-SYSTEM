@@ -65,15 +65,15 @@ def generate_req_id() -> str:
 
 
 def parse_datetime(value: str) -> datetime:
-    """Parse a GePG datetime, tolerating '.'/':' fractional-second separators."""
+    """Parse a GePG datetime (tolerating '.'/':' fractional seconds) as aware."""
     if not value:
         raise ValueError("Missing datetime value")
     try:
-        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
+        dt = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
     except ValueError:
-        pass
-    normalised = re.sub(r":(\d{1,6})$", r".\1", value)
-    return datetime.strptime(normalised, "%Y-%m-%dT%H:%M:%S.%f")
+        normalised = re.sub(r":(\d{1,6})$", r".\1", value)
+        dt = datetime.strptime(normalised, "%Y-%m-%dT%H:%M:%S.%f")
+    return timezone.make_aware(dt) if timezone.is_naive(dt) else dt
 
 
 # ------------------------------------------------------------
