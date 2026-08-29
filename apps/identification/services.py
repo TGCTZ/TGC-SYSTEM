@@ -35,6 +35,19 @@ def create_report(*, stone, user=None, **fields) -> IdentificationReport:
     return report
 
 
+@transaction.atomic
+def update_report(report: IdentificationReport, *, user=None, **fields) -> IdentificationReport:
+    """Update a report's findings. Refuses once the report is finalized (C4)."""
+    if report.is_finalized:
+        raise ServiceError("A finalized report cannot be edited.")
+    for name, value in fields.items():
+        setattr(report, name, value)
+    if user is not None:
+        report.updated_by = user
+    report.save()
+    return report
+
+
 def finalize_report(report: IdentificationReport, *, user=None) -> IdentificationReport:
     """Lock a report against further edits (C4)."""
     if report.is_finalized:

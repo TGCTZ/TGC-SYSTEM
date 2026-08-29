@@ -81,3 +81,18 @@ def add_stone(order: Order, *, stone_type, weight, weight_unit=WeightUnit.CARAT,
         stone=stone, to_status=StoneStatus.RECEIVED, changed_by=user, note="Registered"
     )
     return stone
+
+
+def update_stone(stone: Stone, *, stone_type=None, weight=None, weight_unit=None,
+                 user=None) -> Stone:
+    """Update a stone's recorded properties (during identification)."""
+    if stone_type is not None:
+        stone.stone_type = stone_type
+    if weight is not None:
+        stone.weight = weight
+    if weight_unit:
+        stone.weight_unit = weight_unit
+    if user is not None:
+        stone.updated_by = user
+    stone.save(update_fields=["stone_type", "weight", "weight_unit", "updated_at", "updated_by"])
+    return stone

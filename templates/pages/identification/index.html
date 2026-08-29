@@ -1,0 +1,20 @@
+<c-layouts.app title="Identification">
+  <div class="space-y-6">
+    <h2 class="text-xl font-semibold text-gray-900">Identification worklist</h2>
+    <p class="text-sm text-gray-500">Orders with stones still to identify.</p>
+
+    <c-sections.table :headers="['Reference', 'Customer', 'Received', 'Progress']"
+      :count="orders|length" empty="Nothing to identify.">
+      {% for order in orders %}
+        <c-sections.table.row href="{% url 'identification:order' order.pk %}" :actions="order.row_actions">
+          <td class="px-6 py-3 font-medium">{{ order.reference_no }}</td>
+          <td class="px-6 py-3">{{ order.customer.full_name }}</td>
+          <td class="px-6 py-3">{{ order.received_date }}</td>
+          <td class="px-6 py-3">{{ order.finalized }} / {{ order.stone_count }}</td>
+        </c-sections.table.row>
+      {% endfor %}
+    </c-sections.table>
+
+    <c-atoms.ui.pagination :page_obj="page_obj" />
+  </div>
+</c-layouts.app>

@@ -1,6 +1,7 @@
 <!-- Table: headers=list, count (optional; 0 shows empty state), empty text,
-     loading=bool. Rows go in the slot as <tr>. -->
-<c-vars headers="" count="" empty="No data available" loading="false" />
+     loading=bool. Rows go in the slot as table.row components. A trailing actions
+     column header is added by default; pass actions="false" to omit it. -->
+<c-vars headers="" count="" empty="No data available" loading="false" actions="true" />
 <div class="w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
   {% if loading == 'true' or loading == True %}
     <div class="flex items-center justify-center gap-2 py-10 text-gray-400">
@@ -20,6 +21,9 @@
               {% for h in headers %}
                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">{{ h }}</th>
               {% endfor %}
+              {% if actions == 'true' or actions == True %}
+                <th class="px-6 py-3"><span class="sr-only">Actions</span></th>
+              {% endif %}
             </tr>
           </thead>
         {% endif %}

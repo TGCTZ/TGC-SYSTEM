@@ -1,0 +1,15 @@
+<!-- Renders a Django bound form field: label, widget, help/errors. -->
+<c-vars field />
+<div class="{{ field.css_classes }}">
+  {% if field.label %}
+    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
+      {{ field.label }}{% if field.field.required %}<span class="text-red-500"> *</span>{% endif %}
+    </label>
+  {% endif %}
+  <div class="{% if field.label %}mt-1{% endif %}">{{ field }}</div>
+  {% if field.errors %}
+    <p class="mt-1 text-xs text-red-600">{{ field.errors|join:", " }}</p>
+  {% elif field.help_text %}
+    <p class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>
+  {% endif %}
+</div>

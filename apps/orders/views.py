@@ -4,10 +4,15 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import transaction
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count, Q
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.generic import DetailView, ListView
 
+from apps.core.row_actions import action
+
+from .forms import OrderCreateForm
 from .models import Customer, Order
 from .services import create_order
 
@@ -18,7 +23,7 @@ class OrderListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = "orders.view_order"
     template_name = "pages/orders/index.html"
     context_object_name = "orders"
-    paginate_by = 20
+    paginate_by = 5
 
     def get_queryset(self):
         qs = (
@@ -39,6 +44,10 @@ class OrderListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["query"] = self.request.GET.get("q", "")
+        for order in ctx["orders"]:
+            order.row_actions = [
+                action("View", "lucide:eye", reverse("orders:detail", args=[order.pk])),
+            ]
         return ctx
 
 
@@ -51,41 +60,58 @@ class OrderDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 
     def get_queryset(self):
         return Order.objects.select_related("customer").prefetch_related(
-            "stones__stone_type"
+            "stones__stone_type", "stones__report"
         )
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        for stone in self.object.stones.all():
+            stone.row_actions = self._stone_actions(stone)
+        return ctx
+
+    def _stone_actions(self, stone):
+        """Build the permission-filtered action list for one stone row."""
+        try:
+            report = stone.report
+        except ObjectDoesNotExist:
+            return []
+        user, actions = self.request.user, []
+        if not report.is_finalized and user.has_perm("identification.change_identificationreport"):
+            actions.append(
+                action("Edit", "lucide:pencil", reverse("identification:edit", args=[stone.pk]))
+            )
+        if not report.is_finalized and user.has_perm("identification.finalize_report"):
+            actions.append(
+                action(
+                    "Finalize",
+                    "lucide:lock",
+                    reverse("identification:finalize", args=[report.pk]),
+                    method="post",
+                )
+            )
+        return actions
 
 
 @login_required
 @permission_required("orders.add_order", raise_exception=True)
 def order_create(request):
     """Register a customer and an order with its stone count."""
-    if request.method == "POST":
-        first = request.POST.get("first_name", "").strip()
-        last = request.POST.get("last_name", "").strip()
-        phone = request.POST.get("phone", "").strip()
-        try:
-            stone_count = int(request.POST.get("stone_count", "0"))
-        except ValueError:
-            stone_count = 0
+    form = OrderCreateForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        cd = form.cleaned_data
+        with transaction.atomic():
+            customer = Customer.objects.create(
+                first_name=cd["first_name"],
+                middle_name=cd["middle_name"],
+                last_name=cd["last_name"],
+                phone=cd["phone"],
+                email=cd["email"],
+                region=cd["region"],
+            )
+            order = create_order(
+                customer=customer, stone_count=cd["stone_count"], user=request.user
+            )
+        messages.success(request, f"Order {order.reference_no} created.")
+        return redirect("orders:detail", pk=order.pk)
 
-        if not (first and last and phone):
-            messages.error(request, "First name, last name, and phone are required.")
-        elif stone_count < 1:
-            messages.error(request, "Number of stones must be at least 1.")
-        else:
-            with transaction.atomic():
-                customer = Customer.objects.create(
-                    first_name=first,
-                    middle_name=request.POST.get("middle_name", "").strip(),
-                    last_name=last,
-                    phone=phone,
-                    email=request.POST.get("email", "").strip(),
-                    region=request.POST.get("region", "").strip(),
-                )
-                order = create_order(
-                    customer=customer, stone_count=stone_count, user=request.user
-                )
-            messages.success(request, f"Order {order.reference_no} created.")
-            return redirect("orders:detail", pk=order.pk)
-
-    return render(request, "pages/orders/form.html")
+    return render(request, "pages/orders/form.html", {"form": form})

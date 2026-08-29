@@ -1,4 +1,5 @@
-// Front-end init: searchable selects (Tom Select) + Alpine, wired for HTMX swaps.
+// Front-end init: searchable selects (Tom Select) + Alpine, wired for HTMX swaps,
+// plus clickable table rows.
 (function () {
   "use strict";
 
@@ -25,5 +26,16 @@
   document.addEventListener("htmx:load", function (e) {
     initSelects(e.target);
     initAlpine(e.target);
+  });
+
+  // Clickable rows: <tr data-href="..."> navigates on click, except when the
+  // click lands on an interactive element (link, button, form control, menu).
+  document.addEventListener("click", function (e) {
+    const row = e.target.closest("tr[data-href]");
+    if (!row) return;
+    if (e.target.closest("a, button, input, select, textarea, label, .ts-wrapper, [data-row-ignore]")) {
+      return;
+    }
+    window.location = row.dataset.href;
   });
 })();

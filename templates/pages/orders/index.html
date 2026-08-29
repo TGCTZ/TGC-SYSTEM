@@ -14,32 +14,17 @@
       <c-atoms.ui.button type="submit" variant="secondary">Search</c-atoms.ui.button>
     </form>
 
-    <c-sections.table :headers="['Reference', 'Customer', 'Received', 'Stones', '']" :count="orders|length">
+    <c-sections.table :headers="['Reference', 'Customer', 'Received', 'Stones']" :count="orders|length">
       {% for order in orders %}
-        <tr class="hover:bg-blue-50/60">
+        <c-sections.table.row href="{% url 'orders:detail' order.pk %}" :actions="order.row_actions">
           <td class="px-6 py-3 font-medium">{{ order.reference_no }}</td>
           <td class="px-6 py-3">{{ order.customer.full_name }}</td>
           <td class="px-6 py-3">{{ order.received_date }}</td>
           <td class="px-6 py-3">{{ order.identified }} / {{ order.stone_count }}</td>
-          <td class="px-6 py-3 text-right">
-            <a href="{% url 'orders:detail' order.pk %}" class="text-blue-600 hover:underline">View</a>
-          </td>
-        </tr>
+        </c-sections.table.row>
       {% endfor %}
     </c-sections.table>
 
-    {% if is_paginated %}
-      <div class="flex items-center justify-between text-sm text-gray-600">
-        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-        <div class="flex gap-2">
-          {% if page_obj.has_previous %}
-            <a href="?q={{ query }}&page={{ page_obj.previous_page_number }}" class="text-blue-600 hover:underline">Previous</a>
-          {% endif %}
-          {% if page_obj.has_next %}
-            <a href="?q={{ query }}&page={{ page_obj.next_page_number }}" class="text-blue-600 hover:underline">Next</a>
-          {% endif %}
-        </div>
-      </div>
-    {% endif %}
+    <c-atoms.ui.pagination :page_obj="page_obj" />
   </div>
 </c-layouts.app>

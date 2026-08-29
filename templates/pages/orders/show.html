@@ -26,12 +26,12 @@
       <c-sections.table :headers="['Label', 'Type', 'Weight', 'Status']" :count="order.stones.count"
         empty="No stones identified yet.">
         {% for stone in order.stones.all %}
-          <tr class="hover:bg-blue-50/60">
+          <c-sections.table.row :actions="stone.row_actions">
             <td class="px-6 py-3 font-medium">{{ stone.label }}</td>
             <td class="px-6 py-3">{{ stone.stone_type.name }}</td>
             <td class="px-6 py-3">{{ stone.weight }} {{ stone.weight_unit }}</td>
             <td class="px-6 py-3"><c-atoms.ui.badge variant="info" dot="true">{{ stone.get_status_display }}</c-atoms.ui.badge></td>
-          </tr>
+          </c-sections.table.row>
         {% endfor %}
       </c-sections.table>
     </div>

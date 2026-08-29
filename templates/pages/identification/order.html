@@ -1,0 +1,69 @@
+<c-layouts.app title="Identify · {{ order.reference_no }}">
+  <div class="mx-auto max-w-4xl space-y-6">
+    <c-atoms.ui.breadcrumb>
+      <li><a href="{% url 'identification:index' %}" class="hover:text-gray-700">Identification</a></li>
+      <li><c-atoms.ui.icon name="lucide:chevron-right" size="sm" /></li>
+      <li class="font-medium text-gray-700">{{ order.reference_no }}</li>
+    </c-atoms.ui.breadcrumb>
+
+    <div>
+      <h2 class="text-xl font-semibold text-gray-900">{{ order.reference_no }}</h2>
+      <p class="text-sm text-gray-500">{{ order.customer.full_name }} · {{ order.stones.count }} of {{ order.stone_count }} registered</p>
+    </div>
+
+    {# Registered stones #}
+    <c-sections.table :headers="['Label', 'Type', 'Weight', 'Report', 'Status', '']"
+      :count="order.stones.count" empty="No stones registered yet.">
+      {% for stone in order.stones.all %}
+        <tr {% if stone.report and not stone.report.is_finalized %}data-href="{% url 'identification:edit' stone.pk %}" class="hover:bg-blue-50/60"{% endif %}>
+          <td class="px-6 py-3 font-medium">{{ stone.label }}</td>
+          <td class="px-6 py-3">{{ stone.stone_type.name }}</td>
+          <td class="px-6 py-3">{{ stone.weight }} {{ stone.weight_unit }}</td>
+          <td class="px-6 py-3">{% if stone.report %}{{ stone.report.report_number }}{% else %}—{% endif %}</td>
+          <td class="px-6 py-3">
+            {% if not stone.report %}
+              <c-atoms.ui.badge>Registered</c-atoms.ui.badge>
+            {% elif stone.report.is_finalized %}
+              <c-atoms.ui.badge variant="success" dot="true">Finalized</c-atoms.ui.badge>
+            {% else %}
+              <c-atoms.ui.badge variant="warning" dot="true">Draft</c-atoms.ui.badge>
+            {% endif %}
+          </td>
+          <td class="px-6 py-3 text-right">
+            {% if stone.report and not stone.report.is_finalized %}
+              <c-atoms.ui.row-actions>
+                <a href="{% url 'identification:edit' stone.pk %}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Edit</a>
+                <form method="post" action="{% url 'identification:finalize' stone.report.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="block w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">Finalize</button>
+                </form>
+              </c-atoms.ui.row-actions>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </c-sections.table>
+
+    {# Identify next stone #}
+    {% if order.stones.count < order.stone_count %}
+      <form method="post" action="{% url 'identification:order' order.pk %}" class="space-y-6">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <c-atoms.ui.alert variant="danger">{{ form.non_field_errors|join:", " }}</c-atoms.ui.alert>
+        {% endif %}
+
+        <c-atoms.ui.card title="Register &amp; identify a stone">
+          {% include "pages/identification/_fields.html" %}
+        </c-atoms.ui.card>
+
+        <div class="flex justify-end">
+          <c-atoms.ui.button type="submit" variant="primary">Save identification</c-atoms.ui.button>
+        </div>
+      </form>
+    {% else %}
+      <c-atoms.ui.alert variant="success" title="All stones registered">
+        Finalize any remaining draft reports above to complete this order.
+      </c-atoms.ui.alert>
+    {% endif %}
+  </div>
+</c-layouts.app>

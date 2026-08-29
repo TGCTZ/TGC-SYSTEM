@@ -1,0 +1,24 @@
+<div class="grid gap-4 sm:grid-cols-3">
+  <c-atoms.forms.formfield :field="form.stone_type" />
+  <c-atoms.forms.formfield :field="form.weight" />
+  <c-atoms.forms.formfield :field="form.weight_unit" />
+  <c-atoms.forms.formfield :field="form.species" />
+  <c-atoms.forms.formfield :field="form.variety" />
+  <c-atoms.forms.formfield :field="form.origin" />
+  <c-atoms.forms.formfield :field="form.color" />
+  <c-atoms.forms.formfield :field="form.transparency" />
+  <c-atoms.forms.formfield :field="form.treatment" />
+  <c-atoms.forms.formfield :field="form.optic_character" />
+  <c-atoms.forms.formfield :field="form.shape_cut" />
+  <c-atoms.forms.formfield :field="form.refractive_index" />
+  <c-atoms.forms.formfield :field="form.specific_gravity" />
+  <c-atoms.forms.formfield :field="form.instruments" />
+  <div class="flex items-end pb-1.5">
+    <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+      {{ form.is_polished }} {{ form.is_polished.label }}
+    </label>
+  </div>
+</div>
+<div class="mt-4">
+  <c-atoms.forms.formfield :field="form.conclusion" />
+</div>

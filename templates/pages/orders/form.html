@@ -8,34 +8,25 @@
 
     <form method="post" action="{% url 'orders:create' %}" class="space-y-8">
       {% csrf_token %}
+      {% if form.non_field_errors %}
+        <c-atoms.ui.alert variant="danger">{{ form.non_field_errors|join:", " }}</c-atoms.ui.alert>
+      {% endif %}
 
       <c-atoms.ui.card title="Customer">
         <div class="grid gap-4 sm:grid-cols-2">
-          <c-atoms.forms.fieldset label="First name" for="first_name" required="true">
-            <c-atoms.forms.input id="first_name" name="first_name" required />
-          </c-atoms.forms.fieldset>
-          <c-atoms.forms.fieldset label="Last name" for="last_name" required="true">
-            <c-atoms.forms.input id="last_name" name="last_name" required />
-          </c-atoms.forms.fieldset>
-          <c-atoms.forms.fieldset label="Phone" for="phone" required="true">
-            <c-atoms.forms.input id="phone" name="phone" required />
-          </c-atoms.forms.fieldset>
-          <c-atoms.forms.fieldset label="Email" for="email">
-            <c-atoms.forms.input id="email" name="email" type="email" />
-          </c-atoms.forms.fieldset>
-          <c-atoms.forms.fieldset label="Region" for="region">
-            <c-atoms.forms.input id="region" name="region" />
-          </c-atoms.forms.fieldset>
+          <c-atoms.forms.formfield :field="form.first_name" />
+          <c-atoms.forms.formfield :field="form.middle_name" />
+          <c-atoms.forms.formfield :field="form.last_name" />
+          <c-atoms.forms.formfield :field="form.phone" />
+          <c-atoms.forms.formfield :field="form.email" />
+          <c-atoms.forms.formfield :field="form.region" />
         </div>
       </c-atoms.ui.card>
 
       <c-atoms.ui.card title="Stones">
-        <c-atoms.forms.fieldset label="Number of stones" for="stone_count" required="true"
-          help="How many stones the customer submitted. Their properties are recorded later during identification.">
-          <div class="max-w-[10rem]">
-            <c-atoms.forms.input id="stone_count" name="stone_count" type="number" min="1" value="1" required />
-          </div>
-        </c-atoms.forms.fieldset>
+        <div class="max-w-xs">
+          <c-atoms.forms.formfield :field="form.stone_count" />
+        </div>
       </c-atoms.ui.card>
 
       <div class="flex justify-end gap-2">
