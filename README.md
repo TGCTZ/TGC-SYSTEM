@@ -31,35 +31,67 @@ See [`docs/README.md`](docs/README.md) for the full index. Highlights:
 
 ## Getting started
 
-> Setup steps will be filled in as the project is scaffolded.
+**Prerequisites:** Python 3.13, PostgreSQL, and Node.js + npm.
+
+### First-time setup
 
 ```bash
-# 1. Create and activate a virtual environment
+# 1. Python environment
 python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-
-# 2. Install dependencies
+.venv\Scripts\activate            # macOS/Linux: source .venv/bin/activate
 pip install -r requirements/development.txt
 
-# 3. Configure environment
-cp .env.example .env             # then edit values
+# 2. Front-end dependencies
+npm install
 
-# 4. Apply migrations and run
+# 3. Configuration — copy the template, then set a real SECRET_KEY and DB_* values
+cp .env.example .env
+
+# 4. Create the PostgreSQL database named in .env, then:
 python manage.py migrate
-python manage.py runserver
+
+# 5. Build CSS, seed roles, create an admin (optionally sample data)
+npm run build
+python manage.py setup_roles
+python manage.py createsuperuser
+python manage.py seed             # optional: realistic sample data
 ```
+
+### Running it (day to day)
+
+Two terminals:
+
+```bash
+npm run watch                     # terminal 1 — rebuilds CSS on template/component changes
+```
+```bash
+python manage.py runserver        # terminal 2 — the Django dev server
+```
+
+Then open:
+
+- **http://127.0.0.1:8000/styleguide/** — the UI component gallery
+- **http://127.0.0.1:8000/admin/** — Django admin
+
+> **Notes**
+> - Styles won't render until `output.css` exists — run `npm run build` once, or
+>   keep `npm run watch` running. It's generated (gitignored).
+> - Hard-refresh (Ctrl+Shift+R) after CSS/JS changes; the browser caches `output.css`.
+> - Icons are served from `/icons/`, which reads `node_modules/@iconify/json` — so
+>   `npm install` must have run.
 
 ---
 
 ## Tech stack
 
-- **Python** · **Django 5**
-- **PostgreSQL**
-- **Ruff** (lint + format) · **pytest** (tests) · **factory_boy** (test data & seeding)
+Django 5 · PostgreSQL · django-cotton + Tailwind v4 + HTMX + Alpine · Iconify ·
+Ruff · pytest. Full list and the purpose of each tool:
+[`docs/engineering/tech-stack.md`](docs/engineering/tech-stack.md).
 
 ---
 
 ## Project status
 
-Early scaffolding. Architecture and conventions are defined; application code is
-being built out. See the documentation above.
+Foundation complete: data layer, audit trail, GePG billing integration,
+permissions, and a front-end component library (see `/styleguide/`). Feature
+pages (login, dashboards, workflow screens) are next. See the docs above.
