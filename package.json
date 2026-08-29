@@ -1,0 +1,20 @@
+{
+  "name": "tgc-system-ui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Front-end build (Tailwind CSS) for TGC-SYSTEM.",
+  "scripts": {
+    "build": "tailwindcss -i ./static/src/input.css -o ./static/css/output.css --minify",
+    "watch": "tailwindcss -i ./static/src/input.css -o ./static/css/output.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@iconify/json": "^2.2.522",
+    "alpinejs": "^3.16.3",
+    "tom-select": "^2.6.2"
+  }
+}

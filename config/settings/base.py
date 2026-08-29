@@ -40,6 +40,8 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS: list[str] = [
     "auditlog",
+    "django_cotton",
+    "dj_iconify",
 ]
 
 # Local apps, ordered by dependency layer (low -> high). See docs/conventions.md.
@@ -51,6 +53,7 @@ LOCAL_APPS = [
     "apps.production",      # L3 — sonara, carving, lapidary
     "apps.billing",         # L3 — bills, payments, GePG
     "apps.certificates",    # L3 — certificates, verification
+    "apps.dashboard",       # L4 — shell, nav, styleguide
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -149,6 +152,12 @@ MEDIA_ROOT = BASE_DIR / "media"
 # Defaults
 # ------------------------------------------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# ------------------------------------------------------------
+# Icons (django-iconify — self-hosted Iconify API for the web component)
+# ------------------------------------------------------------
+ICONIFY_JSON_ROOT = str(BASE_DIR / "node_modules" / "@iconify" / "json")
 
 
 # ------------------------------------------------------------

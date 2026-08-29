@@ -1,0 +1,13 @@
+<!-- Fieldset: label + control (slot) + error/help. label, for, help, error, required. -->
+<c-vars label="" for="" help="" error="" required="false" />
+<div>
+  {% if label %}
+    <c-atoms.forms.label for="{{ for }}" required="{{ required }}">{{ label }}</c-atoms.forms.label>
+  {% endif %}
+  <div class="{% if label %}mt-1{% endif %}">{{ slot }}</div>
+  {% if error %}
+    <p class="mt-1 text-xs text-red-600">{{ error }}</p>
+  {% elif help %}
+    <p class="mt-1 text-xs text-gray-500">{{ help }}</p>
+  {% endif %}
+</div>

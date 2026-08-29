@@ -1,0 +1,16 @@
+<c-vars variant="primary" size="md" type="button" />
+<button type="{{ type }}"
+  class="inline-flex items-center justify-center gap-2 font-medium rounded-md
+         transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2
+         disabled:opacity-50 disabled:pointer-events-none
+         {% if size == 'sm' %}px-2.5 py-1.5 text-sm{% elif size == 'lg' %}px-4 py-2.5 text-base{% else %}px-3 py-2 text-sm{% endif %}
+         {% if variant == 'primary' %}bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500
+         {% elif variant == 'secondary' %}bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-400
+         {% elif variant == 'danger' %}bg-red-600 text-white hover:bg-red-700 focus:ring-red-500
+         {% elif variant == 'success' %}bg-green-600 text-white hover:bg-green-700 focus:ring-green-500
+         {% elif variant == 'outline' %}bg-white text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50
+         {% elif variant == 'ghost' %}bg-transparent text-gray-700 hover:bg-gray-100
+         {% elif variant == 'link' %}bg-transparent text-blue-600 hover:underline p-0{% endif %}"
+  {{ attrs }}>
+  {{ slot }}
+</button>

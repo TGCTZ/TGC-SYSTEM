@@ -1,0 +1,7 @@
+<!-- Avatar: initials (fallback), src (optional image), size=sm|md|lg -->
+<c-vars initials="?" src="" size="md" />
+<span class="inline-flex items-center justify-center rounded-full bg-blue-100 text-blue-700 font-medium overflow-hidden
+  {% if size == 'sm' %}h-8 w-8 text-xs{% elif size == 'lg' %}h-12 w-12 text-base{% else %}h-10 w-10 text-sm{% endif %}"
+  {{ attrs }}>
+  {% if src %}<img src="{{ src }}" alt="" class="h-full w-full object-cover">{% else %}{{ initials }}{% endif %}
+</span>

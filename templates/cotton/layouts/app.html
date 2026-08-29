@@ -1,0 +1,12 @@
+<!-- App shell: sidebar + header + content + footer. title sets the page title. -->
+<c-vars title="TGC System" />
+<c-layouts.base title="{{ title }}">
+  <div class="flex h-full">
+    <c-layouts.sidebar />
+    <div class="flex min-w-0 flex-1 flex-col">
+      <c-layouts.header title="{{ title }}" />
+      <main class="flex-1 overflow-y-auto p-6">{{ slot }}</main>
+      <c-layouts.footer />
+    </div>
+  </div>
+</c-layouts.base>

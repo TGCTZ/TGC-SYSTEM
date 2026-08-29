@@ -1,0 +1,9 @@
+<!-- Tooltip (CSS hover): text. Wraps the trigger in the slot. -->
+<c-vars text="" />
+<span class="group relative inline-flex">
+  {{ slot }}
+  <span class="pointer-events-none absolute -top-8 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap
+    rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 transition group-hover:opacity-100">
+    {{ text }}
+  </span>
+</span>

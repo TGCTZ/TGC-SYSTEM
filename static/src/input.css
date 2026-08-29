@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+/* Scan Django templates (incl. django-cotton components) for classes. */
+@source "../../templates";
+@source "../../apps";
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../fonts/inter-variable.woff2") format("woff2");
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+}
+
+/* Alpine: hide x-cloak elements until Alpine initializes them. */
+[x-cloak] {
+  display: none !important;
+}
+
+/* Tom Select: align the combobox with our form inputs. */
+.ts-wrapper {
+  font-size: 0.875rem;
+}
+.ts-control {
+  min-height: 2.25rem;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.375rem;
+  padding: 0.25rem 2.25rem 0.25rem 0.75rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  /* Chevron caret (like a native select), so it reads as a dropdown. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  background-size: 1.1rem;
+}
+.ts-wrapper.focus .ts-control {
+  border-color: rgb(37 99 235);
+  box-shadow: 0 0 0 1px rgb(37 99 235);
+}
+.ts-dropdown {
+  border: 1px solid rgb(229 231 235);
+  border-radius: 0.375rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  font-size: 0.875rem;
+}
+.ts-dropdown .active {
+  background-color: rgb(239 246 255);
+  color: rgb(29 78 216);
+}
+.ts-control .item {
+  background-color: rgb(239 246 255);
+  color: rgb(29 78 216);
+  border-radius: 0.25rem;
+}

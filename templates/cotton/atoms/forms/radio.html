@@ -1,0 +1,7 @@
+<!-- Radio: label (optional; else slot) -->
+<c-vars label="" />
+<label class="inline-flex items-center gap-2 text-sm text-gray-700">
+  <input type="radio"
+    class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500" {{ attrs }}>
+  {% if label %}{{ label }}{% else %}{{ slot }}{% endif %}
+</label>

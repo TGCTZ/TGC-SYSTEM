@@ -5,3 +5,5 @@ python-decouple>=3.8          # env-var configuration
 django-auditlog>=3.0          # change-history audit trail
 requests>=2.31               # GePG HTTP calls
 cryptography>=42.0           # PKCS#12 digital signatures
+django-cotton>=2.0           # HTML component templates
+django-iconify>=0.5          # self-hosted Iconify icon API

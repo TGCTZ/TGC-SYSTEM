@@ -1,0 +1,185 @@
+<c-layouts.app title="Component Styleguide">
+  <div class="mx-auto max-w-5xl space-y-12">
+
+    <c-atoms.ui.breadcrumb>
+      <li><a href="#" class="hover:text-gray-700">Home</a></li>
+      <li><c-atoms.ui.icon name="lucide:chevron-right" size="sm" /></li>
+      <li class="font-medium text-gray-700">Styleguide</li>
+    </c-atoms.ui.breadcrumb>
+
+    {# Buttons #}
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Buttons</h2>
+      <div class="flex flex-wrap items-center gap-3">
+        <c-atoms.ui.button variant="primary">Primary</c-atoms.ui.button>
+        <c-atoms.ui.button variant="secondary">Secondary</c-atoms.ui.button>
+        <c-atoms.ui.button variant="danger">Danger</c-atoms.ui.button>
+        <c-atoms.ui.button variant="success">Success</c-atoms.ui.button>
+        <c-atoms.ui.button variant="outline">Outline</c-atoms.ui.button>
+        <c-atoms.ui.button variant="ghost">Ghost</c-atoms.ui.button>
+        <c-atoms.ui.button variant="link">Link</c-atoms.ui.button>
+        <c-atoms.ui.button variant="primary" disabled>Disabled</c-atoms.ui.button>
+        <c-atoms.ui.button variant="primary" size="sm">Small</c-atoms.ui.button>
+        <c-atoms.ui.button variant="primary" size="lg">Large</c-atoms.ui.button>
+      </div>
+    </section>
+
+    {# Badges #}
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Badges</h2>
+      <div class="flex flex-wrap items-center gap-3">
+        <c-atoms.ui.badge>Default</c-atoms.ui.badge>
+        <c-atoms.ui.badge variant="success">Paid</c-atoms.ui.badge>
+        <c-atoms.ui.badge variant="warning">Pending</c-atoms.ui.badge>
+        <c-atoms.ui.badge variant="danger">Cancelled</c-atoms.ui.badge>
+        <c-atoms.ui.badge variant="info">Info</c-atoms.ui.badge>
+        <c-atoms.ui.badge variant="primary">Primary</c-atoms.ui.badge>
+        <c-atoms.ui.badge variant="success" dot="true">Active</c-atoms.ui.badge>
+        <c-atoms.ui.badge variant="danger" dot="true">Offline</c-atoms.ui.badge>
+      </div>
+    </section>
+
+    {# Alerts #}
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">Alerts</h2>
+      <c-atoms.ui.alert variant="info" title="Heads up">An informational message.</c-atoms.ui.alert>
+      <c-atoms.ui.alert variant="success" title="Saved">The order was created.</c-atoms.ui.alert>
+      <c-atoms.ui.alert variant="warning" title="Check this">Price is missing for a stone type.</c-atoms.ui.alert>
+      <c-atoms.ui.alert variant="danger" title="Failed">The bill could not be submitted.</c-atoms.ui.alert>
+    </section>
+
+    {# Form controls #}
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Form controls</h2>
+      <div class="grid max-w-xl gap-4">
+        <c-atoms.forms.fieldset label="Customer name" for="cust" required="true" help="Full legal name.">
+          <c-atoms.forms.input id="cust" name="cust" placeholder="Jane Doe" />
+        </c-atoms.forms.fieldset>
+        <c-atoms.forms.fieldset label="Stone type" for="type">
+          <c-atoms.forms.select id="type" name="type">
+            <option>Ruby</option><option>Sapphire</option><option>Diamond</option>
+          </c-atoms.forms.select>
+        </c-atoms.forms.fieldset>
+        <c-atoms.forms.fieldset label="Notes" for="notes">
+          <c-atoms.forms.textarea id="notes" name="notes" placeholder="Optional notes"></c-atoms.forms.textarea>
+        </c-atoms.forms.fieldset>
+        <c-atoms.forms.fieldset label="Weight" for="w" error="Weight is required.">
+          <c-atoms.forms.input id="w" name="w" error="true" placeholder="0.00" />
+        </c-atoms.forms.fieldset>
+        <div class="flex items-center gap-6">
+          <c-atoms.forms.checkbox label="Is polished" />
+          <c-atoms.forms.radio name="opt" label="Option A" />
+          <c-atoms.forms.toggle label="Active" />
+        </div>
+      </div>
+    </section>
+
+    {# Searchable selects #}
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Searchable selects</h2>
+      <div class="grid max-w-xl gap-4">
+        <c-atoms.forms.fieldset label="Species (type to search)" for="species">
+          <c-atoms.forms.select id="species" name="species">
+            <option value="">Select a species…</option>
+            <option>Beryl</option><option>Corundum</option><option>Chrysoberyl</option>
+            <option>Diamond</option><option>Feldspar</option><option>Garnet</option>
+            <option>Quartz</option><option>Spinel</option><option>Topaz</option>
+            <option>Tourmaline</option><option>Zircon</option>
+          </c-atoms.forms.select>
+        </c-atoms.forms.fieldset>
+        <c-atoms.forms.fieldset label="Instruments used (multi-select)" for="instr">
+          <c-atoms.forms.select id="instr" name="instr" multiple>
+            <option>Refractometer</option><option>Polariscope</option>
+            <option>Spectroscope</option><option>Microscope</option>
+            <option>UV lamp</option><option>Dichroscope</option>
+          </c-atoms.forms.select>
+        </c-atoms.forms.fieldset>
+        <c-atoms.forms.fieldset label="Plain select (search off)" for="plain">
+          <c-atoms.forms.select id="plain" name="plain" search="false">
+            <option>Yes</option><option>No</option>
+          </c-atoms.forms.select>
+        </c-atoms.forms.fieldset>
+      </div>
+    </section>
+
+    {# Cards #}
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Cards</h2>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <c-atoms.ui.card title="Order summary">
+          A basic card with a title and body content.
+          <c-slot name="footer"><c-atoms.ui.button size="sm">Action</c-atoms.ui.button></c-slot>
+        </c-atoms.ui.card>
+        <c-atoms.ui.card>
+          <c-slot name="header"><div class="flex items-center gap-2"><c-atoms.ui.icon name="lucide:gem" /> Custom header</div></c-slot>
+          Card with a custom header slot.
+        </c-atoms.ui.card>
+      </div>
+    </section>
+
+    {# Table #}
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Table</h2>
+      <c-sections.table :headers="table_headers">
+        <tr class="hover:bg-blue-50/60">
+          <td class="px-6 py-3">ORD-2026-0001</td>
+          <td class="px-6 py-3">Jane Doe</td>
+          <td class="px-6 py-3"><c-atoms.ui.badge variant="success" dot="true">Paid</c-atoms.ui.badge></td>
+          <td class="px-6 py-3 text-right"><c-atoms.ui.action icon="lucide:pencil" /></td>
+        </tr>
+        <tr class="hover:bg-blue-50/60">
+          <td class="px-6 py-3">ORD-2026-0002</td>
+          <td class="px-6 py-3">Acme Ltd</td>
+          <td class="px-6 py-3"><c-atoms.ui.badge variant="warning" dot="true">Pending</c-atoms.ui.badge></td>
+          <td class="px-6 py-3 text-right"><c-atoms.ui.action icon="lucide:pencil" /></td>
+        </tr>
+      </c-sections.table>
+      <p class="text-sm text-gray-500">Empty state:</p>
+      <c-sections.table :headers="table_headers" :count="0" empty="No orders yet." />
+    </section>
+
+    {# Overlays & misc #}
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Overlays &amp; misc</h2>
+      <div class="flex flex-wrap items-center gap-4">
+        <c-atoms.ui.dropdown label="Actions">
+          <a href="#" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Edit</a>
+          <a href="#" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Duplicate</a>
+          <a href="#" class="block px-3 py-2 text-sm text-red-600 hover:bg-gray-50">Delete</a>
+        </c-atoms.ui.dropdown>
+
+        <c-atoms.ui.button variant="outline" onclick="window.dispatchEvent(new CustomEvent('open-demo-modal'))">
+          Open modal
+        </c-atoms.ui.button>
+
+        <c-atoms.ui.tooltip text="Helpful hint">
+          <c-atoms.ui.button variant="ghost">Hover me</c-atoms.ui.button>
+        </c-atoms.ui.tooltip>
+
+        <c-atoms.ui.avatar initials="JD" />
+        <c-atoms.ui.spinner />
+        <c-atoms.ui.icon name="lucide:gem" size="lg" />
+        <c-atoms.ui.icon name="lucide:badge-check" size="lg" />
+      </div>
+
+      <c-atoms.ui.modal id="demo-modal" title="Confirm">
+        Are you sure you want to continue?
+        <c-slot name="footer">
+          <c-atoms.ui.button variant="secondary" x-on:click="open = false">Cancel</c-atoms.ui.button>
+          <c-atoms.ui.button variant="primary" x-on:click="open = false">Confirm</c-atoms.ui.button>
+        </c-slot>
+      </c-atoms.ui.modal>
+    </section>
+
+    {# HTMX #}
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold">HTMX</h2>
+      <c-atoms.ui.button variant="primary"
+        hx-get="{% url 'dashboard:htmx_demo' %}" hx-target="#htmx-out" hx-swap="innerHTML">
+        Load via HTMX
+      </c-atoms.ui.button>
+      <div id="htmx-out" class="text-sm text-gray-500">Nothing loaded yet.</div>
+    </section>
+
+  </div>
+</c-layouts.app>

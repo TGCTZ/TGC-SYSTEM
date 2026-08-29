@@ -1,0 +1,5 @@
+<!-- Icon: name="set:name" (any Iconify set, e.g. lucide:home), size=sm|md|lg -->
+<c-vars name="" size="md" />
+<iconify-icon icon="{{ name }}"
+  class="{% if size == 'sm' %}text-base{% elif size == 'lg' %}text-2xl{% else %}text-xl{% endif %}"
+  {{ attrs }}></iconify-icon>

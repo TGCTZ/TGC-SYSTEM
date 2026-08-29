@@ -1,0 +1,9 @@
+<!-- Select: searchable combobox by default (Tom Select). search="false" opts out.
+     error=bool. Options passed as <option> in the slot. -->
+<c-vars error="false" search="true" />
+<select
+  {% if search != 'false' and search != False %}data-search{% endif %}
+  class="block w-full rounded-md border-0 px-3 py-1.5 text-sm text-gray-900 shadow-sm
+         ring-1 ring-inset focus:ring-2 focus:ring-inset
+         {% if error == 'true' or error == True %}ring-red-400 focus:ring-red-500{% else %}ring-gray-300 focus:ring-blue-600{% endif %}"
+  {{ attrs }}>{{ slot }}</select>

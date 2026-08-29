@@ -7,7 +7,9 @@ from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("icons/", include("dj_iconify.urls")),
     path("billing/", include("apps.billing.urls")),
+    path("", include("apps.dashboard.urls")),
 ]
 
 # Serve media from the dev server only. Static files are handled by the

@@ -1,0 +1,11 @@
+<!-- Toaster: renders Django messages as stacked toasts (top-right). -->
+{% if messages %}
+<div class="fixed right-4 top-4 z-50 flex flex-col gap-2">
+  {% for message in messages %}
+    <div class="flex items-start gap-3 rounded-md border bg-white px-4 py-3 shadow-md
+      {% if message.tags == 'error' %}border-red-200{% elif message.tags == 'success' %}border-green-200{% elif message.tags == 'warning' %}border-yellow-200{% else %}border-blue-200{% endif %}">
+      <div class="text-sm text-gray-800">{{ message }}</div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
