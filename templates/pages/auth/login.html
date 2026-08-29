@@ -1,0 +1,29 @@
+<c-layouts.guest title="Sign in · TGC System">
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    <div>
+      <h2 class="text-base font-semibold text-gray-900">Sign in</h2>
+      <p class="text-sm text-gray-500">Use your TGC account.</p>
+    </div>
+
+    {% if form.non_field_errors %}
+      <c-atoms.ui.alert variant="danger">{{ form.non_field_errors|join:", " }}</c-atoms.ui.alert>
+    {% endif %}
+
+    <c-atoms.forms.fieldset label="Username" for="id_username" required="true"
+      error="{{ form.username.errors|join:', ' }}">
+      <c-atoms.forms.input id="id_username" name="username" autofocus
+        value="{{ form.username.value|default:'' }}"
+        error="{{ form.username.errors|yesno:'true,false' }}" />
+    </c-atoms.forms.fieldset>
+
+    <c-atoms.forms.fieldset label="Password" for="id_password" required="true"
+      error="{{ form.password.errors|join:', ' }}">
+      <c-atoms.forms.input id="id_password" name="password" type="password"
+        error="{{ form.password.errors|yesno:'true,false' }}" />
+    </c-atoms.forms.fieldset>
+
+    <input type="hidden" name="next" value="{{ next }}">
+    <c-atoms.ui.button type="submit" variant="primary" class="w-full">Sign in</c-atoms.ui.button>
+  </form>
+</c-layouts.guest>

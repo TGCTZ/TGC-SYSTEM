@@ -9,7 +9,12 @@
     <button class="text-gray-500 hover:text-gray-700"><c-atoms.ui.icon name="lucide:bell" /></button>
     <c-atoms.ui.dropdown label="{{ request.user.get_username|default:'Account' }}" align="right">
       <a href="#" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Profile</a>
-      <a href="#" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Logout</a>
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="block w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+          Sign out
+        </button>
+      </form>
     </c-atoms.ui.dropdown>
   </div>
 </header>

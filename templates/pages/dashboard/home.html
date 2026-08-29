@@ -1,0 +1,32 @@
+<c-layouts.app title="Dashboard">
+  <div class="space-y-6">
+    <div>
+      <h2 class="text-xl font-semibold text-gray-900">Welcome, {{ request.user.get_username }}</h2>
+      <p class="text-sm text-gray-500">Here's an overview of activity.</p>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <c-atoms.ui.card title="Orders">
+        <p class="text-2xl font-semibold text-gray-900">—</p>
+        <p class="text-xs text-gray-500">Open orders</p>
+      </c-atoms.ui.card>
+      <c-atoms.ui.card title="Identification">
+        <p class="text-2xl font-semibold text-gray-900">—</p>
+        <p class="text-xs text-gray-500">Awaiting report</p>
+      </c-atoms.ui.card>
+      <c-atoms.ui.card title="Billing">
+        <p class="text-2xl font-semibold text-gray-900">—</p>
+        <p class="text-xs text-gray-500">Unpaid bills</p>
+      </c-atoms.ui.card>
+      <c-atoms.ui.card title="Certificates">
+        <p class="text-2xl font-semibold text-gray-900">—</p>
+        <p class="text-xs text-gray-500">Issued this month</p>
+      </c-atoms.ui.card>
+    </div>
+
+    <c-atoms.ui.alert variant="info" title="Coming soon">
+      Feature screens (reception, identification, production, billing,
+      certificates) will appear here as they're built.
+    </c-atoms.ui.alert>
+  </div>
+</c-layouts.app>

@@ -1,8 +1,15 @@
 """Dashboard and component-styleguide views."""
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.utils import timezone
 from django.views.generic import TemplateView
+
+
+class HomeView(LoginRequiredMixin, TemplateView):
+    """Authenticated landing page."""
+
+    template_name = "pages/dashboard/home.html"
 
 
 class StyleguideView(TemplateView):
