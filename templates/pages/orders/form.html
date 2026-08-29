@@ -1,0 +1,47 @@
+<c-layouts.app title="New order">
+  <div class="mx-auto max-w-3xl space-y-6">
+    <c-atoms.ui.breadcrumb>
+      <li><a href="{% url 'orders:index' %}" class="hover:text-gray-700">Orders</a></li>
+      <li><c-atoms.ui.icon name="lucide:chevron-right" size="sm" /></li>
+      <li class="font-medium text-gray-700">New order</li>
+    </c-atoms.ui.breadcrumb>
+
+    <form method="post" action="{% url 'orders:create' %}" class="space-y-8">
+      {% csrf_token %}
+
+      <c-atoms.ui.card title="Customer">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <c-atoms.forms.fieldset label="First name" for="first_name" required="true">
+            <c-atoms.forms.input id="first_name" name="first_name" required />
+          </c-atoms.forms.fieldset>
+          <c-atoms.forms.fieldset label="Last name" for="last_name" required="true">
+            <c-atoms.forms.input id="last_name" name="last_name" required />
+          </c-atoms.forms.fieldset>
+          <c-atoms.forms.fieldset label="Phone" for="phone" required="true">
+            <c-atoms.forms.input id="phone" name="phone" required />
+          </c-atoms.forms.fieldset>
+          <c-atoms.forms.fieldset label="Email" for="email">
+            <c-atoms.forms.input id="email" name="email" type="email" />
+          </c-atoms.forms.fieldset>
+          <c-atoms.forms.fieldset label="Region" for="region">
+            <c-atoms.forms.input id="region" name="region" />
+          </c-atoms.forms.fieldset>
+        </div>
+      </c-atoms.ui.card>
+
+      <c-atoms.ui.card title="Stones">
+        <c-atoms.forms.fieldset label="Number of stones" for="stone_count" required="true"
+          help="How many stones the customer submitted. Their properties are recorded later during identification.">
+          <div class="max-w-[10rem]">
+            <c-atoms.forms.input id="stone_count" name="stone_count" type="number" min="1" value="1" required />
+          </div>
+        </c-atoms.forms.fieldset>
+      </c-atoms.ui.card>
+
+      <div class="flex justify-end gap-2">
+        <a href="{% url 'orders:index' %}"><c-atoms.ui.button type="button" variant="secondary">Cancel</c-atoms.ui.button></a>
+        <c-atoms.ui.button type="submit" variant="primary">Create order</c-atoms.ui.button>
+      </div>
+    </form>
+  </div>
+</c-layouts.app>

@@ -11,19 +11,15 @@ from apps.certificates.services import issue_certificate, revoke_certificate
 from apps.core.enums import StoneStatus
 from apps.core.exceptions import ServiceError
 from apps.identification.services import create_report, finalize_report
-from apps.orders.services import create_order
+from apps.orders.services import add_stone, create_order
 from apps.orders.tests.factories import CustomerFactory
 
 pytestmark = pytest.mark.django_db
 
 
 def _stone(user, stone_type):
-    order = create_order(
-        customer=CustomerFactory(),
-        stones=[{"stone_type": stone_type, "weight": Decimal("1.0")}],
-        user=user,
-    )
-    return order.stones.first()
+    order = create_order(customer=CustomerFactory(), stone_count=1, user=user)
+    return add_stone(order, stone_type=stone_type, weight=Decimal("1.0"), user=user)
 
 
 def _bill(order, status, number):

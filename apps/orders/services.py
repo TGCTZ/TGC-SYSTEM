@@ -4,6 +4,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from apps.core.enums import StoneStatus, WeightUnit
+from apps.core.exceptions import ServiceError
 from apps.core.services import generate_reference_number
 
 from .models import Order, StatusHistory, Stone
@@ -32,37 +33,51 @@ def transition_stone(stone: Stone, to_status: str, *, user=None, note: str = "")
     return stone
 
 
-@transaction.atomic
-def create_order(*, customer, stones: list[dict], received_date=None, user=None) -> Order:
-    """Create an order with its stones, each logged as ``received``.
+def create_order(*, customer, stone_count: int, received_date=None, user=None) -> Order:
+    """Register an order and how many stones the customer submitted.
 
-    ``stones`` is a list of dicts with ``stone_type`` and ``weight`` (and
-    optional ``weight_unit``, ``quantity``, ``label``).
+    Reception records only the count; the individual stones (with their
+    properties) are created later during identification via :func:`add_stone`.
     """
     order = Order(
         reference_no=generate_reference_number(Order, "reference_no", "ORD"),
         customer=customer,
         received_date=received_date or timezone.now().date(),
+        stone_count=stone_count,
     )
     if user is not None:
         order.created_by = user
     order.save()
-
-    for index, data in enumerate(stones):
-        stone = Stone(
-            order=order,
-            label=data.get("label") or chr(65 + index),
-            stone_type=data["stone_type"],
-            weight=data["weight"],
-            weight_unit=data.get("weight_unit", WeightUnit.CARAT),
-            quantity=data.get("quantity", 1),
-            status=StoneStatus.RECEIVED,
-        )
-        if user is not None:
-            stone.created_by = user
-        stone.save()
-        StatusHistory.objects.create(
-            stone=stone, to_status=StoneStatus.RECEIVED, changed_by=user,
-            note="Order received",
-        )
     return order
+
+
+@transaction.atomic
+def add_stone(order: Order, *, stone_type, weight, weight_unit=WeightUnit.CARAT,
+              user=None) -> Stone:
+    """Add a stone to an order (created during identification) as ``received``.
+
+    The label is the next letter in the order (A, B, C…). Refuses to register more
+    stones than the customer submitted (``order.stone_count``).
+    """
+    registered = order.stones.count()
+    if registered >= order.stone_count:
+        raise ServiceError(
+            f"All {order.stone_count} stone(s) for {order.reference_no} are "
+            f"already registered."
+        )
+    label = chr(65 + registered)
+    stone = Stone(
+        order=order,
+        label=label,
+        stone_type=stone_type,
+        weight=weight,
+        weight_unit=weight_unit,
+        status=StoneStatus.RECEIVED,
+    )
+    if user is not None:
+        stone.created_by = user
+    stone.save()
+    StatusHistory.objects.create(
+        stone=stone, to_status=StoneStatus.RECEIVED, changed_by=user, note="Registered"
+    )
+    return stone

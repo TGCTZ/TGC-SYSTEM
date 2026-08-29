@@ -231,20 +231,21 @@ Table "order" {
   reference_no  varchar(30)  [not null, note: 'unique (live); (open: C6)']
   customer_id   bigint       [not null, ref: > customer.id, note: 'PROTECT']
   received_date date         [not null]
+  stone_count   integer      [not null, note: 'count submitted at reception']
   ~audit
-  Note: 'No status column — status lives on each Stone (A7). Progress figures (identified count, remaining) are derived from the stones, not stored.'
+  Note: 'Reception records only stone_count. No status column — status lives on each Stone (A7). Stones are created later, at identification.'
 }
 
 Table stone {
   id             bigint        [pk, increment]
   order_id       bigint        [not null, ref: > "order".id, note: 'CASCADE (soft, via service)']
   label          varchar(20)   [not null, note: 'e.g. A, B within the order']
-  stone_type_id  bigint        [not null, ref: > stone_type.id, note: 'PROTECT']
-  weight         decimal(10,3) [not null, note: '(open: B3)']
+  stone_type_id  bigint        [not null, ref: > stone_type.id, note: 'PROTECT; set at identification']
+  weight         decimal(10,3) [not null, note: 'set at identification; (open: B3)']
   weight_unit    weight_unit   [not null]
-  quantity       integer       [not null, default: 1]
   status         stone_status  [not null, default: 'received']
   ~audit
+  Note: 'One record per physical stone, created at identification (add_stone); capped by order.stone_count.'
   indexes { (status) }
 }
 

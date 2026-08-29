@@ -15,7 +15,7 @@ from apps.billing.services import (
 from apps.core.enums import StoneStatus
 from apps.core.exceptions import ServiceError
 from apps.core.tests.factories import StoneTypeFactory
-from apps.orders.services import create_order
+from apps.orders.services import add_stone, create_order
 from apps.orders.tests.factories import CustomerFactory
 
 pytestmark = pytest.mark.django_db
@@ -36,11 +36,9 @@ def no_gepg(monkeypatch):
 
 
 def _order(user, stone_type, weight="2.0"):
-    return create_order(
-        customer=CustomerFactory(),
-        stones=[{"stone_type": stone_type, "weight": Decimal(weight)}],
-        user=user,
-    )
+    order = create_order(customer=CustomerFactory(), stone_count=1, user=user)
+    add_stone(order, stone_type=stone_type, weight=Decimal(weight), user=user)
+    return order
 
 
 def _payment_xml(bill_number, amount, trx_id):
@@ -75,11 +73,8 @@ def test_generate_bill_twice_raises(user, priced_stone_type, no_gepg):
 
 
 def test_generate_bill_without_price_raises(user, no_gepg):
-    order = create_order(
-        customer=CustomerFactory(),
-        stones=[{"stone_type": StoneTypeFactory(), "weight": Decimal("1.0")}],
-        user=user,
-    )
+    order = create_order(customer=CustomerFactory(), stone_count=1, user=user)
+    add_stone(order, stone_type=StoneTypeFactory(), weight=Decimal("1.0"), user=user)
     with pytest.raises(ServiceError):
         generate_bill_for_order(order, user=user)
 

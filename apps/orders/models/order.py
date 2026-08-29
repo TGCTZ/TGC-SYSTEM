@@ -16,6 +16,9 @@ class Order(BaseModel):
         Customer, on_delete=models.PROTECT, related_name="orders"
     )
     received_date = models.DateField()
+    stone_count = models.PositiveIntegerField(
+        default=0, help_text="Number of stones the customer submitted."
+    )
 
     class Meta:
         ordering = ["-received_date"]
@@ -28,8 +31,8 @@ class Order(BaseModel):
         ]
 
     @property
-    def stone_count(self) -> int:
-        """Number of live stones in this order."""
+    def identified_count(self) -> int:
+        """Number of stones created (identified) so far."""
         return self.stones.count()
 
     def __str__(self) -> str:

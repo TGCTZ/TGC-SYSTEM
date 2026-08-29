@@ -187,23 +187,30 @@ a new model. *(Resolves C5.)*
 | reference_no | Char(30) `UQ` | human-readable, e.g. `ORD-2026-0042` **(open: C6)** |
 | customer | FK→Customer (PROTECT) | `related_name="orders"` |
 | received_date | Date | |
+| stone_count | PositiveInteger | how many stones the customer submitted (recorded at reception) |
 | created_by | FK→User (SET_NULL, ?) | receptionist |
 
+> **Reception records only the count.** The receptionist does not examine stones
+> — they enter `stone_count`. Individual `Stone` records are created later, during
+> identification, when the gemmologist records each stone's properties.
+>
 > Order has **no status field** — status lives on each Stone (decision A7).
-> Order status, if needed for display, is derived from its stones.
 
-### Stone  *(the line item — "one or a batch", A1)*
+### Stone  *(one record per physical stone — created at identification)*
 
 | Column | Type | Notes |
 | --- | --- | --- |
 | id | PK | |
 | order | FK→Order (CASCADE) | `related_name="stones"` |
 | label | Char(20) | e.g. "A", "B" within the order |
-| stone_type | FK→core.StoneType (PROTECT) | |
-| weight | Decimal(10,3) | **(open: B3 — unit)** |
-| weight_unit | FK→core.SiUnit (PROTECT) | |
-| quantity | PositiveInteger | default 1 (a parcel) |
-| status | Char (StoneStatus enum) | default `received` (A7) |
+| stone_type | FK→core.StoneType (PROTECT) | set at identification |
+| weight | Decimal(10,3) | set at identification **(open: B3 — unit)** |
+| weight_unit | Char (WeightUnit enum) | |
+| status | Char (StoneStatus enum) | default `received` |
+
+> A `Stone` exists once a gemmologist registers it (service `add_stone`), which
+> refuses to exceed the order's `stone_count`. One record per physical stone (no
+> parcels).
 
 ### StatusHistory  *(audit trail — decision A9)*
 

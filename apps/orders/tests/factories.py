@@ -30,6 +30,7 @@ class OrderFactory(factory.django.DjangoModelFactory):
     reference_no = factory.Sequence(lambda n: f"ORD-{n:05d}")
     customer = factory.SubFactory(CustomerFactory)
     received_date = factory.Faker("date_this_year")
+    stone_count = 1
 
 
 class StoneFactory(factory.django.DjangoModelFactory):
@@ -43,7 +44,6 @@ class StoneFactory(factory.django.DjangoModelFactory):
     stone_type = factory.SubFactory(StoneTypeFactory)
     weight = FuzzyDecimal(0.5, 50, precision=3)
     weight_unit = WeightUnit.CARAT
-    quantity = 1
     status = StoneStatus.RECEIVED
 
 

@@ -9,6 +9,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("icons/", include("dj_iconify.urls")),
     path("billing/", include("apps.billing.urls")),
+    path("orders/", include("apps.orders.urls")),
     path("", include("apps.accounts.urls")),
     path("", include("apps.dashboard.urls")),
 ]

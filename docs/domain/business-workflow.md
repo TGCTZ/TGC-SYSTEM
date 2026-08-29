@@ -49,26 +49,31 @@
 ### Stage 1 — Reception
 **Who:** Receptionist
 
-1. Identify or register the **Customer**.
-2. Create an **Order** for the visit.
-3. Log each **Stone** under the order — recording weight, quantity, stone type,
-   and unit of measure.
-4. Each stone is set to its initial status.
+1. Register the **Customer**.
+2. Create an **Order** for the visit, recording only **how many stones** the
+   customer submitted (`stone_count`).
 
-**Result:** an Order with one or more Stones, each `received`.
+The receptionist does **not** examine or measure stones — no type, weight, or
+other property is recorded here. Individual stone records are created later, at
+identification.
+
+**Result:** an Order with a `stone_count`; no `Stone` records yet.
 
 ---
 
 ### Stage 2 — Identification & Findings
 **Who:** Gemmologist
 
-1. Take a `received` stone and examine it.
+1. Take a physical stone and **register it** on the order (`add_stone`) —
+   recording its stone type, weight, and unit. This creates the `Stone` record
+   (`received`). The system caps registrations at the order's `stone_count`.
 2. Record findings on the stone's **Identification Report** — species, variety,
    color, transparency, origin, treatment, shape/cut, optic character, and any
    instrument readings (all chosen from admin-managed reference lists).
 3. Complete the report.
 
-**Result:** each stone has one completed identification report; status advances.
+**Result:** each submitted stone becomes a `Stone` record with one completed
+identification report; status advances.
 
 > **(assumption)** Whether a report can still be edited after later stages is
 > open question C4.
@@ -172,7 +177,8 @@ collected
 
 ## 5. Key business rules (confirmed)
 
-1. One **Order** contains one or many **Stones** (a batch).
+1. **Reception records only a stone count** (`stone_count`); stones are created
+   later, at identification, one record per physical stone.
 2. A **report is produced per stone**.
 3. Reference data (colors, species, treatments, prices, …) is **admin-managed**;
    staff select from fixed lists, not free text.
