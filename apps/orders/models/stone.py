@@ -27,6 +27,7 @@ class Stone(BaseModel):
     class Meta:
         ordering = ["order", "label"]
         indexes = [models.Index(fields=["status"])]
+        permissions = [("transition_stone", "Can change a stone's status")]
 
     def __str__(self) -> str:
         return f"{self.order.reference_no} / {self.label}"

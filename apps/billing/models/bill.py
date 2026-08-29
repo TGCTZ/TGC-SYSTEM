@@ -39,6 +39,7 @@ class Bill(BaseModel):
 
     class Meta:
         ordering = ["-created_at"]
+        permissions = [("generate_bill", "Can generate a bill")]
         constraints = [
             models.UniqueConstraint(
                 fields=["bill_number"],

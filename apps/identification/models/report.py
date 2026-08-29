@@ -63,6 +63,7 @@ class IdentificationReport(BaseModel):
     identified_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
+        permissions = [("finalize_report", "Can finalize an identification report")]
         constraints = [
             models.UniqueConstraint(
                 fields=["report_number"],

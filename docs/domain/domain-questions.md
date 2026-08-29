@@ -176,11 +176,17 @@ The system has a custom user model. What **roles** exist (receptionist,
 gemmologist, production staff, accountant, admin…), and which stages can each
 role act on? This drives the permissions layer.
 
-**Partly decided:** roles are implemented as **Django Groups** with attached
-permissions — no custom role table. **Still needed from the team:** the
-definitive list of roles and, for each, which stages/actions it may perform.
+**Decided (provisional):** roles are **Django Groups** — receptionist,
+gemmologist, production, accountant, administrator — seeded by
+`python manage.py setup_roles`. Action-level custom permissions
+(`finalize_report`, `generate_bill`, `issue_certificate`, …) are defined on the
+models. The role→permission mapping lives in `apps/accounts/roles.py`; see
+[`../engineering/permissions.md`](../engineering/permissions.md).
 
-**Answer (roles & their permitted actions):**
+**Still needed from the team:** confirm/adjust which actions each role may
+perform (edit `ROLE_PERMISSIONS`).
+
+**Answer (confirmations / changes to the mapping):**
 
 ---
 

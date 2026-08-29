@@ -38,6 +38,7 @@ class Production(BaseModel):
 
     class Meta:
         ordering = ["stone", "started_at"]
+        permissions = [("record_qa", "Can record production QA")]
 
     def __str__(self) -> str:
         return f"{self.get_type_display()} — {self.stone}"
