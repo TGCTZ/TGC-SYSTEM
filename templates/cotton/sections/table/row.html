@@ -2,7 +2,7 @@
      appended automatically. Pass href to make the whole row clickable, and
      actions=[...] (see apps.core.row_actions) for the per-row action controls. -->
 <c-vars href="" actions="" />
-<tr {% if href %}data-href="{{ href }}" {% endif %}class="hover:bg-blue-50/60">
+<tr {% if href %}data-href="{{ href }}" {% endif %}class="transition-colors hover:bg-blue-100/70">
   {{ slot }}
   <td class="px-6 py-3 text-right">
     <c-atoms.ui.row-actions :actions="actions" />

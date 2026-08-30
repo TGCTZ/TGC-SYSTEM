@@ -1,10 +1,44 @@
-<!-- Toaster: renders Django messages as stacked toasts (top-right). -->
+<!-- Toaster: renders Django messages as stacked toasts (top-right), styled to
+     match the alert component (variant colors + bold title over body). The title
+     comes from the message level; the message text is the body. Each toast slides
+     in and auto-dismisses after 10s; error toasts stay until closed. -->
 {% if messages %}
-<div class="fixed right-4 top-4 z-50 flex flex-col gap-2">
+<div class="fixed right-4 top-4 z-50 flex w-96 max-w-[calc(100vw-2rem)] flex-col gap-2">
   {% for message in messages %}
-    <div class="flex items-start gap-3 rounded-md border bg-white px-4 py-3 shadow-md
-      {% if message.tags == 'error' %}border-red-200{% elif message.tags == 'success' %}border-green-200{% elif message.tags == 'warning' %}border-yellow-200{% else %}border-blue-200{% endif %}">
-      <div class="text-sm text-gray-800">{{ message }}</div>
+    <div x-data="{ show: false, ms: {% if message.tags == 'error' %}0{% else %}10000{% endif %} }"
+      x-init="$nextTick(() => show = true); if (ms) setTimeout(() => show = false, ms)"
+      x-show="show" x-cloak
+      x-transition:enter="transition ease-out duration-300"
+      x-transition:enter-start="opacity-0 translate-y-2"
+      x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-200"
+      x-transition:leave-start="opacity-100 translate-y-0"
+      x-transition:leave-end="opacity-0 translate-y-2"
+      role="{% if message.tags == 'error' %}alert{% else %}status{% endif %}"
+      class="flex gap-3 rounded-md border p-4 shadow-md
+        {% if message.tags == 'success' %}border-green-200 bg-green-50 text-green-800
+        {% elif message.tags == 'warning' %}border-yellow-200 bg-yellow-50 text-yellow-800
+        {% elif message.tags == 'error' %}border-red-200 bg-red-50 text-red-800
+        {% else %}border-blue-200 bg-blue-50 text-blue-800{% endif %}">
+      <div class="shrink-0">
+        {% if message.tags == 'success' %}<c-atoms.ui.icon name="lucide:circle-check" />
+        {% elif message.tags == 'warning' %}<c-atoms.ui.icon name="lucide:triangle-alert" />
+        {% elif message.tags == 'error' %}<c-atoms.ui.icon name="lucide:circle-x" />
+        {% else %}<c-atoms.ui.icon name="lucide:info" />{% endif %}
+      </div>
+      <div class="flex-1 text-sm">
+        <p class="font-medium">
+          {% if message.tags == 'success' %}Success
+          {% elif message.tags == 'warning' %}Warning
+          {% elif message.tags == 'error' %}Error
+          {% else %}Information{% endif %}
+        </p>
+        <div class="mt-0.5">{{ message }}</div>
+      </div>
+      <button type="button" @click="show = false" aria-label="Dismiss"
+        class="shrink-0 rounded text-current opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <c-atoms.ui.icon name="lucide:x" size="sm" />
+      </button>
     </div>
   {% endfor %}
 </div>
