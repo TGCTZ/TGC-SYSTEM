@@ -1,0 +1,12 @@
+<!-- Progress bar: fill = value / max. Bind numeric inputs with :value / :max
+     (e.g. :value="order.finalized"). Pass label="false" to hide the fraction. -->
+<c-vars value="0" max="0" label="true" />
+<div class="flex items-center gap-2">
+  <div class="h-2 w-full min-w-[3rem] overflow-hidden rounded-full bg-gray-200"
+    role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0" aria-valuemax="{{ max }}">
+    <div class="h-full rounded-full bg-blue-600 transition-all" style="width: {% widthratio value max 100 %}%"></div>
+  </div>
+  {% if label == 'true' or label == True %}
+    <span class="shrink-0 text-xs tabular-nums text-gray-500">{{ value }}/{{ max }}</span>
+  {% endif %}
+</div>

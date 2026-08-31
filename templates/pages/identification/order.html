@@ -13,7 +13,7 @@
 
     {# Registered stones #}
     <c-sections.table :headers="['Label', 'Type', 'Weight', 'Report', 'Status', '']"
-      :count="order.stones.count" empty="No stones registered yet.">
+      :count="order.stones.count" empty="No stones registered yet." actions="false">
       {% for stone in order.stones.all %}
         <tr {% if stone.report and not stone.report.is_finalized %}data-href="{% url 'identification:edit' stone.pk %}" class="hover:bg-blue-50/60"{% endif %}>
           <td class="px-6 py-3 font-medium">{{ stone.label }}</td>
@@ -29,15 +29,23 @@
               <c-atoms.ui.badge variant="warning" dot="true">Draft</c-atoms.ui.badge>
             {% endif %}
           </td>
-          <td class="px-6 py-3 text-right">
+          <td class="px-6 py-3">
             {% if stone.report and not stone.report.is_finalized %}
-              <c-atoms.ui.row-actions>
-                <a href="{% url 'identification:edit' stone.pk %}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Edit</a>
-                <form method="post" action="{% url 'identification:finalize' stone.report.pk %}">
-                  {% csrf_token %}
-                  <button type="submit" class="block w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">Finalize</button>
-                </form>
-              </c-atoms.ui.row-actions>
+              <div class="flex items-center justify-end gap-2">
+                <a href="{% url 'identification:edit' stone.pk %}"><c-atoms.ui.button variant="outline" size="sm">Edit</c-atoms.ui.button></a>
+                <c-atoms.ui.button variant="primary" size="sm" onclick="window.dispatchEvent(new CustomEvent('open-finalize-{{ stone.pk }}'))">Finalize</c-atoms.ui.button>
+              </div>
+
+              <c-atoms.ui.modal id="finalize-{{ stone.pk }}" title="Finalize report?">
+                Finalizing <span class="font-medium text-gray-900">{{ stone.report.report_number }}</span> locks it — the report can no longer be edited.
+                <c-slot name="footer">
+                  <c-atoms.ui.button type="button" variant="secondary" size="sm" x-on:click="open = false">Cancel</c-atoms.ui.button>
+                  <form method="post" action="{% url 'identification:finalize' stone.report.pk %}">
+                    {% csrf_token %}
+                    <c-atoms.ui.button type="submit" variant="primary" size="sm">Finalize</c-atoms.ui.button>
+                  </form>
+                </c-slot>
+              </c-atoms.ui.modal>
             {% endif %}
           </td>
         </tr>
