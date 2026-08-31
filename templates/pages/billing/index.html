@@ -1,0 +1,48 @@
+{% load humanize %}
+<c-layouts.app title="Bills">
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl font-semibold text-gray-900">Bills</h2>
+      <div class="flex items-center gap-2">
+        {% if perms.billing.view_payment %}
+          <a href="{% url 'billing:payments' %}"><c-atoms.ui.button variant="secondary">Payments</c-atoms.ui.button></a>
+        {% endif %}
+        {% if can_generate %}
+          <a href="{% url 'billing:worklist' %}">
+            <c-atoms.ui.button variant="primary"><c-atoms.ui.icon name="lucide:plus" size="sm" /> Generate bills</c-atoms.ui.button>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <form method="get" class="flex flex-wrap items-center gap-2">
+      <c-atoms.forms.input name="q" value="{{ query }}" placeholder="Search bill, control no, customer…" />
+      <c-atoms.forms.select name="status" search="false">
+        <option value="">All statuses</option>
+        {% for value, label in statuses %}
+          <option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </c-atoms.forms.select>
+      <c-atoms.ui.button type="submit" variant="secondary">Filter</c-atoms.ui.button>
+    </form>
+
+    <c-sections.table :headers="['Bill', 'Customer', 'Total', 'Status', 'Control no', 'Issued']"
+      :count="bills|length" empty="No bills found.">
+      {% for bill in bills %}
+        <c-sections.table.row href="{% url 'billing:detail' bill.pk %}" :actions="bill.row_actions">
+          <td class="px-6 py-3">
+            <p class="font-medium text-gray-900">{{ bill.bill_number }}</p>
+            <p class="text-xs text-gray-500">{{ bill.order.reference_no }}</p>
+          </td>
+          <td class="px-6 py-3">{{ bill.order.customer.full_name }}</td>
+          <td class="px-6 py-3 tabular-nums">{{ bill.total_amount|floatformat:2|intcomma }} {{ bill.currency }}</td>
+          <td class="px-6 py-3"><c-atoms.ui.badge variant="{{ bill.status_variant }}" dot="true">{{ bill.get_status_display }}</c-atoms.ui.badge></td>
+          <td class="px-6 py-3">{{ bill.control_number|default:"—" }}</td>
+          <td class="px-6 py-3 text-gray-500">{{ bill.issued_at|date:"M j, Y"|default:"—" }}</td>
+        </c-sections.table.row>
+      {% endfor %}
+    </c-sections.table>
+
+    <c-atoms.ui.pagination :page_obj="page_obj" />
+  </div>
+</c-layouts.app>

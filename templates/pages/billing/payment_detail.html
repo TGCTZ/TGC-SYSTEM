@@ -1,0 +1,85 @@
+{% load humanize %}
+<c-layouts.app title="Payment {{ payment.trx_id|default:payment.pk }}">
+  <div class="space-y-6">
+    <c-atoms.ui.breadcrumb>
+      <li><a href="{% url 'billing:index' %}" class="hover:text-gray-700">Bills</a></li>
+      <li><c-atoms.ui.icon name="lucide:chevron-right" size="sm" /></li>
+      <li><a href="{% url 'billing:payments' %}" class="hover:text-gray-700">Payments</a></li>
+      <li><c-atoms.ui.icon name="lucide:chevron-right" size="sm" /></li>
+      <li class="font-medium text-gray-700">{{ payment.trx_id|default:"Payment" }}</li>
+    </c-atoms.ui.breadcrumb>
+
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-xl font-semibold text-gray-900 tabular-nums">{{ payment.paid_amount|floatformat:2|intcomma }} {{ payment.currency }}</h2>
+        <p class="text-sm text-gray-500">{{ payment.trx_dt_tm|date:"M j, Y H:i"|default:"—" }}</p>
+      </div>
+      {% if payment.processed %}<c-atoms.ui.badge variant="success" dot="true">Processed</c-atoms.ui.badge>{% else %}<c-atoms.ui.badge variant="warning" dot="true">Unprocessed</c-atoms.ui.badge>{% endif %}
+    </div>
+
+    <div class="grid gap-4 lg:grid-cols-2">
+      <c-atoms.ui.card title="Payment">
+        <dl class="space-y-2 text-sm">
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">Paid amount</dt><dd class="min-w-0 break-words tabular-nums text-gray-900">{{ payment.paid_amount|floatformat:2|intcomma }} {{ payment.currency }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">Billed amount</dt><dd class="min-w-0 break-words tabular-nums text-gray-900">{{ payment.bill_amount|floatformat:2|intcomma|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">Channel</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.usd_pay_chnl|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">Payment option</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.bill_pay_opt|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">Date</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.trx_dt_tm|date:"M j, Y H:i"|default:"—" }}</dd></div>
+        </dl>
+      </c-atoms.ui.card>
+
+      <c-atoms.ui.card title="Payer">
+        <dl class="space-y-2 text-sm">
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">Name</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.pyr_name|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">Phone</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.pyr_cell_num|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">Email</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.pyr_email|default:"—" }}</dd></div>
+        </dl>
+      </c-atoms.ui.card>
+
+      <c-atoms.ui.card title="Provider">
+        <dl class="space-y-2 text-sm">
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">PSP name</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.psp_name|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">PSP code</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.psp_code|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">Collection account</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.coll_acc_num|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">SP code</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.sp_code|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">SP group code</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.sp_grp_code|default:"—" }}</dd></div>
+        </dl>
+      </c-atoms.ui.card>
+
+      <c-atoms.ui.card title="References">
+        <dl class="space-y-2 text-sm">
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">Transaction id</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.trx_id|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">Payment ref</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.pay_ref_id|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">GePG bill id</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.gepg_bill_id|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">Control number</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.bill_ctr_num|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">Request id</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.req_id|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-36 shrink-0 text-gray-500">Ack id / status</dt><dd class="min-w-0 break-words text-gray-900">{{ payment.ack_id|default:"—" }} · {{ payment.ack_sts_code|default:"—" }}</dd></div>
+        </dl>
+      </c-atoms.ui.card>
+    </div>
+
+    {% if payment.bill %}
+      <c-atoms.ui.card title="Bill">
+        <div class="flex items-center justify-between text-sm">
+          <div>
+            <a href="{% url 'billing:detail' payment.bill.pk %}" class="font-medium text-blue-600 hover:underline">{{ payment.bill.bill_number }}</a>
+            <span class="text-gray-500">· {{ payment.bill.order.customer.full_name }}</span>
+          </div>
+          <c-atoms.ui.badge variant="info">{{ payment.bill.get_status_display }}</c-atoms.ui.badge>
+        </div>
+      </c-atoms.ui.card>
+    {% endif %}
+
+    {% if payment.raw_request %}
+      <div class="space-y-2" x-data="{ open: false }">
+        <button type="button" @click="open = !open"
+          class="flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-gray-900">
+          <c-atoms.ui.icon name="lucide:code" size="sm" /> Raw GePG payload
+          <c-atoms.ui.icon x-show="!open" name="lucide:chevron-down" size="sm" />
+          <c-atoms.ui.icon x-show="open" x-cloak name="lucide:chevron-up" size="sm" />
+        </button>
+        <pre x-show="open" x-cloak class="overflow-x-auto rounded-lg border border-gray-200 bg-gray-50 p-4 text-xs text-gray-700">{{ raw_pretty }}</pre>
+      </div>
+    {% endif %}
+  </div>
+</c-layouts.app>

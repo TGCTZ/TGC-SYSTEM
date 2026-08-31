@@ -1,0 +1,35 @@
+{% load humanize %}
+<c-layouts.app title="Payments">
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl font-semibold text-gray-900">Payments</h2>
+      <a href="{% url 'billing:index' %}"><c-atoms.ui.button variant="secondary" size="sm">Bills</c-atoms.ui.button></a>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <c-atoms.ui.stat label="Payments" value="{{ payment_count }}" icon="lucide:wallet" />
+      <c-atoms.ui.stat label="Total received" value="{{ total_paid|floatformat:2|intcomma }} TZS" icon="lucide:banknote" />
+    </div>
+
+    <form method="get" class="flex flex-wrap items-center gap-2">
+      <c-atoms.forms.input name="q" value="{{ query }}" placeholder="Search payer, transaction, bill…" />
+      <c-atoms.ui.button type="submit" variant="secondary">Search</c-atoms.ui.button>
+    </form>
+
+    <c-sections.table :headers="['Date', 'Payer', 'Channel', 'Bill', 'Amount', 'Transaction']"
+      :count="payments|length" empty="No payments found." actions="false">
+      {% for p in payments %}
+        <tr class="transition-colors hover:bg-blue-100/70" data-href="{% url 'billing:payment_detail' p.pk %}">
+          <td class="px-6 py-3 text-gray-500">{{ p.trx_dt_tm|date:"M j, Y H:i"|default:"—" }}</td>
+          <td class="px-6 py-3">{{ p.pyr_name|default:"—" }}</td>
+          <td class="px-6 py-3">{{ p.psp_name|default:"—" }}</td>
+          <td class="px-6 py-3">{% if p.bill %}{{ p.bill.bill_number }}{% else %}—{% endif %}</td>
+          <td class="px-6 py-3 tabular-nums">{{ p.paid_amount|floatformat:2|intcomma }} {{ p.currency }}</td>
+          <td class="px-6 py-3">{{ p.trx_id|default:"—" }}</td>
+        </tr>
+      {% endfor %}
+    </c-sections.table>
+
+    <c-atoms.ui.pagination :page_obj="page_obj" />
+  </div>
+</c-layouts.app>
