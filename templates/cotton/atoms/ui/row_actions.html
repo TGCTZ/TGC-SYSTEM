@@ -1,6 +1,7 @@
 <!-- Row actions. Pass actions=[{label, url, icon, method, danger}] (see
      apps.core.row_actions). Up to 3 actions render inline as icons; 4+ shows the
-     first 3 inline plus a menu listing every action. -->
+     first 3 inline plus a menu listing every action. The menu is teleported to
+     <body> and fixed-positioned so the table's overflow can't clip it. -->
 <c-vars actions />
 <div class="flex items-center justify-end gap-0.5">
   {% if actions|length <= 3 %}
@@ -11,33 +12,41 @@
     {% for action in actions|slice:":3" %}
       <c-atoms.ui.action-icon :action="action" />
     {% endfor %}
-    <div x-data="{ open: false }" class="relative inline-block text-left">
-      <button type="button" @click.stop="open = !open" title="More actions" aria-label="More actions"
+    <div x-data="{ open: false, mx: 0, my: 0,
+         place() { const r = $refs.trigger.getBoundingClientRect(); this.mx = r.right; this.my = r.bottom + 4; } }"
+      class="inline-block text-left">
+      <button x-ref="trigger" type="button" @click.stop="open = !open; if (open) place()"
+        title="More actions" aria-label="More actions"
         class="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
         <c-atoms.ui.icon name="lucide:ellipsis-vertical" size="sm" />
       </button>
-      <div x-show="open" x-cloak @click.outside="open = false"
-        x-transition:enter="transition ease-out duration-100"
-        x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100"
-        class="absolute right-0 z-10 mt-1 min-w-[11rem] rounded-md border border-gray-200 bg-white py-1 shadow-lg">
-        {% for action in actions %}
-          {% if action.method == "post" %}
-            <form method="post" action="{{ action.url }}">
-              {% csrf_token %}
-              <button type="submit"
-                class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm {% if action.danger %}text-red-600 hover:bg-red-50{% else %}text-gray-700 hover:bg-gray-50{% endif %}">
+      <template x-teleport="body">
+        <div x-show="open" x-cloak
+          @click.outside="open = false" @keydown.escape.window="open = false"
+          @scroll.window="open = false" @resize.window="open = false"
+          x-transition:enter="transition ease-out duration-100"
+          x-transition:enter-start="opacity-0 scale-95"
+          x-transition:enter-end="opacity-100 scale-100"
+          :style="`top: ${my}px; left: ${mx}px`"
+          class="fixed z-50 min-w-[11rem] -translate-x-full rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+          {% for action in actions %}
+            {% if action.method == "post" %}
+              <form method="post" action="{{ action.url }}">
+                {% csrf_token %}
+                <button type="submit"
+                  class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm {% if action.danger %}text-red-600 hover:bg-red-50{% else %}text-gray-700 hover:bg-gray-50{% endif %}">
+                  <c-atoms.ui.icon name="{{ action.icon }}" size="sm" /> {{ action.label }}
+                </button>
+              </form>
+            {% else %}
+              <a href="{{ action.url }}"
+                class="flex items-center gap-2 px-3 py-2 text-sm {% if action.danger %}text-red-600 hover:bg-red-50{% else %}text-gray-700 hover:bg-gray-50{% endif %}">
                 <c-atoms.ui.icon name="{{ action.icon }}" size="sm" /> {{ action.label }}
-              </button>
-            </form>
-          {% else %}
-            <a href="{{ action.url }}"
-              class="flex items-center gap-2 px-3 py-2 text-sm {% if action.danger %}text-red-600 hover:bg-red-50{% else %}text-gray-700 hover:bg-gray-50{% endif %}">
-              <c-atoms.ui.icon name="{{ action.icon }}" size="sm" /> {{ action.label }}
-            </a>
-          {% endif %}
-        {% endfor %}
-      </div>
+              </a>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </template>
     </div>
   {% endif %}
 </div>

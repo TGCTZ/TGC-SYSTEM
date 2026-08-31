@@ -58,6 +58,9 @@ ROLE_PERMISSIONS: dict[str, list[str]] = {
     ADMINISTRATOR: [
         *_REFERENCE_MANAGE,
         "accounts.add_user", "accounts.change_user", "accounts.view_user",
+        "accounts.delete_user",
         "accounts.verify_user", "accounts.approve_user",
+        # Roles & permissions portal (Groups) at /manage/roles/.
+        "auth.view_group", "auth.add_group", "auth.change_group", "auth.delete_group",
     ],
 }

@@ -1,0 +1,39 @@
+<!-- Permission matrix: apps -> models -> permissions as labelled toggle switches. Pass
+     matrix (from apps.adminpanel.roles.permission_matrix). readonly="true" disables the
+     switches and hides the form inputs and the toggle-all control. -->
+<c-vars matrix readonly="false" />
+<div class="space-y-3">
+  {% for app in matrix %}
+    <div class="overflow-hidden rounded-xl border border-gray-200"
+      {% if readonly != 'true' %}x-data="{ setAll(v){ $root.querySelectorAll('input[type=checkbox]').forEach(c => { c.checked = v }) } }"{% endif %}>
+      <div class="flex items-center justify-between border-b border-gray-200 bg-gray-100 px-4 py-2.5">
+        <p class="text-sm font-bold uppercase tracking-wide text-gray-800">{{ app.app_label }}</p>
+        {% if readonly != 'true' %}
+          <label class="flex items-center gap-2 text-xs text-gray-500">
+            <span>Toggle all</span>
+            <c-atoms.forms.toggle x-on:change="setAll($event.target.checked)" />
+          </label>
+        {% endif %}
+      </div>
+      <div class="divide-y divide-gray-100">
+        {% for model in app.models %}
+          <div class="px-4 py-3">
+            <p class="mb-2 text-sm font-medium text-gray-700">{{ model.label }}</p>
+            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {% for perm in model.perms %}
+                <label class="inline-flex items-center gap-2 text-sm text-gray-600">
+                  {% if readonly == 'true' %}
+                    <c-atoms.forms.toggle disabled :checked="perm.checked" />
+                  {% else %}
+                    <c-atoms.forms.toggle name="permissions" value="{{ perm.perm_id }}" :checked="perm.checked" />
+                  {% endif %}
+                  <span>{{ perm.name }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+</div>

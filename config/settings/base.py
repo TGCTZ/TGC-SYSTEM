@@ -24,6 +24,9 @@ SECRET_KEY = config("SECRET_KEY")  # no default — must be set, fail loud
 DEBUG = config("DEBUG", default=False, cast=bool)  # safe default: off
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1,localhost", cast=Csv())
 
+# Display name for app-shell branding (header, breadcrumbs). See core.context_processors.
+SITE_NAME = config("SITE_NAME", default="TGC System")
+
 
 # ------------------------------------------------------------
 # Applications
@@ -54,6 +57,7 @@ LOCAL_APPS = [
     "apps.billing",         # L3 — bills, payments, GePG
     "apps.certificates",    # L3 — certificates, verification
     "apps.dashboard",       # L4 — shell, nav, styleguide
+    "apps.adminpanel",      # L4 — generic back-office at /manage/
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -92,6 +96,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "apps.core.context_processors.site",
+                "apps.core.context_processors.breadcrumbs",
             ],
         },
     },

@@ -1,20 +1,23 @@
-<!-- Header: top bar with page title, notifications, and account menu. -->
-<c-vars title="TGC System" />
+<!-- Header: top bar with page title (left) and breadcrumb + notifications (right). -->
+<c-vars title="" />
 <header class="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6">
   <div class="flex items-center gap-3">
+    <button type="button" x-data="{ show: window.history.length > 1 }" x-show="show" x-cloak
+      @click="history.back()" aria-label="Go back"
+      class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-gray-700 ring-1 ring-inset ring-gray-300 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <c-atoms.ui.icon name="lucide:arrow-left" size="sm" /> Back
+    </button>
     <button class="text-gray-500 md:hidden"><c-atoms.ui.icon name="lucide:menu" /></button>
-    <h1 class="text-base font-semibold text-gray-900">{{ title }}</h1>
+    <h1 class="text-base font-semibold text-gray-900">{{ title|default:SITE_NAME }}</h1>
   </div>
   <div class="flex items-center gap-4">
+    <nav class="hidden items-center gap-1.5 text-xs text-gray-400 sm:flex" aria-label="Breadcrumb">
+      {% for crumb in breadcrumbs %}
+        <a href="{{ crumb.url }}" class="hover:text-gray-600">{{ crumb.label }}</a>
+        <c-atoms.ui.icon name="lucide:chevron-right" size="sm" />
+      {% endfor %}
+      <span class="font-medium text-gray-600">{{ title|default:SITE_NAME }}</span>
+    </nav>
     <button class="text-gray-500 hover:text-gray-700"><c-atoms.ui.icon name="lucide:bell" /></button>
-    <c-atoms.ui.dropdown label="{{ request.user.get_username|default:'Account' }}" align="right">
-      <a href="#" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Profile</a>
-      <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit" class="block w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
-          Sign out
-        </button>
-      </form>
-    </c-atoms.ui.dropdown>
   </div>
 </header>

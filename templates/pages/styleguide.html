@@ -120,22 +120,65 @@
     {# Table #}
     <section class="space-y-4">
       <h2 class="text-lg font-semibold">Table</h2>
+      <p class="text-sm text-gray-500">
+        Rows are <code>table.row</code> components. Row 1 (clickable) has two actions shown
+        inline as icons; row 2 has five, so three show inline and the rest collapse into a
+        <code>⋮</code> menu. The actions column and header are added automatically.
+      </p>
       <c-sections.table :headers="table_headers">
-        <tr class="hover:bg-blue-50/60">
+        <c-sections.table.row href="#" :actions="few_actions">
           <td class="px-6 py-3">ORD-2026-0001</td>
           <td class="px-6 py-3">Jane Doe</td>
           <td class="px-6 py-3"><c-atoms.ui.badge variant="success" dot="true">Paid</c-atoms.ui.badge></td>
-          <td class="px-6 py-3 text-right"><c-atoms.ui.action icon="lucide:pencil" /></td>
-        </tr>
-        <tr class="hover:bg-blue-50/60">
+        </c-sections.table.row>
+        <c-sections.table.row :actions="many_actions">
           <td class="px-6 py-3">ORD-2026-0002</td>
           <td class="px-6 py-3">Acme Ltd</td>
           <td class="px-6 py-3"><c-atoms.ui.badge variant="warning" dot="true">Pending</c-atoms.ui.badge></td>
-          <td class="px-6 py-3 text-right"><c-atoms.ui.action icon="lucide:pencil" /></td>
-        </tr>
+        </c-sections.table.row>
       </c-sections.table>
       <p class="text-sm text-gray-500">Empty state:</p>
       <c-sections.table :headers="table_headers" :count="0" empty="No orders yet." />
+    </section>
+
+    {# Pagination #}
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">Pagination</h2>
+      <c-atoms.ui.pagination :page_obj="page_obj" />
+    </section>
+
+    {# List #}
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">List</h2>
+      <c-sections.list>
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-sm text-gray-700">Refractometer</span>
+          <c-atoms.ui.badge variant="success">In use</c-atoms.ui.badge>
+        </div>
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-sm text-gray-700">Polariscope</span>
+          <c-atoms.ui.badge>Idle</c-atoms.ui.badge>
+        </div>
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-sm text-gray-700">Spectroscope</span>
+          <c-atoms.ui.badge variant="warning">Maintenance</c-atoms.ui.badge>
+        </div>
+      </c-sections.list>
+    </section>
+
+    {# Toasts #}
+    <section id="toasts" class="space-y-4">
+      <h2 class="text-lg font-semibold">Toasts</h2>
+      <p class="text-sm text-gray-500">
+        Driven by Django messages and shown top-right. Click to fire one; success, info and
+        warning auto-dismiss after 10s, while errors stay until closed.
+      </p>
+      <div class="flex flex-wrap items-center gap-3">
+        <a href="?toast=info#toasts"><c-atoms.ui.button variant="outline">Info toast</c-atoms.ui.button></a>
+        <a href="?toast=success#toasts"><c-atoms.ui.button variant="success">Success toast</c-atoms.ui.button></a>
+        <a href="?toast=warning#toasts"><c-atoms.ui.button variant="secondary">Warning toast</c-atoms.ui.button></a>
+        <a href="?toast=error#toasts"><c-atoms.ui.button variant="danger">Error toast</c-atoms.ui.button></a>
+      </div>
     </section>
 
     {# Overlays & misc #}

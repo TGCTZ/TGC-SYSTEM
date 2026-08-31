@@ -1,0 +1,14 @@
+<c-layouts.app title="{% if mode == 'edit' %}Edit{% else %}New{% endif %} {{ panel.verbose_name }}">
+  <div class="mx-auto max-w-2xl space-y-6">
+    <h2 class="text-xl font-semibold text-gray-900">{% if mode == 'edit' %}Edit{% else %}New{% endif %} {{ panel.verbose_name }}</h2>
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {% if form.non_field_errors %}<c-atoms.ui.alert variant="danger">{{ form.non_field_errors|join:" " }}</c-atoms.ui.alert>{% endif %}
+      {% for field in form %}<c-atoms.forms.formfield :field="field" />{% endfor %}
+      <div class="flex gap-2">
+        <c-atoms.ui.button type="submit" variant="primary">Save</c-atoms.ui.button>
+        <a href="{% url 'manage:list' panel.app_label panel.model_name %}"><c-atoms.ui.button type="button" variant="secondary">Cancel</c-atoms.ui.button></a>
+      </div>
+    </form>
+  </div>
+</c-layouts.app>

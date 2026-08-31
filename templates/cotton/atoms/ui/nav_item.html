@@ -1,0 +1,19 @@
+<!-- Sidebar nav item. Highlights as active when the current view's URL namespace
+     matches active_when, so any page in that section (e.g. an order's detail page)
+     keeps its nav item selected. Pass href, icon (Iconify name), label, active_when.
+     Pass perm ("app.codename") to hide the item from users who lack it, or
+     staff_only to show it only to staff members. -->
+<c-vars href="#" icon="" label="" active_when="" perm="" staff_only="" />
+{% if staff_only and not request.user.is_staff %}{% elif not perm or perm in perms %}
+  {% if active_when and request.resolver_match.namespace == active_when %}
+    <a href="{{ href }}" aria-current="page"
+      class="flex items-center gap-3 rounded-md bg-blue-50 px-3 py-2 font-medium text-blue-700">
+      <c-atoms.ui.icon name="{{ icon }}" /> {{ label }}
+    </a>
+  {% else %}
+    <a href="{{ href }}"
+      class="flex items-center gap-3 rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-gray-100">
+      <c-atoms.ui.icon name="{{ icon }}" /> {{ label }}
+    </a>
+  {% endif %}
+{% endif %}

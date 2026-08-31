@@ -20,17 +20,26 @@ permissions through their group(s). No custom role table.
 
 ## Roles
 
-Five Groups: `receptionist`, `gemmologist`, `production`, `accountant`,
-`administrator`. The Group→permission mapping is the source of truth in
-[`apps/accounts/roles.py`](../../apps/accounts/roles.py) (`ROLE_PERMISSIONS`).
+Five seeded Groups: `receptionist`, `gemmologist`, `production`, `accountant`,
+`administrator`. The Group→permission mapping for these is the version-controlled
+baseline in [`apps/accounts/roles.py`](../../apps/accounts/roles.py)
+(`ROLE_PERMISSIONS`), where `administrator` also holds the `auth.*_group` and
+`accounts.*_user` permissions that gate the portals below.
 
-Seed or refresh them (idempotent):
+Seed or refresh the baseline Groups (idempotent):
 
 ```bash
 python manage.py setup_roles
 ```
 
-Assign users to groups in the Django admin (User → Permissions → Groups).
+Beyond the baseline, roles are managed at runtime through the **roles & permissions
+portal** (`/manage/roles/`, `adminpanel` module): create Groups and toggle their
+permissions on a per-model matrix, and add/remove members. Assign users to groups
+there or in the **users module** (`/users/`) — the Django admin remains available too.
+
+> The matrix governs **business** permissions (the project's own apps). Infrastructure
+> permissions a role holds (e.g. `auth.*_group`) are preserved across edits but not
+> shown, so editing a role through the portal never silently drops them.
 
 ## Enforcement
 

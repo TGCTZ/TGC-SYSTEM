@@ -1,0 +1,9 @@
+# django-cotton templates: keep every Django {{ }}/{% %} tag on a single line.
+# PyCharm's HTML formatter wraps long lines by default, which splits these tags
+# across lines — and cotton's parser then emits them as literal text. Turning off
+# line wrapping here stops Reformat Code from breaking cotton components.
+[*.html]
+max_line_length = off
+ij_html_text_wrap = off
+ij_html_keep_line_breaks = true
+ij_html_keep_line_breaks_in_text = true

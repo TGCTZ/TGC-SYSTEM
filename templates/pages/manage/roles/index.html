@@ -1,0 +1,23 @@
+<c-layouts.app title="Roles">
+  <div class="space-y-6">
+
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl font-semibold text-gray-900">Roles &amp; permissions</h2>
+      {% if can_add %}
+        <a href="{% url 'manage:role_create' %}">
+          <c-atoms.ui.button variant="primary"><c-atoms.ui.icon name="lucide:plus" size="sm" /> New role</c-atoms.ui.button>
+        </a>
+      {% endif %}
+    </div>
+
+    <c-sections.table :headers="['Role', 'Members', 'Permissions']" :count="groups|length" empty="No roles yet.">
+      {% for group in groups %}
+        <c-sections.table.row href="{% url 'manage:role_detail' group.pk %}" :actions="group.row_actions">
+          <td class="px-6 py-3 font-medium">{{ group.name }}</td>
+          <td class="px-6 py-3">{{ group.member_count }}</td>
+          <td class="px-6 py-3">{{ group.perm_count }}</td>
+        </c-sections.table.row>
+      {% endfor %}
+    </c-sections.table>
+  </div>
+</c-layouts.app>

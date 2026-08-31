@@ -1,0 +1,10 @@
+<!-- KPI stat tile: label, value, optional delta and icon. -->
+<c-vars label="" value="" delta="" icon="lucide:activity" />
+<div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+  <div class="flex items-center justify-between">
+    <p class="text-sm text-gray-500">{{ label }}</p>
+    <span class="text-gray-400"><c-atoms.ui.icon name="{{ icon }}" /></span>
+  </div>
+  <p class="mt-2 text-2xl font-semibold text-gray-900">{{ value }}</p>
+  {% if delta %}<p class="mt-1 text-xs text-green-600">+{{ delta }} this week</p>{% endif %}
+</div>

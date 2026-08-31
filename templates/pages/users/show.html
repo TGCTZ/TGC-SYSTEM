@@ -1,0 +1,54 @@
+<c-layouts.app title="User {{ user_obj.get_username }}">
+  <div class="space-y-6">
+
+    <div class="grid gap-4 lg:grid-cols-3">
+      <c-atoms.ui.card title="Profile">
+        <div class="flex items-center gap-3">
+          <c-atoms.ui.avatar initials="{{ user_obj.get_username|slice:':2'|upper }}" />
+          <div class="min-w-0">
+            <p class="font-medium text-gray-900">{{ user_obj.get_full_name|default:user_obj.get_username }}</p>
+            <p class="truncate text-sm text-gray-500">{{ user_obj.email|default:"No email" }}</p>
+          </div>
+        </div>
+      </c-atoms.ui.card>
+
+      <c-atoms.ui.card title="Details">
+        <p class="text-sm">
+          <span class="text-gray-500">Status:</span>
+          {% if user_obj.is_active %}<c-atoms.ui.badge variant="success">Active</c-atoms.ui.badge>
+          {% else %}<c-atoms.ui.badge variant="danger">Inactive</c-atoms.ui.badge>{% endif %}
+        </p>
+        <p class="text-sm">
+          <span class="text-gray-500">Roles:</span>
+          {% for g in user_obj.groups.all %}{{ g.name }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}
+        </p>
+        <p class="text-sm"><span class="text-gray-500">Staff:</span> {{ user_obj.is_staff|yesno:"Yes,No" }}</p>
+        <p class="text-sm"><span class="text-gray-500">Joined:</span> {{ user_obj.date_joined|date:"M j, Y" }}</p>
+        <p class="text-sm"><span class="text-gray-500">Last login:</span> {{ user_obj.last_login|default:"Never" }}</p>
+      </c-atoms.ui.card>
+
+      <c-atoms.ui.card title="Actions">
+        <div class="space-y-2">
+          {% if perms.accounts.change_user %}
+            <a href="{% url 'users:edit' user_obj.pk %}">
+              <c-atoms.ui.button variant="outline" size="sm">Edit</c-atoms.ui.button>
+            </a>
+            <form method="post" action="{% url 'users:toggle' user_obj.pk %}">
+              {% csrf_token %}
+              <c-atoms.ui.button type="submit" variant="secondary" size="sm">
+                {% if user_obj.is_active %}Deactivate{% else %}Activate{% endif %}
+              </c-atoms.ui.button>
+            </form>
+          {% endif %}
+          {% if perms.accounts.delete_user %}
+            <form method="post" action="{% url 'users:delete' user_obj.pk %}"
+              onsubmit="return confirm('Delete this user permanently?')">
+              {% csrf_token %}
+              <c-atoms.ui.button type="submit" variant="danger" size="sm">Delete</c-atoms.ui.button>
+            </form>
+          {% endif %}
+        </div>
+      </c-atoms.ui.card>
+    </div>
+  </div>
+</c-layouts.app>

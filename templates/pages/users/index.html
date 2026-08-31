@@ -1,0 +1,51 @@
+<c-layouts.app title="Users">
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl font-semibold text-gray-900">Users</h2>
+      {% if perms.accounts.add_user %}
+        <a href="{% url 'users:create' %}">
+          <c-atoms.ui.button variant="primary">
+            <c-atoms.ui.icon name="lucide:plus" size="sm" /> New user
+          </c-atoms.ui.button>
+        </a>
+      {% endif %}
+    </div>
+
+    <form method="get" class="flex flex-wrap items-center gap-2">
+      <c-atoms.forms.input name="q" value="{{ query }}" placeholder="Search name, username, email…" />
+      <c-atoms.forms.select name="status" search="false">
+        <option value="">All statuses</option>
+        <option value="active" {% if status == 'active' %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactive</option>
+      </c-atoms.forms.select>
+      <c-atoms.ui.button type="submit" variant="secondary">Filter</c-atoms.ui.button>
+    </form>
+
+    <c-sections.table :headers="['User', 'Email', 'Roles', 'Status', 'Last login']"
+      :count="users|length" empty="No users found.">
+      {% for u in users %}
+        <c-sections.table.row href="{% url 'users:detail' u.pk %}" :actions="u.row_actions">
+          <td class="px-6 py-3">
+            <div class="flex items-center gap-3">
+              <c-atoms.ui.avatar initials="{{ u.get_username|slice:':2'|upper }}" size="sm" />
+              <div class="min-w-0">
+                <p class="font-medium text-gray-900">{{ u.get_username }}</p>
+                <p class="truncate text-xs text-gray-500">{{ u.get_full_name }}</p>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-3">{{ u.email|default:"—" }}</td>
+          <td class="px-6 py-3">
+            {% for g in u.groups.all %}<c-atoms.ui.badge variant="info">{{ g.name }}</c-atoms.ui.badge> {% empty %}<span class="text-gray-400">—</span>{% endfor %}
+          </td>
+          <td class="px-6 py-3">
+            {% if u.is_active %}<c-atoms.ui.badge variant="success" dot="true">Active</c-atoms.ui.badge>{% else %}<c-atoms.ui.badge variant="danger" dot="true">Inactive</c-atoms.ui.badge>{% endif %}
+          </td>
+          <td class="px-6 py-3 text-gray-500">{{ u.last_login|default:"Never" }}</td>
+        </c-sections.table.row>
+      {% endfor %}
+    </c-sections.table>
+
+    <c-atoms.ui.pagination :page_obj="page_obj" />
+  </div>
+</c-layouts.app>

@@ -1,0 +1,67 @@
+<c-layouts.app title="{{ panel.verbose_name_plural }}">
+  <div class="space-y-6">
+
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl font-semibold text-gray-900">{{ panel.verbose_name_plural }}</h2>
+      {% if can_add %}
+        <a href="{% url 'manage:create' panel.app_label panel.model_name %}">
+          <c-atoms.ui.button variant="primary"><c-atoms.ui.icon name="lucide:plus" size="sm" /> New</c-atoms.ui.button>
+        </a>
+      {% endif %}
+    </div>
+
+    {% if panel.search_fields or filters %}
+      <form method="get" class="flex flex-wrap items-center gap-2">
+        {% if panel.search_fields %}
+          <c-atoms.forms.input name="q" value="{{ query }}" placeholder="Search…" />
+        {% endif %}
+        {% for filter in filters %}
+          <c-atoms.forms.select name="{{ filter.name }}" search="false">
+            <option value="">{{ filter.label }}: all</option>
+            {% for value, label in filter.options %}
+              <option value="{{ value }}" {% if filter.current == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </c-atoms.forms.select>
+        {% endfor %}
+        <c-atoms.ui.button type="submit" variant="secondary">Apply</c-atoms.ui.button>
+      </form>
+    {% endif %}
+
+    {% if rows %}
+      <div class="w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50/80">
+              <tr>
+                {% for col in columns %}
+                  <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    {% if col.orderable %}
+                      <a href="{% querystring sort=col.next %}" class="inline-flex items-center gap-1 hover:text-gray-700">{{ col.label }} <span>{{ col.indicator }}</span></a>
+                    {% else %}{{ col.label }}{% endif %}
+                  </th>
+                {% endfor %}
+                <th class="px-6 py-3"><span class="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 text-sm text-gray-700">
+              {% for row in rows %}
+                <c-sections.table.row href="{% url 'manage:detail' panel.app_label panel.model_name row.obj.pk %}" :actions="row.actions">
+                  {% for cell in row.cells %}
+                    <td class="px-6 py-3">
+                      {% if cell.kind == 'bool' %}
+                        {% if cell.value %}<c-atoms.ui.badge variant="success" dot="true">Yes</c-atoms.ui.badge>{% else %}<c-atoms.ui.badge variant="danger" dot="true">No</c-atoms.ui.badge>{% endif %}
+                      {% else %}{{ cell.value }}{% endif %}
+                    </td>
+                  {% endfor %}
+                </c-sections.table.row>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <c-atoms.ui.pagination :page_obj="page_obj" />
+    {% else %}
+      <c-sections.table :headers="[]" :count="0" empty="Nothing here yet." actions="false" />
+    {% endif %}
+  </div>
+</c-layouts.app>

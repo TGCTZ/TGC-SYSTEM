@@ -1,0 +1,23 @@
+<c-layouts.app title="{{ object }}">
+  <div class="space-y-6">
+
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl font-semibold text-gray-900">{{ object }}</h2>
+      <div class="flex gap-2">
+        {% if can_change %}<a href="{% url 'manage:edit' panel.app_label panel.model_name object.pk %}"><c-atoms.ui.button variant="outline" size="sm">Edit</c-atoms.ui.button></a>{% endif %}
+        {% if can_delete %}<a href="{% url 'manage:delete' panel.app_label panel.model_name object.pk %}"><c-atoms.ui.button variant="danger" size="sm">Delete</c-atoms.ui.button></a>{% endif %}
+      </div>
+    </div>
+
+    <c-atoms.ui.card>
+      <dl class="divide-y divide-gray-100">
+        {% for field in fields %}
+          <div class="grid grid-cols-3 gap-4 py-3">
+            <dt class="text-sm text-gray-500">{{ field.label }}</dt>
+            <dd class="col-span-2 text-sm text-gray-900">{% if field.cell.kind == 'bool' %}{{ field.cell.value|yesno:"Yes,No" }}{% else %}{{ field.cell.value }}{% endif %}</dd>
+          </div>
+        {% endfor %}
+      </dl>
+    </c-atoms.ui.card>
+  </div>
+</c-layouts.app>

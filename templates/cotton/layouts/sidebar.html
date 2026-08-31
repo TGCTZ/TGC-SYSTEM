@@ -1,30 +1,53 @@
 <!-- Sidebar: role navigation. Links are placeholders until feature pages exist. -->
 <aside class="hidden w-64 shrink-0 flex-col border-r border-gray-200 bg-white md:flex">
-  <div class="flex h-16 items-center gap-2 border-b border-gray-200 px-5 text-blue-600">
-    <c-atoms.ui.icon name="lucide:gem" size="lg" />
-    <span class="text-sm font-semibold text-gray-900">TGC System</span>
-  </div>
-  <nav class="flex-1 space-y-1 p-3 text-sm">
-    <a href="{% url 'dashboard:home' %}" class="flex items-center gap-3 rounded-md bg-blue-50 px-3 py-2 font-medium text-blue-700">
-      <c-atoms.ui.icon name="lucide:layout-dashboard" /> Dashboard
-    </a>
-    <a href="{% url 'orders:index' %}" class="flex items-center gap-3 rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-gray-100">
-      <c-atoms.ui.icon name="lucide:package" /> Orders
-    </a>
-    <a href="{% url 'identification:index' %}" class="flex items-center gap-3 rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-gray-100">
-      <c-atoms.ui.icon name="lucide:microscope" /> Identification
-    </a>
-    <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-gray-100">
-      <c-atoms.ui.icon name="lucide:hammer" /> Production
-    </a>
-    <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-gray-100">
-      <c-atoms.ui.icon name="lucide:banknote" /> Billing
-    </a>
-    <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-gray-100">
-      <c-atoms.ui.icon name="lucide:badge-check" /> Certificates
-    </a>
-    <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 font-medium text-gray-700 hover:bg-gray-100">
-      <c-atoms.ui.icon name="lucide:users" /> Users
-    </a>
-  </nav>
+    <div class="flex h-16 items-center gap-2 border-b border-gray-200 px-5 text-blue-600">
+        <c-atoms.ui.icon name="lucide:gem" size="lg"/>
+        <span class="text-sm font-semibold text-gray-900">TGC System</span>
+    </div>
+    <nav class="flex-1 space-y-1 p-3 text-sm">
+        <c-atoms.ui.nav-item href="{% url 'dashboard:home' %}"
+                             icon="lucide:layout-dashboard" label="Dashboard"
+                             active_when="dashboard"/>
+        <c-atoms.ui.nav-item href="{% url 'orders:index' %}"
+                             icon="lucide:package" label="Orders"
+                             active_when="orders" perm="orders.view_order"/>
+        <c-atoms.ui.nav-item href="{% url 'identification:index' %}"
+                             icon="lucide:microscope" label="Identification"
+                             active_when="identification"
+                             perm="identification.add_identificationreport"/>
+        <c-atoms.ui.nav-item href="#" icon="lucide:hammer" label="Production"
+                             perm="production.view_production"/>
+        <c-atoms.ui.nav-item href="#" icon="lucide:banknote" label="Billing"
+                             perm="billing.view_bill"/>
+        <c-atoms.ui.nav-item href="#" icon="lucide:badge-check" label="Certificates"
+                             perm="certificates.view_certificate"/>
+        <c-atoms.ui.nav-item href="{% url 'users:index' %}" icon="lucide:users" label="Users"
+                             active_when="users" perm="accounts.view_user"/>
+        <c-atoms.ui.nav-item href="{% url 'manage:index' %}" icon="lucide:layout-grid"
+                             label="Manage" active_when="manage" staff_only="true"/>
+    </nav>
+
+    <!-- Account footer: identity + quick actions. The name/role block links to the
+         profile page (full details live there); the icon signs out. -->
+    <div class="border-t border-gray-200 p-3">
+        <div class="flex items-center gap-2">
+            <a href="#" title="View profile"
+               class="flex min-w-0 flex-1 items-center gap-3 rounded-md px-2 py-1.5 hover:bg-gray-100">
+                <c-atoms.ui.avatar
+                        initials="{{ request.user.get_username|slice:':2'|upper }}"
+                        size="sm"/>
+                <div class="min-w-0">
+                    <p class="truncate text-sm font-medium text-gray-900">{{ request.user.get_full_name|default:request.user.get_username }}</p>
+                    <p class="truncate text-xs text-gray-500">{% if request.user.is_superuser %}Administrator{% else %}{{ request.user.groups.first.name|default:"Member" }}{% endif %}</p>
+                </div>
+            </a>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" title="Sign out" aria-label="Sign out"
+                        class="shrink-0 rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <c-atoms.ui.icon name="lucide:log-out" size="sm"/>
+                </button>
+            </form>
+        </div>
+    </div>
 </aside>

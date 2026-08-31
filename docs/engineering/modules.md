@@ -22,15 +22,16 @@
 | **L3** | `certificates` | Certificate issuance, QR codes, public verification. |
 | **L4** | `reports` | Management reports and exports (reads across domain modules). |
 | **L4** | `dashboard` | Landing pages and navigation shells (thin entrypoints). |
+| **L4** | `adminpanel` | Generic model-admin, roles & permissions portal, and users management at `/manage/` + `/users/`. |
 
-**9 focused modules**, each with a single clear responsibility.
+**10 focused modules**, each with a single clear responsibility.
 
 ---
 
 ## 2. Dependency layers
 
 ```
-L4   reports · dashboard          (read/aggregate; import ↓ only)
+L4   reports · dashboard · adminpanel   (read/aggregate; import ↓ only)
         │
 L3   orders · identification · production · billing · certificates
         │                         (the business; import ↓ only)
@@ -92,6 +93,16 @@ modules; holds little state of its own.
 ### `dashboard` (L4)
 **Owns:** landing pages, role-based navigation. No business logic.
 **Depends on:** domain modules (read-only).
+
+### `adminpanel` (L4)
+**Owns:** the generic model-admin framework (a `ModelPanel` registry — apps register
+models in their own `panels.py`, getting styled list/detail/CRUD screens at
+`/manage/<app>/<model>/`), the **roles & permissions portal** (`/manage/roles/` — Group
+CRUD with a live permission matrix), and an admin dashboard (KPI cards + audit-log
+activity feed). The bespoke **users module** (`/users/`, `accounts.users_views`) is a
+sibling. Only safe reference models are registered (see `core/panels.py`); workflow
+models keep their service-driven flows. Django's `/admin/` remains available.
+**Depends on:** `core`, `accounts` (read/registry only).
 
 ---
 

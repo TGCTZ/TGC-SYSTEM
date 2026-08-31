@@ -1,0 +1,17 @@
+<c-layouts.app title="Activity">
+  <div class="space-y-6">
+    <h2 class="text-xl font-semibold text-gray-900">Activity log</h2>
+    <c-sections.list>
+      {% for row in rows %}
+        <div class="flex items-center gap-3 px-4 py-3 text-sm">
+          <c-atoms.ui.avatar initials="{{ row.actor.get_username|slice:':2'|upper|default:'?' }}" size="sm" />
+          <p class="min-w-0 flex-1 text-gray-700"><span class="font-medium">{{ row.actor|default:'System' }}</span> {{ row.verb }} {{ row.model }} <span class="text-gray-500">{{ row.repr }}</span></p>
+          <span class="shrink-0 text-xs text-gray-400">{{ row.timestamp|date:"M j, H:i" }}</span>
+        </div>
+      {% empty %}
+        <div class="px-4 py-6 text-center text-sm text-gray-400">No activity yet.</div>
+      {% endfor %}
+    </c-sections.list>
+    <c-atoms.ui.pagination :page_obj="page_obj" />
+  </div>
+</c-layouts.app>

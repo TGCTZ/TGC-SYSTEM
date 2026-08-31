@@ -41,7 +41,9 @@ select = [
 # the "no wildcard imports" rule in §9 and §20.
 
 ignore = [
-    "S101",   # assert used — fine in tests (also handled per-file below)
+    "S101",    # assert used — fine in tests (also handled per-file below)
+    "RUF012",  # Django Meta/ModelPanel class attrs (fields, ordering) aren't ClassVar
+    "DJ012",   # Django Meta field-ordering convention differs from Ruff's preference
 ]
 
 [tool.ruff.lint.per-file-ignores]
