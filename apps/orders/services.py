@@ -10,7 +10,9 @@ from apps.core.services import generate_reference_number
 from .models import Order, StatusHistory, Stone
 
 
-def transition_stone(stone: Stone, to_status: str, *, user=None, note: str = "") -> Stone:
+def transition_stone(
+    stone: Stone, to_status: str, *, user=None, note: str = ""
+) -> Stone:
     """Move a stone to a new status and record it in the audit trail.
 
     No-ops if the stone is already in ``to_status``. Transition rules (B5/B6) are
@@ -52,11 +54,13 @@ def create_order(*, customer, stone_count: int, received_date=None, user=None) -
 
 
 @transaction.atomic
-def add_stone(order: Order, *, stone_type, weight, weight_unit=WeightUnit.CARAT,
-              user=None) -> Stone:
-    """Add a stone to an order (created during identification) as ``received``.
+def add_stone(
+    order: Order, *, stone_type, weight=None, weight_unit=WeightUnit.CARAT, user=None
+) -> Stone:
+    """Add a stone to an order as ``received``, typed for pricing.
 
-    The label is the next letter in the order (A, B, C…). Refuses to register more
+    Only the type is required at registration; weight and findings are recorded later
+    (after payment). The label is the next letter (A, B, C…); refuses to register more
     stones than the customer submitted (``order.stone_count``).
     """
     registered = order.stones.count()
@@ -83,8 +87,9 @@ def add_stone(order: Order, *, stone_type, weight, weight_unit=WeightUnit.CARAT,
     return stone
 
 
-def update_stone(stone: Stone, *, stone_type=None, weight=None, weight_unit=None,
-                 user=None) -> Stone:
+def update_stone(
+    stone: Stone, *, stone_type=None, weight=None, weight_unit=None, user=None
+) -> Stone:
     """Update a stone's recorded properties (during identification)."""
     if stone_type is not None:
         stone.stone_type = stone_type
@@ -94,5 +99,13 @@ def update_stone(stone: Stone, *, stone_type=None, weight=None, weight_unit=None
         stone.weight_unit = weight_unit
     if user is not None:
         stone.updated_by = user
-    stone.save(update_fields=["stone_type", "weight", "weight_unit", "updated_at", "updated_by"])
+    stone.save(
+        update_fields=[
+            "stone_type",
+            "weight",
+            "weight_unit",
+            "updated_at",
+            "updated_by",
+        ]
+    )
     return stone

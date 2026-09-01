@@ -27,9 +27,12 @@ def no_gepg(monkeypatch):
 
     def _fake(bill, customer, username):
         return {
-            "success": True, "control_number": "994400000123",
-            "status_code": "7101", "status_desc": "ok",
-            "is_sync": True, "raw_response": "<x/>",
+            "success": True,
+            "control_number": "994400000123",
+            "status_code": "7101",
+            "status_desc": "ok",
+            "is_sync": True,
+            "raw_response": "<x/>",
         }
 
     monkeypatch.setattr(billing_services, "submit_bill", _fake)
@@ -59,7 +62,9 @@ def test_generate_bill_snapshots_and_bills_stones(user, priced_stone_type, no_ge
     bill = generate_bill_for_order(order, user=user)
     assert bill.bill_number.startswith("BILL-")
     item = bill.items.first()
-    assert item.amount == item.unit_price * item.weight
+    # Flat price by type: amount == the type's fixed price, no weight factor.
+    assert item.amount == item.unit_price
+    assert item.weight is None
     assert bill.total_amount == item.amount
     assert order.stones.first().status == StoneStatus.BILLED
     assert bill.control_number == "994400000123"
@@ -82,7 +87,9 @@ def test_generate_bill_without_price_raises(user, no_gepg):
 def test_payment_notification_settles_bill(user, priced_stone_type, no_gepg):
     order = _order(user, priced_stone_type)
     bill = generate_bill_for_order(order, user=user)
-    ack = process_payment_notification(_payment_xml(bill.bill_number, bill.total_amount, "TRX-1"))
+    ack = process_payment_notification(
+        _payment_xml(bill.bill_number, bill.total_amount, "TRX-1")
+    )
     assert "7101" in ack
     bill.refresh_from_db()
     assert bill.status == BillStatus.PAID

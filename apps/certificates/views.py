@@ -32,7 +32,7 @@ class CertificateListView(LoginRequiredMixin, PermissionRequiredMixin, ListView)
     permission_required = "certificates.view_certificate"
     template_name = "pages/certificates/index.html"
     context_object_name = "certificates"
-    paginate_by = 10
+    paginate_by = 5
 
     def get_queryset(self):
         qs = Certificate.objects.select_related("stone__order__customer").order_by(
@@ -42,21 +42,17 @@ class CertificateListView(LoginRequiredMixin, PermissionRequiredMixin, ListView)
         if query:
             qs = qs.filter(
                 Q(certificate_no__icontains=query)
+                | Q(status__icontains=query)
+                | Q(stone_type_snapshot__icontains=query)
                 | Q(stone__label__icontains=query)
                 | Q(stone__order__reference_no__icontains=query)
                 | Q(stone__order__customer__first_name__icontains=query)
                 | Q(stone__order__customer__last_name__icontains=query)
             )
-        status = self.request.GET.get("status")
-        if status:
-            qs = qs.filter(status=status)
         return qs
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["query"] = self.request.GET.get("q", "")
-        ctx["status"] = self.request.GET.get("status", "")
-        ctx["statuses"] = CertificateStatus.choices
         ctx["can_issue"] = self.request.user.has_perm("certificates.issue_certificate")
         for cert in ctx["certificates"]:
             cert.status_variant = _STATUS_VARIANT.get(cert.status, "info")
@@ -74,7 +70,7 @@ class CertifiableStonesView(LoginRequiredMixin, PermissionRequiredMixin, ListVie
     permission_required = "certificates.issue_certificate"
     template_name = "pages/certificates/worklist.html"
     context_object_name = "stones"
-    paginate_by = 10
+    paginate_by = 5
 
     def get_queryset(self):
         qs = Stone.objects.select_related("stone_type", "order__customer").filter(
@@ -133,6 +129,37 @@ def detail(request, pk):
             "can_revoke": (
                 request.user.has_perm("certificates.revoke_certificate")
                 and certificate.status != CertificateStatus.REVOKED
+            ),
+        },
+    )
+
+
+@login_required
+@permission_required("certificates.view_certificate", raise_exception=True)
+def print_certificate(request, pk):
+    """Printable gemstone-identification-report document for a certificate."""
+    certificate = get_object_or_404(
+        Certificate.objects.select_related(
+            "stone__order__customer",
+            "report__species",
+            "report__variety",
+            "report__origin",
+            "report__shape_cut",
+            "issued_by",
+        ),
+        pk=pk,
+    )
+    return render(
+        request,
+        "pages/certificates/print.html",
+        {
+            "certificate": certificate,
+            "report": certificate.report,
+            "instruments": certificate.report.instruments_used.select_related(
+                "instrument"
+            ),
+            "verify_url": request.build_absolute_uri(
+                reverse("certificates:verify", args=[certificate.verification_token])
             ),
         },
     )

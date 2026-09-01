@@ -34,11 +34,11 @@ logger = logging.getLogger(__name__)
 
 
 def _price_for(stone) -> Decimal:
-    """Active unit price for a stone's type, or raise if none is set."""
-    price = StonePrice.objects.filter(stone_type=stone.stone_type, is_active=True).first()
+    """The fixed price for a stone's type, or raise if none is set."""
+    price = StonePrice.objects.filter(stone_type=stone.stone_type).first()
     if price is None:
-        raise ServiceError(f"No active price for stone type '{stone.stone_type}'.")
-    return price.price_per_unit
+        raise ServiceError(f"No price set for stone type '{stone.stone_type}'.")
+    return price.price
 
 
 @transaction.atomic
@@ -65,14 +65,13 @@ def _create_local_bill(order, service_provider, user) -> Bill:
 
     total = Decimal("0")
     for stone in stones:
-        unit_price = _price_for(stone)
-        amount = (unit_price * stone.weight).quantize(Decimal("0.01"))
+        amount = _price_for(stone)
         item = BillItem(
             bill=bill,
             stone=stone,
-            description=f"{stone.stone_type.name} — {stone.weight} {stone.weight_unit}",
-            unit_price=unit_price,
-            weight=stone.weight,
+            description=stone.stone_type.name,
+            unit_price=amount,
+            weight=None,
             amount=amount,
             gfs_code=settings.GEPG_GFS_CODE,
             item_ref=f"B{bill.id}IT-{stone.id}",
@@ -81,7 +80,9 @@ def _create_local_bill(order, service_provider, user) -> Bill:
             item.created_by = user
         item.save()
         total += amount
-        transition_stone(stone, StoneStatus.BILLED, user=user, note=f"Billed on {bill.bill_number}")
+        transition_stone(
+            stone, StoneStatus.BILLED, user=user, note=f"Billed on {bill.bill_number}"
+        )
 
     bill.total_amount = total
     bill.save(update_fields=["total_amount", "updated_at"])
@@ -101,14 +102,19 @@ def generate_bill_for_order(order, *, service_provider=None, user=None) -> Bill:
 
     bill.gepg_submitted = True
     bill.gepg_submitted_at = timezone.now()
-    bill.status_code = result["status_code"] or ""
-    bill.status_desc = result["status_desc"] or ""
+    # Truncate to the columns' limits — gateway/connection errors can be verbose.
+    bill.status_code = (result["status_code"] or "")[:30]
+    bill.status_desc = (result["status_desc"] or "")[:255]
     if result["success"] and result["control_number"] not in (None, "PENDING"):
         bill.control_number = result["control_number"]
     bill.save(
         update_fields=[
-            "gepg_submitted", "gepg_submitted_at", "status_code", "status_desc",
-            "control_number", "updated_at",
+            "gepg_submitted",
+            "gepg_submitted_at",
+            "status_code",
+            "status_desc",
+            "control_number",
+            "updated_at",
         ]
     )
     return bill
@@ -153,7 +159,9 @@ def _apply_payment(header: dict, txn: dict, raw: str) -> None:
         payment.save()
         return
 
-    paid = sum((p.paid_amount or Decimal("0") for p in bill.payments.all()), Decimal("0"))
+    paid = sum(
+        (p.paid_amount or Decimal("0") for p in bill.payments.all()), Decimal("0")
+    )
     if paid >= bill.total_amount:
         bill.status = BillStatus.PAID
         for stone in bill.order.stones.all():
@@ -177,5 +185,7 @@ def handle_bill_response_callback(xml_content: str) -> str:
         bill.control_number = data["control_number"]
         bill.status_code = data["status_code"]
         bill.status_desc = data["status_desc"]
-        bill.save(update_fields=["control_number", "status_code", "status_desc", "updated_at"])
+        bill.save(
+            update_fields=["control_number", "status_code", "status_desc", "updated_at"]
+        )
     return build_bill_response_ack(data["res_id"], "7101")

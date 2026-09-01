@@ -1,4 +1,8 @@
-"""Identification forms."""
+"""Identification forms.
+
+The workflow has two phases: first the gemmologist assigns the stone's *type* (which
+fixes the price), the customer pays, then the gemmologist records the *findings*.
+"""
 
 from decimal import Decimal
 
@@ -15,15 +19,30 @@ def _optional_choices(choices):
     return [("", "—"), *choices]
 
 
-class StoneIdentificationForm(StyledFormMixin, forms.Form):
-    """Register a stone and record its identification findings."""
+class StoneTypeForm(StyledFormMixin, forms.Form):
+    """Phase 1 — register a stone under its priced type (no findings yet)."""
 
-    # Stone (recorded at identification)
-    stone_type = forms.ModelChoiceField(queryset=StoneType.objects.filter(is_active=True))
-    weight = forms.DecimalField(max_digits=10, decimal_places=3, min_value=Decimal("0.001"))
-    weight_unit = forms.ChoiceField(choices=WeightUnit.choices, initial=WeightUnit.CARAT)
+    stone_type = forms.ModelChoiceField(
+        queryset=StoneType.objects.filter(is_active=True), label="Stone type"
+    )
 
-    # Findings
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Only three fixed types — a plain select is clearer (and never clipped) than
+        # a searchable Tom Select combobox.
+        self.fields["stone_type"].widget.attrs.pop("data-search", None)
+
+
+class FindingsForm(StyledFormMixin, forms.Form):
+    """Phase 2 — record weight and the gemmological findings (after payment)."""
+
+    weight = forms.DecimalField(
+        max_digits=10, decimal_places=3, min_value=Decimal("0.001")
+    )
+    weight_unit = forms.ChoiceField(
+        choices=WeightUnit.choices, initial=WeightUnit.CARAT
+    )
+
     species = forms.ModelChoiceField(
         queryset=Species.objects.filter(is_active=True), required=False
     )
@@ -34,7 +53,9 @@ class StoneIdentificationForm(StyledFormMixin, forms.Form):
         queryset=Origin.objects.filter(is_active=True), required=False
     )
     shape_cut = forms.ModelChoiceField(
-        queryset=ShapeCut.objects.filter(is_active=True), required=False, label="Shape / cut"
+        queryset=ShapeCut.objects.filter(is_active=True),
+        required=False,
+        label="Shape / cut",
     )
     color = forms.ChoiceField(choices=_optional_choices(Color.choices), required=False)
     transparency = forms.ChoiceField(

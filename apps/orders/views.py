@@ -3,8 +3,8 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
 from django.db.models import Count, Q
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -74,13 +74,23 @@ class OrderDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         try:
             report = stone.report
         except ObjectDoesNotExist:
-            return []
+            report = None
         user, actions = self.request.user, []
-        if not report.is_finalized and user.has_perm("identification.change_identificationreport"):
+        finalized = report is not None and report.is_finalized
+        change = "identification.change_identificationreport"
+        if not finalized and user.has_perm(change):
             actions.append(
-                action("Edit", "lucide:pencil", reverse("identification:edit", args=[stone.pk]))
+                action(
+                    "Findings",
+                    "lucide:clipboard-list",
+                    reverse("identification:findings_stone", args=[stone.pk]),
+                )
             )
-        if not report.is_finalized and user.has_perm("identification.finalize_report"):
+        if (
+            report is not None
+            and not finalized
+            and user.has_perm("identification.finalize_report")
+        ):
             actions.append(
                 action(
                     "Finalize",

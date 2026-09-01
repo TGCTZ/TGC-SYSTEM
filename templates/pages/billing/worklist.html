@@ -1,18 +1,12 @@
-<c-layouts.app title="Generate bills">
+<c-layouts.app title="Generate bills" search_placeholder="Search reference, customer…">
   <div class="space-y-6">
-    <c-atoms.ui.breadcrumb>
-      <li><a href="{% url 'billing:index' %}" class="hover:text-gray-700">Bills</a></li>
-      <li><c-atoms.ui.icon name="lucide:chevron-right" size="sm" /></li>
-      <li class="font-medium text-gray-700">Generate</li>
-    </c-atoms.ui.breadcrumb>
-
     <div>
       <h2 class="text-xl font-semibold text-gray-900">Ready to bill</h2>
       <p class="text-sm text-gray-500">Orders whose stones are all identified and not yet billed.</p>
     </div>
 
     <c-sections.table :headers="['Reference', 'Customer', 'Received', 'Stones', '']"
-      :count="orders|length" empty="Nothing ready to bill." actions="false">
+      count="{{ orders|length }}" empty="Nothing ready to bill." actions="false">
       {% for order in orders %}
         <tr class="transition-colors hover:bg-blue-100/70">
           <td class="px-6 py-3 font-medium">{{ order.reference_no }}</td>

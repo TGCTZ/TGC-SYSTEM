@@ -12,5 +12,6 @@ urlpatterns = [
     path("stones/<int:stone_pk>/issue/", views.issue, name="issue"),
     path("verify/<str:token>/", views.verify, name="verify"),
     path("<int:pk>/", views.detail, name="detail"),
+    path("<int:pk>/print/", views.print_certificate, name="print"),
     path("<int:pk>/revoke/", views.revoke, name="revoke"),
 ]

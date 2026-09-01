@@ -52,6 +52,7 @@ ignore = [
 # Tests may use asserts and hard-coded test data freely.
 "**/tests/*" = ["S101", "S105", "S106"]
 "**/factories.py" = ["S311"]   # non-crypto random is fine for fake data
+"**/commands/seed.py" = ["S311"]   # sample data uses non-crypto random
 
 [tool.ruff.lint.isort]
 # Group local apps separately so import order reads:

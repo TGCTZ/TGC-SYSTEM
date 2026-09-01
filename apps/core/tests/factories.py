@@ -1,9 +1,9 @@
 """Factories for core reference data and pricing."""
 
 import factory
-from factory.fuzzy import FuzzyChoice, FuzzyDecimal
+from factory.fuzzy import FuzzyChoice
 
-from apps.core.enums import StoneCategory, WeightUnit
+from apps.core.enums import StoneCategory
 from apps.core.models import (
     Instrument,
     Origin,
@@ -77,12 +77,11 @@ class InstrumentFactory(factory.django.DjangoModelFactory):
 
 
 class StonePriceFactory(factory.django.DjangoModelFactory):
-    """Builds an active price for a stone type."""
+    """Builds the fixed price for a stone type."""
 
     class Meta:
         model = StonePrice
         django_get_or_create = ("stone_type",)
 
     stone_type = factory.SubFactory(StoneTypeFactory)
-    price_per_unit = FuzzyDecimal(50_000, 5_000_000)
-    unit = WeightUnit.CARAT
+    price = 10_000

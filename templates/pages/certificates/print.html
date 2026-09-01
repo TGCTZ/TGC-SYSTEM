@@ -1,0 +1,161 @@
+<c-layouts.base title="Certificate {{ certificate.certificate_no }}">
+  <style>
+    :root { --ink:#1a1a1a; --line:#111; --muted:#555; --head:#f0f0f0; }
+    body { background:#e9eaed; }
+    .cert-toolbar {
+      max-width:1120px; margin:0 auto; padding:14px 16px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .cert-toolbar .btn {
+      font:600 13px/1 system-ui,sans-serif; padding:9px 16px; border-radius:8px;
+      border:1px solid #cfd3da; background:#fff; color:#1f2937; cursor:pointer; text-decoration:none;
+    }
+    .cert-toolbar .btn-primary { background:#1f4e8c; border-color:#1f4e8c; color:#fff; }
+    .cert-toolbar .revoked { color:#b91c1c; font:700 13px/1 system-ui,sans-serif; letter-spacing:.05em; }
+
+    .cert-page { max-width:1120px; margin:0 auto 40px; padding:0 16px; }
+    .cert-doc {
+      position:relative; background:#fff; color:var(--ink); border:2px solid var(--line);
+      padding:14px 16px; aspect-ratio:1.414/1;
+      font-family:'Times New Roman',Georgia,serif; box-shadow:0 6px 24px rgba(0,0,0,.12);
+    }
+    .cert-doc.revoked::after {
+      content:"REVOKED"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+      font:900 130px/1 system-ui,sans-serif; color:rgba(185,28,28,.14);
+      transform:rotate(-22deg); pointer-events:none; letter-spacing:.1em;
+    }
+
+    .c-header { display:grid; grid-template-columns:90px 1fr 90px; align-items:center; gap:10px;
+      border-bottom:2px solid var(--line); padding-bottom:8px; }
+    .c-badge { width:74px; height:74px; border:1px solid #bbb; border-radius:50%;
+      display:flex; align-items:center; justify-content:center; font:600 11px sans-serif; color:#999; }
+    .c-badge.right { border-radius:8px; }
+    .c-title-block { text-align:center; }
+    .c-ministry { font-size:13px; letter-spacing:.04em; }
+    .c-centre { font-size:19px; font-weight:700; letter-spacing:.03em; }
+    .c-title { font-size:15px; font-weight:700; margin-top:2px; text-decoration:underline; letter-spacing:.02em; }
+
+    .c-infobar { display:flex; justify-content:space-between; font-size:12px;
+      padding:6px 2px; border-bottom:1.5px solid var(--line); }
+
+    .c-cols { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px; }
+    .c-col { border:1.5px solid var(--line); display:flex; flex-direction:column; }
+    .c-colhead { background:var(--head); border-bottom:1.5px solid var(--line);
+      text-align:center; font-weight:700; font-size:12px; padding:5px; letter-spacing:.05em; }
+    .c-colbody { padding:8px 10px; flex:1; display:flex; flex-direction:column; }
+
+    .c-row { display:flex; justify-content:space-between; gap:8px; font-size:12px;
+      padding:5px 0; border-bottom:1px dotted #bbb; }
+    .c-row:last-child { border-bottom:none; }
+    .c-row .k { color:var(--muted); font-weight:600; }
+    .c-row .v { text-align:right; }
+
+    .c-subhead { background:var(--head); text-align:center; font-weight:700; font-size:11px;
+      padding:4px; margin-top:8px; border:1px solid var(--line); letter-spacing:.04em; }
+    .c-stamp { border:1px solid var(--line); height:86px; margin-top:8px; text-align:center;
+      display:flex; flex-direction:column; justify-content:center; color:#999; font:600 10px sans-serif; }
+    .c-photo { border:1px solid #ccc; flex:1; min-height:150px; display:flex; align-items:center;
+      justify-content:center; color:#aaa; font:600 12px sans-serif; text-align:center; }
+    .c-inst { display:flex; justify-content:space-between; font-size:12px; padding:4px 0;
+      border-bottom:1px dotted #bbb; }
+    .c-inst:last-of-type { border-bottom:none; }
+    .c-check { color:#166534; font-weight:700; }
+    .c-qr { text-align:center; margin-top:10px; }
+    .c-qr .box { width:96px; height:96px; margin:0 auto; border:1px solid var(--line);
+      display:flex; align-items:center; justify-content:center; color:#aaa; font:600 10px sans-serif; }
+    .c-qr .lbl { font-size:10px; font-weight:700; margin-top:4px; letter-spacing:.08em; }
+    .c-qr .url { font-size:8px; color:var(--muted); word-break:break-all; margin-top:2px; font-family:sans-serif; }
+    .c-verify { margin-top:10px; font-size:10px; line-height:1.4; border-top:1px solid var(--line); padding-top:6px; }
+
+    @media print {
+      @page { size:A4 landscape; margin:8mm; }
+      body { background:#fff; }
+      .cert-toolbar { display:none; }
+      .cert-page { max-width:none; margin:0; padding:0; }
+      .cert-doc { border-width:2px; box-shadow:none; aspect-ratio:auto; height:190mm; }
+    }
+  </style>
+
+  <div class="cert-toolbar">
+    <a href="{% url 'certificates:detail' certificate.pk %}" class="btn">← Back</a>
+    {% if certificate.status == 'revoked' %}<span class="revoked">● This certificate is REVOKED</span>{% endif %}
+    <button type="button" class="btn btn-primary" onclick="window.print()">Print / Save PDF</button>
+  </div>
+
+  <div class="cert-page">
+    <div class="cert-doc {% if certificate.status == 'revoked' %}revoked{% endif %}">
+
+      <div class="c-header">
+        <div class="c-badge">COA</div>
+        <div class="c-title-block">
+          <div class="c-ministry">MINISTRY OF MINERALS</div>
+          <div class="c-centre">TANZANIA GEMMOLOGICAL CENTRE</div>
+          <div class="c-title">GEMSTONE IDENTIFICATION REPORT</div>
+        </div>
+        <div class="c-badge right">TGC</div>
+      </div>
+
+      <div class="c-infobar">
+        <span><b>REPORT NO:</b> {{ certificate.certificate_no }}</span>
+        <span><b>DATE:</b> {{ certificate.issued_at|date:"j F Y" }}</span>
+      </div>
+
+      <div class="c-cols">
+
+        <div class="c-col">
+          <div class="c-colhead">DESCRIPTION</div>
+          <div class="c-colbody">
+            <div class="c-row"><span class="k">COLOR</span><span class="v">{{ report.get_color_display|default:"—" }}</span></div>
+            <div class="c-row"><span class="k">SHAPE / CUT</span><span class="v">{{ report.shape_cut.name|default:"—" }}</span></div>
+            <div class="c-row"><span class="k">WEIGHT</span><span class="v">{{ certificate.weight_snapshot }} {{ certificate.stone.weight_unit }}</span></div>
+            <div class="c-row"><span class="k">TRANSPARENCY</span><span class="v">{{ report.get_transparency_display|default:"—" }}</span></div>
+            <div class="c-row"><span class="k">OPTIC CHARACTER</span><span class="v">{{ report.get_optic_character_display|default:"—" }}</span></div>
+            <div class="c-row"><span class="k">R.I.</span><span class="v">{{ report.refractive_index|default:"—" }}</span></div>
+            <div class="c-row"><span class="k">SPECIFIC GRAVITY</span><span class="v">{{ report.specific_gravity|default:"—" }}</span></div>
+
+            <div class="c-stamp"><span>OFFICIAL STAMP</span></div>
+
+            <div class="c-subhead">GEMMOLOGIST</div>
+            <div class="c-row"><span class="k">Examined by</span><span class="v">{{ certificate.gemmologist|default:"—" }}</span></div>
+          </div>
+        </div>
+
+        <div class="c-col">
+          <div class="c-colhead">GEMSTONE PHOTO</div>
+          <div class="c-colbody">
+            <div class="c-photo">GEMSTONE IMAGE<br><small>Not available</small></div>
+            <div class="c-subhead">IDENTIFICATION</div>
+            <div class="c-row"><span class="k">GROUP / SPECIES</span><span class="v">{{ report.species.name|default:"—" }}</span></div>
+            <div class="c-row"><span class="k">VARIETY</span><span class="v">{{ report.variety.name|default:"—" }}</span></div>
+            <div class="c-row"><span class="k">TREATMENT</span><span class="v">{{ report.get_treatment_display|default:"—" }}</span></div>
+            <div class="c-row"><span class="k">ORIGIN</span><span class="v">{{ report.origin.name|default:"—" }}</span></div>
+          </div>
+        </div>
+
+        <div class="c-col">
+          <div class="c-colhead">INSTRUMENTS USED</div>
+          <div class="c-colbody">
+            <div style="flex:1;">
+              {% for used in instruments %}
+                <div class="c-inst"><span>{{ used.instrument.name }}</span><span class="c-check">✓</span></div>
+              {% empty %}
+                <div class="c-inst"><span style="color:#aaa;">None recorded</span></div>
+              {% endfor %}
+            </div>
+
+            <div class="c-qr">
+              <div class="box">QR</div>
+              <div class="lbl">SCAN TO VERIFY</div>
+              <div class="url">{{ verify_url }}</div>
+            </div>
+
+            <div class="c-verify">
+              <b>VERIFICATION STATEMENT:</b> The information described in this report has been examined by a qualified gemmologist. Verify authenticity at the link above.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</c-layouts.base>

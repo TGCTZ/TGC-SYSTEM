@@ -13,10 +13,12 @@
                              active_when="orders" perm="orders.view_order"/>
         <c-atoms.ui.nav-item href="{% url 'identification:index' %}"
                              icon="lucide:microscope" label="Identification"
-                             active_when="identification"
+                             active_when="identification" active_names="index,order"
                              perm="identification.add_identificationreport"/>
-        <c-atoms.ui.nav-item href="#" icon="lucide:hammer" label="Production"
-                             perm="production.view_production"/>
+        <c-atoms.ui.nav-item href="{% url 'identification:findings' %}"
+                             icon="lucide:clipboard-list" label="Findings"
+                             active_when="identification" active_names="findings,findings_stone,finalize"
+                             perm="identification.change_identificationreport"/>
         <c-atoms.ui.nav-item href="{% url 'billing:index' %}" icon="lucide:banknote"
                              label="Billing" active_when="billing" perm="billing.view_bill"/>
         <c-atoms.ui.nav-item href="{% url 'certificates:index' %}" icon="lucide:badge-check"

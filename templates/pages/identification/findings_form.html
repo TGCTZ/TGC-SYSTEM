@@ -1,0 +1,60 @@
+<c-layouts.app title="Findings · {{ stone.label }} · {{ stone.order.reference_no }}">
+  <div class="mx-auto max-w-4xl space-y-6">
+    <div>
+      <h2 class="text-xl font-semibold text-gray-900">{{ stone.stone_type.name }} · Stone {{ stone.label }}</h2>
+      <p class="text-sm text-gray-500">{{ stone.order.reference_no }} · {{ stone.order.customer.full_name }}</p>
+    </div>
+
+    <form method="post" action="{% url 'identification:findings_stone' stone.pk %}" class="space-y-6">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <c-atoms.ui.alert variant="danger">{{ form.non_field_errors|join:", " }}</c-atoms.ui.alert>
+      {% endif %}
+      <c-atoms.ui.card title="Findings">
+        <div class="grid gap-4 sm:grid-cols-3">
+          <c-atoms.forms.formfield :field="form.weight" />
+          <c-atoms.forms.formfield :field="form.weight_unit" />
+          <c-atoms.forms.formfield :field="form.species" />
+          <c-atoms.forms.formfield :field="form.variety" />
+          <c-atoms.forms.formfield :field="form.origin" />
+          <c-atoms.forms.formfield :field="form.shape_cut" />
+          <c-atoms.forms.formfield :field="form.color" />
+          <c-atoms.forms.formfield :field="form.transparency" />
+          <c-atoms.forms.formfield :field="form.treatment" />
+          <c-atoms.forms.formfield :field="form.optic_character" />
+          <c-atoms.forms.formfield :field="form.refractive_index" />
+          <c-atoms.forms.formfield :field="form.specific_gravity" />
+          <c-atoms.forms.formfield :field="form.instruments" />
+          <div class="flex items-end pb-1.5">
+            <label class="inline-flex items-center gap-2 text-sm text-gray-700">{{ form.is_polished }} {{ form.is_polished.label }}</label>
+          </div>
+        </div>
+        <div class="mt-4"><c-atoms.forms.formfield :field="form.conclusion" /></div>
+      </c-atoms.ui.card>
+      <div class="flex justify-end gap-2">
+        <a href="{% url 'identification:findings' %}"><c-atoms.ui.button type="button" variant="secondary">Cancel</c-atoms.ui.button></a>
+        <c-atoms.ui.button type="submit" variant="primary">Save findings</c-atoms.ui.button>
+      </div>
+    </form>
+
+    {% if report %}
+      <c-atoms.ui.card title="Finalize">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <span class="text-sm text-gray-600">When the findings are complete, finalize the report to lock it and enable certification.</span>
+          <c-atoms.ui.button variant="primary" size="sm" onclick="window.dispatchEvent(new CustomEvent('open-finalize'))">Finalize report</c-atoms.ui.button>
+        </div>
+      </c-atoms.ui.card>
+
+      <c-atoms.ui.modal id="finalize" title="Finalize report?">
+        Finalizing <span class="font-medium text-gray-900">{{ report.report_number }}</span> locks it — findings can no longer be edited.
+        <c-slot name="footer">
+          <c-atoms.ui.button type="button" variant="secondary" size="sm" x-on:click="open = false">Cancel</c-atoms.ui.button>
+          <form method="post" action="{% url 'identification:finalize' report.pk %}">
+            {% csrf_token %}
+            <c-atoms.ui.button type="submit" variant="primary" size="sm">Finalize</c-atoms.ui.button>
+          </form>
+        </c-slot>
+      </c-atoms.ui.modal>
+    {% endif %}
+  </div>
+</c-layouts.app>

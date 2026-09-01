@@ -8,7 +8,8 @@ app_name = "identification"
 
 urlpatterns = [
     path("", views.WorklistView.as_view(), name="index"),
-    path("<int:order_pk>/", views.order_identify, name="order"),
-    path("stone/<int:pk>/edit/", views.stone_edit, name="edit"),
+    path("findings/", views.FindingsWorklistView.as_view(), name="findings"),
+    path("findings/<int:pk>/", views.stone_findings, name="findings_stone"),
     path("report/<int:pk>/finalize/", views.finalize, name="finalize"),
+    path("<int:order_pk>/", views.order_identify, name="order"),
 ]

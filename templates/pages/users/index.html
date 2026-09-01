@@ -1,4 +1,4 @@
-<c-layouts.app title="Users">
+<c-layouts.app title="Users" search_placeholder="Search name, username, email, role, status…">
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-semibold text-gray-900">Users</h2>
@@ -11,18 +11,8 @@
       {% endif %}
     </div>
 
-    <form method="get" class="flex flex-wrap items-center gap-2">
-      <c-atoms.forms.input name="q" value="{{ query }}" placeholder="Search name, username, email…" />
-      <c-atoms.forms.select name="status" search="false">
-        <option value="">All statuses</option>
-        <option value="active" {% if status == 'active' %}selected{% endif %}>Active</option>
-        <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactive</option>
-      </c-atoms.forms.select>
-      <c-atoms.ui.button type="submit" variant="secondary">Filter</c-atoms.ui.button>
-    </form>
-
     <c-sections.table :headers="['User', 'Email', 'Roles', 'Status', 'Last login']"
-      :count="users|length" empty="No users found.">
+      count="{{ users|length }}" empty="No users found.">
       {% for u in users %}
         <c-sections.table.row href="{% url 'users:detail' u.pk %}" :actions="u.row_actions">
           <td class="px-6 py-3">

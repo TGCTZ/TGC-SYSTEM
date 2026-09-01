@@ -1,11 +1,5 @@
 <c-layouts.app title="New order">
   <div class="mx-auto max-w-3xl space-y-6">
-    <c-atoms.ui.breadcrumb>
-      <li><a href="{% url 'orders:index' %}" class="hover:text-gray-700">Orders</a></li>
-      <li><c-atoms.ui.icon name="lucide:chevron-right" size="sm" /></li>
-      <li class="font-medium text-gray-700">New order</li>
-    </c-atoms.ui.breadcrumb>
-
     <form method="post" action="{% url 'orders:create' %}" class="space-y-8">
       {% csrf_token %}
       {% if form.non_field_errors %}

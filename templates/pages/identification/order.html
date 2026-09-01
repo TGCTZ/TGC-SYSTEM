@@ -1,76 +1,38 @@
 <c-layouts.app title="Identify · {{ order.reference_no }}">
-  <div class="mx-auto max-w-4xl space-y-6">
-    <c-atoms.ui.breadcrumb>
-      <li><a href="{% url 'identification:index' %}" class="hover:text-gray-700">Identification</a></li>
-      <li><c-atoms.ui.icon name="lucide:chevron-right" size="sm" /></li>
-      <li class="font-medium text-gray-700">{{ order.reference_no }}</li>
-    </c-atoms.ui.breadcrumb>
-
+  <div class="mx-auto max-w-3xl space-y-6">
     <div>
       <h2 class="text-xl font-semibold text-gray-900">{{ order.reference_no }}</h2>
-      <p class="text-sm text-gray-500">{{ order.customer.full_name }} · {{ order.stones.count }} of {{ order.stone_count }} registered</p>
+      <p class="text-sm text-gray-500">{{ order.customer.full_name }} · {{ order.stones.count }} of {{ order.stone_count }} identified</p>
     </div>
 
-    {# Registered stones #}
-    <c-sections.table :headers="['Label', 'Type', 'Weight', 'Report', 'Status', '']"
-      :count="order.stones.count" empty="No stones registered yet." actions="false">
+    {# Identified stones (type assigned; findings recorded after payment) #}
+    <c-sections.table :headers="['Label', 'Type']"
+      count="{{ order.stones.count }}" empty="No stones identified yet." actions="false">
       {% for stone in order.stones.all %}
-        <tr {% if stone.report and not stone.report.is_finalized %}data-href="{% url 'identification:edit' stone.pk %}" class="hover:bg-blue-50/60"{% endif %}>
+        <tr class="transition-colors hover:bg-blue-100/70">
           <td class="px-6 py-3 font-medium">{{ stone.label }}</td>
           <td class="px-6 py-3">{{ stone.stone_type.name }}</td>
-          <td class="px-6 py-3">{{ stone.weight }} {{ stone.weight_unit }}</td>
-          <td class="px-6 py-3">{% if stone.report %}{{ stone.report.report_number }}{% else %}—{% endif %}</td>
-          <td class="px-6 py-3">
-            {% if not stone.report %}
-              <c-atoms.ui.badge>Registered</c-atoms.ui.badge>
-            {% elif stone.report.is_finalized %}
-              <c-atoms.ui.badge variant="success" dot="true">Finalized</c-atoms.ui.badge>
-            {% else %}
-              <c-atoms.ui.badge variant="warning" dot="true">Draft</c-atoms.ui.badge>
-            {% endif %}
-          </td>
-          <td class="px-6 py-3">
-            {% if stone.report and not stone.report.is_finalized %}
-              <div class="flex items-center justify-end gap-2">
-                <a href="{% url 'identification:edit' stone.pk %}"><c-atoms.ui.button variant="outline" size="sm">Edit</c-atoms.ui.button></a>
-                <c-atoms.ui.button variant="primary" size="sm" onclick="window.dispatchEvent(new CustomEvent('open-finalize-{{ stone.pk }}'))">Finalize</c-atoms.ui.button>
-              </div>
-
-              <c-atoms.ui.modal id="finalize-{{ stone.pk }}" title="Finalize report?">
-                Finalizing <span class="font-medium text-gray-900">{{ stone.report.report_number }}</span> locks it — the report can no longer be edited.
-                <c-slot name="footer">
-                  <c-atoms.ui.button type="button" variant="secondary" size="sm" x-on:click="open = false">Cancel</c-atoms.ui.button>
-                  <form method="post" action="{% url 'identification:finalize' stone.report.pk %}">
-                    {% csrf_token %}
-                    <c-atoms.ui.button type="submit" variant="primary" size="sm">Finalize</c-atoms.ui.button>
-                  </form>
-                </c-slot>
-              </c-atoms.ui.modal>
-            {% endif %}
-          </td>
         </tr>
       {% endfor %}
     </c-sections.table>
 
-    {# Identify next stone #}
     {% if order.stones.count < order.stone_count %}
-      <form method="post" action="{% url 'identification:order' order.pk %}" class="space-y-6">
+      <form method="post" class="space-y-4">
         {% csrf_token %}
         {% if form.non_field_errors %}
           <c-atoms.ui.alert variant="danger">{{ form.non_field_errors|join:", " }}</c-atoms.ui.alert>
         {% endif %}
-
-        <c-atoms.ui.card title="Register &amp; identify a stone">
-          {% include "pages/identification/_fields.html" %}
+        <c-atoms.ui.card title="Identify stone — assign type">
+          <div class="max-w-sm"><c-atoms.forms.formfield :field="form.stone_type" /></div>
+          <p class="mt-2 text-xs text-gray-500">Weight and the full findings are recorded after payment.</p>
         </c-atoms.ui.card>
-
         <div class="flex justify-end">
-          <c-atoms.ui.button type="submit" variant="primary">Save identification</c-atoms.ui.button>
+          <c-atoms.ui.button type="submit" variant="primary">Identify stone</c-atoms.ui.button>
         </div>
       </form>
     {% else %}
-      <c-atoms.ui.alert variant="success" title="All stones registered">
-        Finalize any remaining draft reports above to complete this order.
+      <c-atoms.ui.alert variant="success" title="All stones identified">
+        This order is ready for billing — generate a bill so the customer can pay, then record the findings.
       </c-atoms.ui.alert>
     {% endif %}
   </div>

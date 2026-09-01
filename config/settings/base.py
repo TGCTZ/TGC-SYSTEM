@@ -49,15 +49,14 @@ THIRD_PARTY_APPS: list[str] = [
 
 # Local apps, ordered by dependency layer (low -> high). See docs/conventions.md.
 LOCAL_APPS = [
-    "apps.core",       # L1 — shared base models, reference data, utils
-    "apps.accounts",   # L2 — custom user, roles, permissions
-    "apps.orders",     # L3 — customers, orders, stones
+    "apps.core",  # L1 — shared base models, reference data, utils
+    "apps.accounts",  # L2 — custom user, roles, permissions
+    "apps.orders",  # L3 — customers, orders, stones
     "apps.identification",  # L3 — identification reports
-    "apps.production",      # L3 — sonara, carving, lapidary
-    "apps.billing",         # L3 — bills, payments, GePG
-    "apps.certificates",    # L3 — certificates, verification
-    "apps.dashboard",       # L4 — shell, nav, styleguide
-    "apps.adminpanel",      # L4 — generic back-office at /manage/
+    "apps.billing",  # L3 — bills, payments, GePG
+    "apps.certificates",  # L3 — certificates, verification
+    "apps.dashboard",  # L4 — shell, nav, styleguide
+    "apps.adminpanel",  # L4 — generic back-office at /manage/
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -125,7 +124,9 @@ DATABASES = {
 AUTH_USER_MODEL = "accounts.User"  # custom user model, set on day one
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -197,3 +198,7 @@ GEPG_PUBLIC_CERT_PATH = config(
 
 # Bill defaults
 GEPG_BILL_EXPIRY_DAYS = config("GEPG_BILL_EXPIRY_DAYS", default=365, cast=int)
+
+# Development-only: skip the real GePG bill submission and return an instant
+# simulated control number (see apps.billing.gateways.gepg.submit_bill).
+GEPG_SIMULATE = config("GEPG_SIMULATE", default=False, cast=bool)

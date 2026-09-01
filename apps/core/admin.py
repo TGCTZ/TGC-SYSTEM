@@ -77,8 +77,7 @@ class VarietyAdmin(ReferenceAdmin):
 class StonePriceAdmin(BaseModelAdmin):
     """Admin for stone prices."""
 
-    list_display = ("stone_type", "price_per_unit", "unit", "is_active", "deleted_at")
-    list_filter = ("unit", "is_active")
+    list_display = ("stone_type", "price", "deleted_at")
     search_fields = ("stone_type__name",)
     list_select_related = ("stone_type",)
 

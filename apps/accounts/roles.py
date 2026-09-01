@@ -8,7 +8,6 @@ labels it grants, and is the version-controlled source of truth applied by the
 # Role (Group) names.
 RECEPTIONIST = "receptionist"
 GEMMOLOGIST = "gemmologist"
-PRODUCTION = "production"
 ACCOUNTANT = "accountant"
 ADMINISTRATOR = "administrator"
 
@@ -25,46 +24,64 @@ _REFERENCE_VIEW = [
 # Full CRUD on reference data + pricing, for the administrator.
 _REFERENCE_MANAGE = [
     f"core.{action}_{model}"
-    for model in
-    ("stonetype", "species", "variety", "origin", "shapecut", "instrument",
-     "stoneprice")
+    for model in (
+        "stonetype",
+        "species",
+        "variety",
+        "origin",
+        "shapecut",
+        "instrument",
+        "stoneprice",
+    )
     for action in ("add", "change", "delete", "view")
 ]
 
 ROLE_PERMISSIONS: dict[str, list[str]] = {
     RECEPTIONIST: [
-        "orders.add_customer", "orders.change_customer", "orders.view_customer",
-        "orders.add_order", "orders.view_order",
-        "orders.add_stone", "orders.view_stone", "orders.transition_stone",
+        "orders.add_customer",
+        "orders.change_customer",
+        "orders.view_customer",
+        "orders.add_order",
+        "orders.view_order",
+        "orders.add_stone",
+        "orders.view_stone",
+        "orders.transition_stone",
         "certificates.view_certificate",
     ],
     GEMMOLOGIST: [
-        "orders.view_stone", "orders.transition_stone",
+        "orders.view_stone",
+        "orders.transition_stone",
         "identification.add_identificationreport",
         "identification.change_identificationreport",
         "identification.view_identificationreport",
         "identification.finalize_report",
-        "certificates.view_certificate", "certificates.issue_certificate",
+        "certificates.view_certificate",
+        "certificates.issue_certificate",
         *_REFERENCE_VIEW,
     ],
-    PRODUCTION: [
-        "orders.view_stone", "orders.transition_stone",
-        "production.add_production", "production.change_production",
-        "production.view_production", "production.record_qa",
-    ],
     ACCOUNTANT: [
-        "orders.view_order", "orders.view_stone",
-        "billing.view_bill", "billing.generate_bill", "billing.view_payment",
+        "orders.view_order",
+        "orders.view_stone",
+        "billing.view_bill",
+        "billing.generate_bill",
+        "billing.view_payment",
     ],
     ADMINISTRATOR: [
         *_REFERENCE_MANAGE,
-        "accounts.add_user", "accounts.change_user", "accounts.view_user",
+        "accounts.add_user",
+        "accounts.change_user",
+        "accounts.view_user",
         "accounts.delete_user",
-        "accounts.verify_user", "accounts.approve_user",
+        "accounts.verify_user",
+        "accounts.approve_user",
         # Roles & permissions portal (Groups) at /manage/roles/.
-        "auth.view_group", "auth.add_group", "auth.change_group", "auth.delete_group",
+        "auth.view_group",
+        "auth.add_group",
+        "auth.change_group",
+        "auth.delete_group",
         # Certificates.
-        "certificates.view_certificate", "certificates.issue_certificate",
+        "certificates.view_certificate",
+        "certificates.issue_certificate",
         "certificates.revoke_certificate",
     ],
 }

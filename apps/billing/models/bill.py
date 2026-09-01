@@ -18,7 +18,11 @@ class Bill(BaseModel):
     bill_number = models.CharField(max_length=50)
     control_number = models.CharField(max_length=50, blank=True, default="")
     service_provider = models.ForeignKey(
-        ServiceProvider, on_delete=models.PROTECT, null=True, blank=True, related_name="bills"
+        ServiceProvider,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="bills",
     )
     total_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
     currency = models.CharField(max_length=3, default="TZS")
@@ -66,7 +70,7 @@ class BillItem(BaseModel):
     )
     description = models.CharField(max_length=255)
     unit_price = models.DecimalField(max_digits=15, decimal_places=2)
-    weight = models.DecimalField(max_digits=10, decimal_places=3)
+    weight = models.DecimalField(max_digits=10, decimal_places=3, null=True, blank=True)
     amount = models.DecimalField(max_digits=15, decimal_places=2)
     gfs_code = models.CharField(max_length=20, blank=True, default="")
     item_ref = models.CharField(max_length=50, blank=True, default="")
@@ -97,8 +101,12 @@ class Payment(BaseModel):
     psp_name = models.CharField(max_length=200, blank=True, default="")
     trx_id = models.CharField(max_length=100, blank=True, default="")
     pay_ref_id = models.CharField(max_length=100, blank=True, default="")
-    bill_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
-    paid_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    bill_amount = models.DecimalField(
+        max_digits=15, decimal_places=2, null=True, blank=True
+    )
+    paid_amount = models.DecimalField(
+        max_digits=15, decimal_places=2, null=True, blank=True
+    )
     bill_pay_opt = models.CharField(max_length=1, blank=True, default="")
     currency = models.CharField(max_length=3, blank=True, default="")
     coll_acc_num = models.CharField(max_length=50, blank=True, default="")

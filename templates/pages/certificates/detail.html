@@ -1,17 +1,14 @@
 <c-layouts.app title="Certificate {{ certificate.certificate_no }}">
   <div class="space-y-6">
-    <c-atoms.ui.breadcrumb>
-      <li><a href="{% url 'certificates:index' %}" class="hover:text-gray-700">Certificates</a></li>
-      <li><c-atoms.ui.icon name="lucide:chevron-right" size="sm" /></li>
-      <li class="font-medium text-gray-700">{{ certificate.certificate_no }}</li>
-    </c-atoms.ui.breadcrumb>
-
     <div class="flex items-center justify-between">
       <div>
         <h2 class="text-xl font-semibold text-gray-900">{{ certificate.certificate_no }}</h2>
         <p class="text-sm text-gray-500">Stone {{ certificate.stone.label }} · {{ certificate.stone.order.reference_no }} · {{ certificate.stone.order.customer.full_name }}</p>
       </div>
       <div class="flex items-center gap-3">
+        <a href="{% url 'certificates:print' certificate.pk %}" target="_blank" rel="noopener">
+          <c-atoms.ui.button variant="outline" size="sm"><c-atoms.ui.icon name="lucide:printer" size="sm" /> Certificate document</c-atoms.ui.button>
+        </a>
         <c-atoms.ui.badge variant="{{ status_variant }}" dot="true">{{ certificate.get_status_display }}</c-atoms.ui.badge>
         {% if can_revoke %}
           <c-atoms.ui.button variant="danger" size="sm" onclick="window.dispatchEvent(new CustomEvent('open-revoke'))">Revoke</c-atoms.ui.button>

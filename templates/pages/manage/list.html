@@ -1,4 +1,4 @@
-<c-layouts.app title="{{ panel.verbose_name_plural }}">
+<c-layouts.app title="{{ panel.verbose_name_plural }}" search_placeholder="Search {{ panel.verbose_name_plural|lower }}…">
   <div class="space-y-6">
 
     <div class="flex items-center justify-between">
@@ -9,23 +9,6 @@
         </a>
       {% endif %}
     </div>
-
-    {% if panel.search_fields or filters %}
-      <form method="get" class="flex flex-wrap items-center gap-2">
-        {% if panel.search_fields %}
-          <c-atoms.forms.input name="q" value="{{ query }}" placeholder="Search…" />
-        {% endif %}
-        {% for filter in filters %}
-          <c-atoms.forms.select name="{{ filter.name }}" search="false">
-            <option value="">{{ filter.label }}: all</option>
-            {% for value, label in filter.options %}
-              <option value="{{ value }}" {% if filter.current == value %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </c-atoms.forms.select>
-        {% endfor %}
-        <c-atoms.ui.button type="submit" variant="secondary">Apply</c-atoms.ui.button>
-      </form>
-    {% endif %}
 
     {% if rows %}
       <div class="w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">

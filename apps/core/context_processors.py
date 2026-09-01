@@ -7,6 +7,10 @@ from django.urls import NoReverseMatch, reverse
 
 # URL namespace -> (breadcrumb label, index url name) for the section trail.
 _SECTIONS = {
+    "orders": ("Orders", "orders:index"),
+    "identification": ("Identification", "identification:index"),
+    "billing": ("Bills", "billing:index"),
+    "certificates": ("Certificates", "certificates:index"),
     "users": ("Users", "users:index"),
     "manage": ("Manage", "manage:index"),
 }

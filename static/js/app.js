@@ -7,7 +7,12 @@
   function initSelects(root) {
     if (!window.TomSelect || !root.querySelectorAll) return;
     root.querySelectorAll("select[data-search]:not(.tomselected)").forEach(function (el) {
-      new TomSelect(el, { allowEmptyOption: true, maxOptions: null });
+      // dropdownParent: body so the menu escapes overflow-hidden cards/tables.
+      new TomSelect(el, {
+        allowEmptyOption: true,
+        maxOptions: null,
+        dropdownParent: "body",
+      });
     });
   }
 

@@ -1,8 +1,9 @@
 """Factories for billing."""
 
 import factory
-from django.utils import timezone
 from factory.fuzzy import FuzzyDecimal
+
+from django.utils import timezone
 
 from apps.billing.models import Bill, BillItem, Payment, ServiceProvider
 from apps.orders.tests.factories import OrderFactory, StoneFactory
@@ -38,9 +39,8 @@ class BillItemFactory(factory.django.DjangoModelFactory):
     bill = factory.SubFactory(BillFactory)
     stone = factory.SubFactory(StoneFactory)
     description = factory.Faker("sentence", nb_words=4)
-    unit_price = FuzzyDecimal(50_000, 1_000_000)
-    weight = FuzzyDecimal(0.5, 50, precision=3)
-    amount = FuzzyDecimal(100_000, 5_000_000)
+    unit_price = FuzzyDecimal(10_000, 40_000)
+    amount = FuzzyDecimal(10_000, 40_000)
 
 
 class PaymentFactory(factory.django.DjangoModelFactory):

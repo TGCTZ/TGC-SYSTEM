@@ -3,20 +3,18 @@
 from django.db import transaction
 from django.utils import timezone
 
-from apps.core.enums import StoneStatus
 from apps.core.exceptions import ServiceError
 from apps.core.services import generate_reference_number
-from apps.orders.services import transition_stone
 
 from .models import IdentificationReport
 
 
 @transaction.atomic
 def create_report(*, stone, user=None, **fields) -> IdentificationReport:
-    """Create a report for a stone and move it to under-identification.
+    """Create an identification report for a stone.
 
-    Extra keyword fields (species, color, refractive_index, …) are set on the
-    report as given.
+    Recorded after payment, so the stone's status is left unchanged. Extra keyword
+    fields (species, color, refractive_index, …) are set on the report as given.
     """
     report = IdentificationReport(
         stone=stone,
@@ -29,14 +27,13 @@ def create_report(*, stone, user=None, **fields) -> IdentificationReport:
         report.created_by = user
         report.identified_by = user
     report.save()
-    transition_stone(
-        stone, StoneStatus.UNDER_IDENTIFICATION, user=user, note="Sent to identification"
-    )
     return report
 
 
 @transaction.atomic
-def update_report(report: IdentificationReport, *, user=None, **fields) -> IdentificationReport:
+def update_report(
+    report: IdentificationReport, *, user=None, **fields
+) -> IdentificationReport:
     """Update a report's findings. Refuses once the report is finalized (C4)."""
     if report.is_finalized:
         raise ServiceError("A finalized report cannot be edited.")
@@ -59,7 +56,11 @@ def finalize_report(report: IdentificationReport, *, user=None) -> Identificatio
         report.updated_by = user
     report.save(
         update_fields=[
-            "is_finalized", "identified_at", "identified_by", "updated_at", "updated_by"
+            "is_finalized",
+            "identified_at",
+            "identified_by",
+            "updated_at",
+            "updated_by",
         ]
     )
     return report

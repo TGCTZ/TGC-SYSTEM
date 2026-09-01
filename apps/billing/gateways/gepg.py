@@ -5,6 +5,7 @@ Isolates the GePG wire format (XML, HTTP, status codes) from the service layer.
 
 import logging
 import re
+import secrets
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from decimal import ROUND_HALF_UP, Decimal
@@ -154,6 +155,11 @@ def submit_bill(bill, customer, username: str = "System") -> dict:
     Result keys: success, control_number, status_code, status_desc, is_sync,
     raw_response.
     """
+    if getattr(settings, "GEPG_SIMULATE", False):
+        # Development: skip the network and return an instant control number.
+        control_number = f"99{secrets.randbelow(10**10):010d}"
+        return _result(True, control_number, "7101", "Simulated (dev)", True, None)
+
     xml_payload = sign_if_enabled(build_bill_xml(bill, customer, username))
     try:
         response = requests.post(
@@ -201,10 +207,14 @@ def _parse_bill_response(raw: str) -> dict:
         desc = ack.findtext("AckStsDesc", "")
         if code in ACK_SUCCESS:
             # Acknowledged; control number will arrive via callback.
-            return _result(True, "PENDING", code, desc or "Awaiting control number", False, raw)
+            return _result(
+                True, "PENDING", code, desc or "Awaiting control number", False, raw
+            )
         return _result(False, None, code, desc or "Rejected by GePG", False, raw)
 
-    return _result(False, None, "UNKNOWN_RESPONSE", "Unrecognised GePG response", False, raw)
+    return _result(
+        False, None, "UNKNOWN_RESPONSE", "Unrecognised GePG response", False, raw
+    )
 
 
 def _result(success, control_number, status_code, status_desc, is_sync, raw) -> dict:

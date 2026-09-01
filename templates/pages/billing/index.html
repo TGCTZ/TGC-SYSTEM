@@ -1,5 +1,5 @@
 {% load humanize %}
-<c-layouts.app title="Bills">
+<c-layouts.app title="Bills" search_placeholder="Search bills, customer, status…">
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-semibold text-gray-900">Bills</h2>
@@ -15,19 +15,8 @@
       </div>
     </div>
 
-    <form method="get" class="flex flex-wrap items-center gap-2">
-      <c-atoms.forms.input name="q" value="{{ query }}" placeholder="Search bill, control no, customer…" />
-      <c-atoms.forms.select name="status" search="false">
-        <option value="">All statuses</option>
-        {% for value, label in statuses %}
-          <option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-      </c-atoms.forms.select>
-      <c-atoms.ui.button type="submit" variant="secondary">Filter</c-atoms.ui.button>
-    </form>
-
     <c-sections.table :headers="['Bill', 'Customer', 'Total', 'Status', 'Control no', 'Issued']"
-      :count="bills|length" empty="No bills found.">
+      count="{{ bills|length }}" empty="No bills found.">
       {% for bill in bills %}
         <c-sections.table.row href="{% url 'billing:detail' bill.pk %}" :actions="bill.row_actions">
           <td class="px-6 py-3">

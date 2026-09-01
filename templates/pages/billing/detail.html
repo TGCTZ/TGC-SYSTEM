@@ -1,12 +1,6 @@
 {% load humanize %}
 <c-layouts.app title="Bill {{ bill.bill_number }}">
   <div class="space-y-6">
-    <c-atoms.ui.breadcrumb>
-      <li><a href="{% url 'billing:index' %}" class="hover:text-gray-700">Bills</a></li>
-      <li><c-atoms.ui.icon name="lucide:chevron-right" size="sm" /></li>
-      <li class="font-medium text-gray-700">{{ bill.bill_number }}</li>
-    </c-atoms.ui.breadcrumb>
-
     <div class="flex items-center justify-between">
       <div>
         <h2 class="text-xl font-semibold text-gray-900">{{ bill.bill_number }}</h2>
@@ -40,19 +34,17 @@
 
     <div class="space-y-3">
       <p class="text-sm font-medium text-gray-700">Line items</p>
-      <c-sections.table :headers="['Label', 'Type', 'Weight', 'Unit price', 'Amount']"
-        :count="items|length" empty="No items." actions="false">
+      <c-sections.table :headers="['Label', 'Type', 'Amount']"
+        count="{{ items|length }}" empty="No items." actions="false">
         {% for item in items %}
           <tr class="transition-colors hover:bg-blue-100/70">
             <td class="px-6 py-3 font-medium">{{ item.stone.label }}</td>
             <td class="px-6 py-3">{{ item.stone.stone_type.name }}</td>
-            <td class="px-6 py-3 tabular-nums">{{ item.weight }} {{ item.stone.weight_unit }}</td>
-            <td class="px-6 py-3 tabular-nums">{{ item.unit_price|floatformat:2|intcomma }}</td>
             <td class="px-6 py-3 tabular-nums">{{ item.amount|floatformat:2|intcomma }}</td>
           </tr>
         {% endfor %}
         <tr class="border-t-2 border-gray-200 bg-gray-50/60 font-semibold text-gray-900">
-          <td class="px-6 py-3 text-right" colspan="4">Total</td>
+          <td class="px-6 py-3 text-right" colspan="2">Total</td>
           <td class="px-6 py-3 tabular-nums">{{ bill.total_amount|floatformat:2|intcomma }} {{ bill.currency }}</td>
         </tr>
       </c-sections.table>

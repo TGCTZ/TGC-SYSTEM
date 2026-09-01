@@ -1,11 +1,5 @@
 <c-layouts.app title="Order {{ order.reference_no }}">
   <div class="space-y-6">
-    <c-atoms.ui.breadcrumb>
-      <li><a href="{% url 'orders:index' %}" class="hover:text-gray-700">Orders</a></li>
-      <li><c-atoms.ui.icon name="lucide:chevron-right" size="sm" /></li>
-      <li class="font-medium text-gray-700">{{ order.reference_no }}</li>
-    </c-atoms.ui.breadcrumb>
-
     <div class="grid gap-4 lg:grid-cols-3">
       <c-atoms.ui.card title="Customer">
         <p class="font-medium text-gray-900">{{ order.customer.full_name }}</p>

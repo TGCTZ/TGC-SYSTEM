@@ -17,8 +17,10 @@ class Stone(BaseModel):
     stone_type = models.ForeignKey(
         "core.StoneType", on_delete=models.PROTECT, related_name="stones"
     )
-    weight = models.DecimalField(max_digits=10, decimal_places=3)
-    weight_unit = models.CharField(max_length=10, choices=WeightUnit.choices)
+    weight = models.DecimalField(max_digits=10, decimal_places=3, null=True, blank=True)
+    weight_unit = models.CharField(
+        max_length=10, choices=WeightUnit.choices, default=WeightUnit.CARAT
+    )
     status = models.CharField(
         max_length=20, choices=StoneStatus.choices, default=StoneStatus.RECEIVED
     )

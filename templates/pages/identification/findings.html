@@ -1,0 +1,27 @@
+<c-layouts.app title="Findings" search_placeholder="Search reference, customer, label, type…">
+  <div class="space-y-6">
+    <div>
+      <h2 class="text-xl font-semibold text-gray-900">Findings worklist</h2>
+      <p class="text-sm text-gray-500">Paid stones awaiting their gemmological findings.</p>
+    </div>
+
+    <c-sections.table :headers="['Order', 'Customer', 'Label', 'Type', '']"
+      count="{{ stones|length }}" empty="No stones awaiting findings." actions="false">
+      {% for stone in stones %}
+        <tr class="transition-colors hover:bg-blue-100/70" data-href="{% url 'identification:findings_stone' stone.pk %}">
+          <td class="px-6 py-3 font-medium">{{ stone.order.reference_no }}</td>
+          <td class="px-6 py-3">{{ stone.order.customer.full_name }}</td>
+          <td class="px-6 py-3">{{ stone.label }}</td>
+          <td class="px-6 py-3">{{ stone.stone_type.name }}</td>
+          <td class="px-6 py-3">
+            <div class="flex justify-end">
+              <a href="{% url 'identification:findings_stone' stone.pk %}"><c-atoms.ui.button variant="primary" size="sm">Record findings</c-atoms.ui.button></a>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </c-sections.table>
+
+    <c-atoms.ui.pagination :page_obj="page_obj" />
+  </div>
+</c-layouts.app>

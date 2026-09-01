@@ -1,6 +1,6 @@
 """Local development settings."""
 
-from .base import *  # noqa: F403
+from .base import *
 
 DEBUG = True
 
@@ -8,3 +8,6 @@ DEBUG = True
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 INTERNAL_IPS = ["127.0.0.1"]
+
+# Skip the real GePG bill submission in dev — return an instant control number.
+GEPG_SIMULATE = config("GEPG_SIMULATE", default=True, cast=bool)

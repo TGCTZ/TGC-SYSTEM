@@ -88,3 +88,12 @@ def test_public_verify_logs_access(client, django_user_model, priced_stone_type)
 def test_verify_unknown_token(client):
     resp = client.get("/certificates/verify/not-a-real-token/", SERVER_NAME="localhost")
     assert resp.status_code == 200
+
+
+def test_certificate_document_renders(client, django_user_model, priced_stone_type):
+    su = _superuser(django_user_model)
+    cert = issue_certificate(_ready_stone(su, priced_stone_type, "BILL-CV-4"), user=su)
+    client.force_login(su)
+    resp = client.get(f"/certificates/{cert.pk}/print/", SERVER_NAME="localhost")
+    assert resp.status_code == 200
+    assert b"GEMSTONE IDENTIFICATION REPORT" in resp.content

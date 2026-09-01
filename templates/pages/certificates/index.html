@@ -1,4 +1,4 @@
-<c-layouts.app title="Certificates">
+<c-layouts.app title="Certificates" search_placeholder="Search certificate, stone, customer, status…">
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-semibold text-gray-900">Certificates</h2>
@@ -9,19 +9,8 @@
       {% endif %}
     </div>
 
-    <form method="get" class="flex flex-wrap items-center gap-2">
-      <c-atoms.forms.input name="q" value="{{ query }}" placeholder="Search certificate, stone, customer…" />
-      <c-atoms.forms.select name="status" search="false">
-        <option value="">All statuses</option>
-        {% for value, label in statuses %}
-          <option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-      </c-atoms.forms.select>
-      <c-atoms.ui.button type="submit" variant="secondary">Filter</c-atoms.ui.button>
-    </form>
-
     <c-sections.table :headers="['Certificate', 'Stone', 'Customer', 'Status', 'Issued']"
-      :count="certificates|length" empty="No certificates found.">
+      count="{{ certificates|length }}" empty="No certificates found.">
       {% for cert in certificates %}
         <c-sections.table.row href="{% url 'certificates:detail' cert.pk %}" :actions="cert.row_actions">
           <td class="px-6 py-3">

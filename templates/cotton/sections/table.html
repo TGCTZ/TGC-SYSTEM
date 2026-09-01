@@ -1,13 +1,14 @@
-<!-- Table: headers=list, count (optional; 0 shows empty state), empty text,
+<!-- Table: headers=list, count (optional; 0 shows the empty state), empty text,
      loading=bool. Rows go in the slot as table.row components. A trailing actions
-     column header is added by default; pass actions="false" to omit it. -->
+     column header is added by default; pass actions="false" to omit it.
+     Pass count as a string ("{{ items|length }}") so a zero survives cotton binding. -->
 <c-vars headers="" count="" empty="No data available" loading="false" actions="true" />
 <div class="w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
   {% if loading == 'true' or loading == True %}
     <div class="flex items-center justify-center gap-2 py-10 text-gray-400">
       <c-atoms.ui.spinner /> Loading…
     </div>
-  {% elif count == 0 %}
+  {% elif count == 0 or count == '0' %}
     <div class="flex flex-col items-center gap-2 py-12 text-gray-400">
       <c-atoms.ui.icon name="lucide:inbox" size="lg" />
       <p class="text-sm">{{ empty }}</p>

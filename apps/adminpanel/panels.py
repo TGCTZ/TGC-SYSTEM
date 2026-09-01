@@ -36,7 +36,7 @@ class ModelPanel:
     list_filter: tuple = ()  # fields with choices or boolean → filter dropdowns
     search_fields: tuple = ()  # icontains-OR search
     ordering: tuple | None = None  # default ordering, e.g. ("-created_at",)
-    list_per_page: int = 20
+    list_per_page: int = 5
     form_fields: tuple | None = None  # None → editable non-audit fields
     can_create: bool = True  # False if required fields aren't user-editable
     label: str | None = None  # overrides the singular display name

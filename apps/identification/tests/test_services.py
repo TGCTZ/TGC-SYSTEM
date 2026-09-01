@@ -2,7 +2,6 @@
 
 import pytest
 
-from apps.core.enums import StoneStatus
 from apps.core.exceptions import ServiceError
 from apps.identification.services import create_report, finalize_report
 from apps.orders.tests.factories import StoneFactory
@@ -10,12 +9,14 @@ from apps.orders.tests.factories import StoneFactory
 pytestmark = pytest.mark.django_db
 
 
-def test_create_report_moves_stone(user):
+def test_create_report_leaves_stone_status(user):
     stone = StoneFactory()
+    before = stone.status
     report = create_report(stone=stone, user=user, conclusion="Ruby")
     assert report.report_number.startswith("RPT-")
     stone.refresh_from_db()
-    assert stone.status == StoneStatus.UNDER_IDENTIFICATION
+    # Findings are recorded after payment, so create_report no longer transitions.
+    assert stone.status == before
 
 
 def test_finalize_locks_report(user):

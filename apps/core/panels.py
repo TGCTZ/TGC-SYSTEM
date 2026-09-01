@@ -44,10 +44,9 @@ class VarietyPanel(_ReferencePanel):
 
 
 class StonePricePanel(ModelPanel):
-    """Active price per stone type."""
+    """Fixed price per stone type."""
 
-    list_display = ("stone_type", "price_per_unit", "unit", "is_active")
-    list_filter = ("unit", "is_active")
+    list_display = ("stone_type", "price")
     search_fields = ("stone_type__name",)
     ordering = ("stone_type__name",)
     icon = "lucide:banknote"

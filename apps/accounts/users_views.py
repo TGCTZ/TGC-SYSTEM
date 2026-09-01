@@ -25,29 +25,29 @@ class UserListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = "accounts.view_user"
     template_name = "pages/users/index.html"
     context_object_name = "users"
-    paginate_by = 10
+    paginate_by = 5
 
     def get_queryset(self):
         qs = User.objects.prefetch_related("groups").order_by("username")
         query = self.request.GET.get("q", "").strip()
         if query:
-            qs = qs.filter(
+            cond = (
                 Q(username__icontains=query)
                 | Q(email__icontains=query)
                 | Q(first_name__icontains=query)
                 | Q(last_name__icontains=query)
+                | Q(groups__name__icontains=query)
             )
-        status = self.request.GET.get("status")
-        if status == "active":
-            qs = qs.filter(is_active=True)
-        elif status == "inactive":
-            qs = qs.filter(is_active=False)
+            # Let "active" / "inactive" filter by status too (search doubles as filter).
+            if query.lower() in ("active", "enabled"):
+                cond |= Q(is_active=True)
+            elif query.lower() in ("inactive", "disabled"):
+                cond |= Q(is_active=False)
+            qs = qs.filter(cond).distinct()
         return qs
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["query"] = self.request.GET.get("q", "")
-        ctx["status"] = self.request.GET.get("status", "")
         for user in ctx["users"]:
             user.row_actions = self._actions(user)
         return ctx

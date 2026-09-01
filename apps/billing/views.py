@@ -48,7 +48,7 @@ class BillListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = "billing.view_bill"
     template_name = "pages/billing/index.html"
     context_object_name = "bills"
-    paginate_by = 10
+    paginate_by = 5
 
     def get_queryset(self):
         qs = Bill.objects.select_related("order__customer").order_by("-created_at")
@@ -57,21 +57,16 @@ class BillListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
             qs = qs.filter(
                 Q(bill_number__icontains=query)
                 | Q(control_number__icontains=query)
+                | Q(status__icontains=query)
                 | Q(order__reference_no__icontains=query)
                 | Q(order__customer__first_name__icontains=query)
                 | Q(order__customer__last_name__icontains=query)
                 | Q(order__customer__company_name__icontains=query)
             )
-        status = self.request.GET.get("status")
-        if status:
-            qs = qs.filter(status=status)
         return qs
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["query"] = self.request.GET.get("q", "")
-        ctx["status"] = self.request.GET.get("status", "")
-        ctx["statuses"] = BillStatus.choices
         ctx["can_generate"] = self.request.user.has_perm("billing.generate_bill")
         for bill in ctx["bills"]:
             bill.status_variant = _STATUS_VARIANT.get(bill.status, "warning")
@@ -87,17 +82,26 @@ class BillableOrdersView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = "billing.generate_bill"
     template_name = "pages/billing/worklist.html"
     context_object_name = "orders"
-    paginate_by = 10
+    paginate_by = 5
 
     def get_queryset(self):
-        return (
+        # Billable once every stone is registered and typed (price known);
+        # findings are recorded after payment.
+        qs = (
             Order.objects.select_related("customer")
-            .annotate(
-                finalized=Count("stones", filter=Q(stones__report__is_finalized=True))
-            )
-            .filter(bill__isnull=True, stone_count__gt=0, finalized=F("stone_count"))
+            .annotate(registered=Count("stones"))
+            .filter(bill__isnull=True, stone_count__gt=0, registered=F("stone_count"))
             .order_by("received_date")
         )
+        query = self.request.GET.get("q", "").strip()
+        if query:
+            qs = qs.filter(
+                Q(reference_no__icontains=query)
+                | Q(customer__first_name__icontains=query)
+                | Q(customer__last_name__icontains=query)
+                | Q(customer__company_name__icontains=query)
+            )
+        return qs
 
 
 @login_required
@@ -168,7 +172,7 @@ class PaymentListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = "billing.view_payment"
     template_name = "pages/billing/payments.html"
     context_object_name = "payments"
-    paginate_by = 15
+    paginate_by = 5
 
     def get_queryset(self):
         qs = Payment.objects.select_related("bill").order_by("-trx_dt_tm")

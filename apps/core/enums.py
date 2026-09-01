@@ -8,7 +8,6 @@ class StoneStatus(models.TextChoices):
 
     RECEIVED = ("received", "Received")
     UNDER_IDENTIFICATION = ("under_identification", "Under identification")
-    IN_PRODUCTION = ("in_production", "In production")
     BILLED = ("billed", "Billed")
     PAID = ("paid", "Paid")
     CERTIFIED = ("certified", "Certified")

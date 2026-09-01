@@ -1,14 +1,6 @@
 {% load humanize %}
 <c-layouts.app title="Payment {{ payment.trx_id|default:payment.pk }}">
   <div class="space-y-6">
-    <c-atoms.ui.breadcrumb>
-      <li><a href="{% url 'billing:index' %}" class="hover:text-gray-700">Bills</a></li>
-      <li><c-atoms.ui.icon name="lucide:chevron-right" size="sm" /></li>
-      <li><a href="{% url 'billing:payments' %}" class="hover:text-gray-700">Payments</a></li>
-      <li><c-atoms.ui.icon name="lucide:chevron-right" size="sm" /></li>
-      <li class="font-medium text-gray-700">{{ payment.trx_id|default:"Payment" }}</li>
-    </c-atoms.ui.breadcrumb>
-
     <div class="flex items-center justify-between">
       <div>
         <h2 class="text-xl font-semibold text-gray-900 tabular-nums">{{ payment.paid_amount|floatformat:2|intcomma }} {{ payment.currency }}</h2>

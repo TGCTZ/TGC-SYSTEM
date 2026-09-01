@@ -1,4 +1,4 @@
-<c-layouts.app title="Orders">
+<c-layouts.app title="Orders" search_placeholder="Search reference, customer, phone…">
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-semibold text-gray-900">Orders</h2>
@@ -9,12 +9,7 @@
       </a>
     </div>
 
-    <form method="get" class="flex max-w-md gap-2">
-      <c-atoms.forms.input name="q" value="{{ query }}" placeholder="Search reference, customer, phone…" />
-      <c-atoms.ui.button type="submit" variant="secondary">Search</c-atoms.ui.button>
-    </form>
-
-    <c-sections.table :headers="['Reference', 'Customer', 'Received', 'Stones']" :count="orders|length">
+    <c-sections.table :headers="['Reference', 'Customer', 'Received', 'Stones']" count="{{ orders|length }}">
       {% for order in orders %}
         <c-sections.table.row href="{% url 'orders:detail' order.pk %}" :actions="order.row_actions">
           <td class="px-6 py-3 font-medium">{{ order.reference_no }}</td>
