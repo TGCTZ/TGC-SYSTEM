@@ -19,8 +19,8 @@
                              perm="production.view_production"/>
         <c-atoms.ui.nav-item href="{% url 'billing:index' %}" icon="lucide:banknote"
                              label="Billing" active_when="billing" perm="billing.view_bill"/>
-        <c-atoms.ui.nav-item href="#" icon="lucide:badge-check" label="Certificates"
-                             perm="certificates.view_certificate"/>
+        <c-atoms.ui.nav-item href="{% url 'certificates:index' %}" icon="lucide:badge-check"
+                             label="Certificates" active_when="certificates" perm="certificates.view_certificate"/>
         <c-atoms.ui.nav-item href="{% url 'users:index' %}" icon="lucide:users" label="Users"
                              active_when="users" perm="accounts.view_user"/>
         <c-atoms.ui.nav-item href="{% url 'manage:index' %}" icon="lucide:layout-grid"

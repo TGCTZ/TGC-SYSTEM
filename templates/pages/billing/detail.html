@@ -15,6 +15,18 @@
       <c-atoms.ui.badge variant="{{ status_variant }}" dot="true">{{ bill.get_status_display }}</c-atoms.ui.badge>
     </div>
 
+    {% if can_simulate %}
+      <c-atoms.ui.alert variant="warning" title="Development tools">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <span>Simulate a GePG payment to settle this bill and continue the flow. Dev only — never available in production.</span>
+          <form method="post" action="{% url 'billing:simulate_payment' bill.pk %}">
+            {% csrf_token %}
+            <c-atoms.ui.button type="submit" variant="primary" size="sm">Simulate payment</c-atoms.ui.button>
+          </form>
+        </div>
+      </c-atoms.ui.alert>
+    {% endif %}
+
     <c-atoms.ui.card title="Summary">
       <dl class="grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
         <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">Total</dt><dd class="font-semibold text-gray-900 tabular-nums">{{ bill.total_amount|floatformat:2|intcomma }} {{ bill.currency }}</dd></div>

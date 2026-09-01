@@ -1,0 +1,41 @@
+<c-layouts.app title="Issue certificates">
+  <div class="space-y-6">
+    <c-atoms.ui.breadcrumb>
+      <li><a href="{% url 'certificates:index' %}" class="hover:text-gray-700">Certificates</a></li>
+      <li><c-atoms.ui.icon name="lucide:chevron-right" size="sm" /></li>
+      <li class="font-medium text-gray-700">Issue</li>
+    </c-atoms.ui.breadcrumb>
+
+    <div>
+      <h2 class="text-xl font-semibold text-gray-900">Ready to certify</h2>
+      <p class="text-sm text-gray-500">Stones with a finalized report and a fully paid bill, not yet certified.</p>
+    </div>
+
+    <form method="get" class="flex flex-wrap items-center gap-2">
+      <c-atoms.forms.input name="q" value="{{ query }}" placeholder="Search by customer or order…" />
+      <c-atoms.ui.button type="submit" variant="secondary">Search</c-atoms.ui.button>
+      {% if query %}<a href="{% url 'certificates:worklist' %}"><c-atoms.ui.button type="button" variant="ghost">Clear</c-atoms.ui.button></a>{% endif %}
+    </form>
+
+    <c-sections.table :headers="['Order', 'Customer', 'Label', 'Type', 'Weight', '']"
+      :count="stones|length" empty="Nothing ready to certify." actions="false">
+      {% for stone in stones %}
+        <tr class="transition-colors hover:bg-blue-100/70">
+          <td class="px-6 py-3 font-medium">{{ stone.order.reference_no }}</td>
+          <td class="px-6 py-3">{{ stone.order.customer.full_name }}</td>
+          <td class="px-6 py-3">{{ stone.label }}</td>
+          <td class="px-6 py-3">{{ stone.stone_type.name }}</td>
+          <td class="px-6 py-3">{{ stone.weight }} {{ stone.weight_unit }}</td>
+          <td class="px-6 py-3">
+            <div class="flex justify-end">
+              <form method="post" action="{% url 'certificates:issue' stone.pk %}">
+                {% csrf_token %}
+                <c-atoms.ui.button type="submit" variant="primary" size="sm">Issue certificate</c-atoms.ui.button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </c-sections.table>
+  </div>
+</c-layouts.app>

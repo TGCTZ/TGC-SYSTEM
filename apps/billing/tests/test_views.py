@@ -4,6 +4,8 @@ from decimal import Decimal
 
 import pytest
 
+from django.test import override_settings
+
 from apps.billing import services as billing_services
 from apps.billing.models import Bill, Payment
 from apps.billing.services import generate_bill_for_order
@@ -97,3 +99,41 @@ def test_payment_detail_renders(client, django_user_model):
     client.force_login(_superuser(django_user_model))
     resp = client.get(f"/billing/payments/{payment.pk}/", SERVER_NAME="localhost")
     assert resp.status_code == 200
+
+
+def test_simulate_payment_settles_bill(django_user_model, priced_stone_type, no_gepg):
+    from apps.billing.dev import simulate_payment
+    from apps.billing.enums import BillStatus
+
+    su = _superuser(django_user_model)
+    bill = generate_bill_for_order(_billable_order(su, priced_stone_type), user=su)
+    simulate_payment(bill)
+    bill.refresh_from_db()
+    assert bill.status == BillStatus.PAID
+    assert bill.payments.exists()
+
+
+def test_simulate_view_404_when_not_debug(
+    client, django_user_model, priced_stone_type, no_gepg
+):
+    su = _superuser(django_user_model)
+    bill = generate_bill_for_order(_billable_order(su, priced_stone_type), user=su)
+    client.force_login(su)
+    # config.settings.test has DEBUG = False, so the dev endpoint is hidden.
+    resp = client.post(f"/billing/{bill.pk}/simulate-payment/", SERVER_NAME="localhost")
+    assert resp.status_code == 404
+
+
+@override_settings(DEBUG=True)
+def test_simulate_view_settles_in_debug(
+    client, django_user_model, priced_stone_type, no_gepg
+):
+    from apps.billing.enums import BillStatus
+
+    su = _superuser(django_user_model)
+    bill = generate_bill_for_order(_billable_order(su, priced_stone_type), user=su)
+    client.force_login(su)
+    resp = client.post(f"/billing/{bill.pk}/simulate-payment/", SERVER_NAME="localhost")
+    assert resp.status_code == 302
+    bill.refresh_from_db()
+    assert bill.status == BillStatus.PAID

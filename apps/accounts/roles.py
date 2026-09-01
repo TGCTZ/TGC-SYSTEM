@@ -44,6 +44,7 @@ ROLE_PERMISSIONS: dict[str, list[str]] = {
         "identification.change_identificationreport",
         "identification.view_identificationreport",
         "identification.finalize_report",
+        "certificates.view_certificate", "certificates.issue_certificate",
         *_REFERENCE_VIEW,
     ],
     PRODUCTION: [
@@ -62,5 +63,8 @@ ROLE_PERMISSIONS: dict[str, list[str]] = {
         "accounts.verify_user", "accounts.approve_user",
         # Roles & permissions portal (Groups) at /manage/roles/.
         "auth.view_group", "auth.add_group", "auth.change_group", "auth.delete_group",
+        # Certificates.
+        "certificates.view_certificate", "certificates.issue_certificate",
+        "certificates.revoke_certificate",
     ],
 }

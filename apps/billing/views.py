@@ -4,11 +4,12 @@ GePG inbound webhook endpoints (called by GePG, CSRF-exempt)."""
 import logging
 import xml.etree.ElementTree as ET
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db.models import Count, F, Q, Sum
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
@@ -19,6 +20,7 @@ from apps.core.exceptions import ServiceError
 from apps.core.row_actions import action
 from apps.orders.models import Order
 
+from .dev import simulate_payment as simulate_gepg_payment
 from .enums import BillStatus
 from .models import Bill, Payment
 from .services import (
@@ -140,8 +142,24 @@ def bill_detail(request, pk):
             "items": bill.items.select_related("stone__stone_type").all(),
             "payments": payments,
             "status_variant": _STATUS_VARIANT.get(bill.status, "warning"),
+            "can_simulate": settings.DEBUG and bill.status != BillStatus.PAID,
         },
     )
+
+
+@login_required
+@permission_required("billing.generate_bill", raise_exception=True)
+@require_POST
+def simulate_payment(request, pk):
+    """Dev-only: settle a bill via a simulated GePG payment. Absent in production."""
+    if not settings.DEBUG:
+        raise Http404
+    bill = get_object_or_404(Bill, pk=pk)
+    simulate_gepg_payment(bill)
+    messages.success(
+        request, f"Simulated payment for {bill.bill_number} — bill settled."
+    )
+    return redirect("billing:detail", pk=bill.pk)
 
 
 class PaymentListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):

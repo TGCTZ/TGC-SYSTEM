@@ -1,0 +1,31 @@
+<c-layouts.guest title="Certificate verification">
+  {% if certificate %}
+    <div class="space-y-5">
+      <div class="flex flex-col items-center gap-2 text-center">
+        {% if valid %}
+          <span class="flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-green-600"><c-atoms.ui.icon name="lucide:badge-check" size="lg" /></span>
+          <p class="text-lg font-semibold text-green-700">Valid certificate</p>
+        {% else %}
+          <span class="flex h-14 w-14 items-center justify-center rounded-full bg-red-100 text-red-600"><c-atoms.ui.icon name="lucide:shield-x" size="lg" /></span>
+          <p class="text-lg font-semibold text-red-700">Certificate revoked</p>
+        {% endif %}
+        <p class="font-mono text-sm text-gray-500">{{ certificate.certificate_no }}</p>
+      </div>
+
+      <dl class="space-y-2 border-t border-gray-100 pt-4 text-sm">
+        <div class="flex justify-between gap-4"><dt class="text-gray-500">Stone type</dt><dd class="text-gray-900">{{ certificate.stone_type_snapshot }}</dd></div>
+        <div class="flex justify-between gap-4"><dt class="text-gray-500">Weight</dt><dd class="text-gray-900 tabular-nums">{{ certificate.weight_snapshot }} {{ certificate.stone.weight_unit }}</dd></div>
+        <div class="flex justify-between gap-4"><dt class="text-gray-500">Colour</dt><dd class="text-gray-900">{{ certificate.color_snapshot|default:"—" }}</dd></div>
+        <div class="flex justify-between gap-4"><dt class="text-gray-500">Origin</dt><dd class="text-gray-900">{{ certificate.origin_snapshot|default:"—" }}</dd></div>
+        <div class="flex justify-between gap-4"><dt class="text-gray-500">Gemmologist</dt><dd class="text-gray-900">{{ certificate.gemmologist|default:"—" }}</dd></div>
+        <div class="flex justify-between gap-4"><dt class="text-gray-500">Issued</dt><dd class="text-gray-900">{{ certificate.issued_at|date:"M j, Y" }}</dd></div>
+      </dl>
+    </div>
+  {% else %}
+    <div class="flex flex-col items-center gap-2 py-4 text-center">
+      <span class="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 text-gray-500"><c-atoms.ui.icon name="lucide:file-question" size="lg" /></span>
+      <p class="text-lg font-semibold text-gray-800">Certificate not found</p>
+      <p class="text-sm text-gray-500">This verification link is not valid.</p>
+    </div>
+  {% endif %}
+</c-layouts.guest>

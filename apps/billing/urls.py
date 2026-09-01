@@ -14,6 +14,7 @@ urlpatterns = [
     path("payments/<int:pk>/", views.payment_detail, name="payment_detail"),
     path("orders/<int:order_pk>/generate/", views.generate_bill, name="generate"),
     path("<int:pk>/", views.bill_detail, name="detail"),
+    path("<int:pk>/simulate-payment/", views.simulate_payment, name="simulate_payment"),
     # GePG inbound webhooks
     path(
         "api/payments/notification/",
