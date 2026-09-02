@@ -1,3 +1,4 @@
+{% load static %}
 <c-layouts.base title="Certificate {{ certificate.certificate_no }}">
   <style>
     :root { --ink:#1a1a1a; --line:#111; --muted:#555; --head:#f0f0f0; }
@@ -30,6 +31,8 @@
     .c-badge { width:74px; height:74px; border:1px solid #bbb; border-radius:50%;
       display:flex; align-items:center; justify-content:center; font:600 11px sans-serif; color:#999; }
     .c-badge.right { border-radius:8px; }
+    /* Official emblems: national coat of arms (left) + TGC logo (right). */
+    .c-emblem { width:100%; max-width:84px; height:84px; object-fit:contain; }
     .c-title-block { text-align:center; }
     .c-ministry { font-size:13px; letter-spacing:.04em; }
     .c-centre { font-size:19px; font-weight:700; letter-spacing:.03em; }
@@ -86,13 +89,13 @@
     <div class="cert-doc {% if certificate.status == 'revoked' %}revoked{% endif %}">
 
       <div class="c-header">
-        <div class="c-badge">COA</div>
+        <img class="c-emblem" src="{% static 'src/img/Coat_Of_Arm_TZ.webp' %}" alt="Tanzania Coat of Arms">
         <div class="c-title-block">
           <div class="c-ministry">MINISTRY OF MINERALS</div>
           <div class="c-centre">TANZANIA GEMMOLOGICAL CENTRE</div>
           <div class="c-title">GEMSTONE IDENTIFICATION REPORT</div>
         </div>
-        <div class="c-badge right">TGC</div>
+        <img class="c-emblem" src="{% static 'src/img/TGC-logo.png' %}" alt="TGC logo">
       </div>
 
       <div class="c-infobar">

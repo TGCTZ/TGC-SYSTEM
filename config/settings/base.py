@@ -5,7 +5,7 @@ Environment-specific modules (development, production, test) import everything
 from here and override as needed. Selected via DJANGO_SETTINGS_MODULE.
 
 Secrets and environment-specific values come from environment variables
-(see .env.example). Nothing sensitive is hard-coded here.
+(see .env). Nothing sensitive is hard-coded here.
 """
 
 from pathlib import Path
