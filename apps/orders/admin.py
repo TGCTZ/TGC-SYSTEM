@@ -49,4 +49,11 @@ class StatusHistoryAdmin(admin.ModelAdmin):
 
     list_display = ("stone", "from_status", "to_status", "changed_by", "changed_at")
     list_filter = ("to_status",)
-    readonly_fields = ("stone", "from_status", "to_status", "changed_by", "changed_at", "note")
+    readonly_fields = (
+        "stone",
+        "from_status",
+        "to_status",
+        "changed_by",
+        "changed_at",
+        "note",
+    )

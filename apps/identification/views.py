@@ -29,9 +29,11 @@ _REPORT_FIELDS = (
     "origin",
     "shape_cut",
     "color",
+    "nature_type",
     "transparency",
     "treatment",
     "optic_character",
+    "dimensions",
     "refractive_index",
     "specific_gravity",
     "is_polished",
@@ -177,6 +179,7 @@ def stone_findings(request, pk):
 
 
 def _findings_initial(stone, report):
+    """Seed the findings form from the stone and any draft report already saved."""
     initial = {"weight": stone.weight, "weight_unit": stone.weight_unit}
     if report is not None:
         initial["instruments"] = list(

@@ -23,14 +23,18 @@ def test_create_order_records_count_only(user):
 
 def test_add_stone_creates_received_stone(user, priced_stone_type):
     order = create_order(customer=CustomerFactory(), stone_count=2, user=user)
-    stone = add_stone(order, stone_type=priced_stone_type, weight=Decimal("1.5"), user=user)
+    stone = add_stone(
+        order, stone_type=priced_stone_type, weight=Decimal("1.5"), user=user
+    )
     assert stone.label == "A"
     assert stone.status == StoneStatus.RECEIVED
     assert StatusHistory.objects.filter(
         stone=stone, to_status=StoneStatus.RECEIVED
     ).exists()
     # second stone gets the next label
-    stone_b = add_stone(order, stone_type=priced_stone_type, weight=Decimal("2.0"), user=user)
+    stone_b = add_stone(
+        order, stone_type=priced_stone_type, weight=Decimal("2.0"), user=user
+    )
     assert stone_b.label == "B"
 
 
@@ -43,7 +47,9 @@ def test_add_stone_beyond_count_raises(user, priced_stone_type):
 
 def test_transition_records_history(user, priced_stone_type):
     order = create_order(customer=CustomerFactory(), stone_count=1, user=user)
-    stone = add_stone(order, stone_type=priced_stone_type, weight=Decimal("1"), user=user)
+    stone = add_stone(
+        order, stone_type=priced_stone_type, weight=Decimal("1"), user=user
+    )
     transition_stone(stone, StoneStatus.UNDER_IDENTIFICATION, user=user, note="go")
     stone.refresh_from_db()
     assert stone.status == StoneStatus.UNDER_IDENTIFICATION
@@ -56,7 +62,9 @@ def test_transition_records_history(user, priced_stone_type):
 
 def test_transition_noop_on_same_status(user, priced_stone_type):
     order = create_order(customer=CustomerFactory(), stone_count=1, user=user)
-    stone = add_stone(order, stone_type=priced_stone_type, weight=Decimal("1"), user=user)
+    stone = add_stone(
+        order, stone_type=priced_stone_type, weight=Decimal("1"), user=user
+    )
     before = StatusHistory.objects.filter(stone=stone).count()
     transition_stone(stone, StoneStatus.RECEIVED, user=user)
     assert StatusHistory.objects.filter(stone=stone).count() == before

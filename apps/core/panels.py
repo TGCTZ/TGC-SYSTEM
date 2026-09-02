@@ -2,7 +2,7 @@
 
 Only the simple, safe lookup/reference models are registered here, so the generic
 ``/manage/`` admin can manage them out of the box. Workflow models (orders, stones,
-production, bills) are deliberately left to their bespoke, service-driven flows —
+bills, reports) are deliberately left to their bespoke, service-driven flows —
 their state machines must not be bypassed by generic create/edit forms.
 """
 
@@ -10,6 +10,7 @@ from apps.adminpanel.panels import ModelPanel
 from apps.adminpanel.registry import site
 
 from .models import (
+    Color,
     Instrument,
     Origin,
     ShapeCut,
@@ -43,6 +44,14 @@ class VarietyPanel(_ReferencePanel):
     list_display = ("name", "species", "is_active")
 
 
+class ColorPanel(_ReferencePanel):
+    """Colors are filed under a broad color family."""
+
+    list_display = ("name", "group", "is_active")
+    list_filter = ("group", "is_active")
+    icon = "lucide:palette"
+
+
 class StonePricePanel(ModelPanel):
     """Fixed price per stone type."""
 
@@ -55,6 +64,7 @@ class StonePricePanel(ModelPanel):
 site.register(StoneType, StoneTypePanel)
 site.register(Species, _ReferencePanel)
 site.register(Variety, VarietyPanel)
+site.register(Color, ColorPanel)
 site.register(Origin, _ReferencePanel)
 site.register(ShapeCut, _ReferencePanel)
 site.register(Instrument, _ReferencePanel)

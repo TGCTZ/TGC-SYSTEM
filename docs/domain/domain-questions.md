@@ -8,18 +8,22 @@
 > Please review Part B and Part C and fill in answers. Each answer directly
 > shapes the database schema.
 
-> **Service-layer assumptions (provisional).** The service layer is being built
-> on the defaults below pending team answers. Each is easy to change later.
+> **Status of the assumptions.** Several provisional defaults are now settled in
+> code; the rest still ride on the defaults below pending team answers.
 >
-> - **B1** — a stone may have **multiple** production steps.
-> - **B2** — pricing is **flat**: `price_per_unit × weight`.
-> - **B3** — default weight unit is **carat**.
-> - **B4** — a certificate can be issued **only after the bill is fully paid**.
-> - **B5** — the `StoneStatus` enum values as defined.
-> - **B6** — **production is optional**; a stone may go identification → billing.
+> - **B1 / B6 ✅** — **no production module** in the current build; a stone goes
+>   type-identification → billing → findings → certificate.
+> - **B2 ✅** — pricing is **flat per stone type** (`StonePrice.price`); weight
+>   does not change the price.
+> - **B3 ✅** — weight unit is **carat/gram** (`WeightUnit`); no `SiUnit`.
+> - **B5 ✅** — the `StoneStatus` list is settled (no `in_production`).
+> - **C5 ✅** — four roles seeded (receptionist, gemmologist, accountant,
+>   administrator).
+> - **B4** — a certificate can be issued **only after the bill is fully paid**
+>   (still provisional).
 > - **C2** — **partial payments allowed**; bill is `paid` once payments cover the
->   total, else `partially_paid`.
-> - **C3** — certificates **can be revoked**.
+>   total, else `partially_paid` (still provisional).
+> - **C3** — certificates **can be revoked** (still provisional).
 > - **C4** — a **finalized** report is **locked** (no further edits).
 > - **C6** — reference formats: `ORD-YYYY-NNNN`, `RPT-YYYY-NNNN`,
 >   `BILL-YYYY-NNNN`, `CERT-YYYY-NNNN` (per-year sequence).
@@ -31,15 +35,15 @@
 ```
 Customer brings stones
       ↓
-RECEPTION      → an Order is created, containing one or more Stones
+RECEPTION       → an Order is created, containing one or more Stones
       ↓
-IDENTIFICATION → a gemmologist examines each stone → a report per stone
+TYPE IDENTIFY   → a gemmologist assigns each stone's type (fixes the price)
       ↓
-PRODUCTION     → optional processing: sonara / carving / lapidary
+BILLING         → one Bill per Order; GePG control number; customer pays
       ↓
-BILLING        → one Bill per Order; GePG control number; customer pays
+FINDINGS        → after payment, the gemmologist records + finalizes the report
       ↓
-CERTIFICATE    → a certificate is issued per stone (with QR verification)
+CERTIFICATE     → a certificate is issued per stone (with QR verification)
 ```
 
 ---
@@ -53,11 +57,11 @@ CERTIFICATE    → a certificate is issued per stone (with QR verification)
 | A3 | Is the reference data (colors, species, treatments, etc.) fixed or user-editable during data entry? | **Stable, admin-managed lookup lists** — staff choose from dropdowns; they are not added ad hoc during data entry. |
 | A4 | Is billing per order or per stone? | **One Bill per Order** — the customer pays once for the whole batch. |
 | A5 | Is a certificate issued per order or per stone? | **Per stone** — each stone gets its own certificate and QR verification. |
-| A6 | What determines a stone's price? | **Stone type and weight.** |
+| A6 | What determines a stone's price? | **Stone type only** — a flat price per type (weight does not affect it). *(Refined from the original "type and weight" — see B2.)* |
 | A7 | Does each stone carry its own status, or does the whole order move together? | **Each stone has its own status** and progresses independently through the pipeline. |
 | A8 | Are the workflow stages fixed or editable by staff? | **Fixed stages defined in code** — they rarely change; developers manage them. |
 | A9 | Is a status audit trail needed? | **Yes — a full audit trail is a must** ("who moved this stone to which stage, and when"). |
-| A10 | Is production one model or three separate ones? | **One Production model with a `type` field** (sonara / carving / lapidary) — they share the same shape of record. |
+| A10 | Is production one model or three separate ones? | ~~One Production model with a `type` field.~~ **Superseded — the production module is not part of the current build** (see B1/B6). |
 
 ---
 
@@ -69,27 +73,22 @@ or is it strictly **one production step per stone**?
 - *If multiple:* a Stone can have many Production records.
 - *If one:* a Stone has at most one Production record.
 
-**Answer:**
+**Answer:** ✅ Moot — the **production module was removed**; there is no Production
+record. A stone goes type-identification → billing → findings → certificate.
 
 ---
 
 ### B2. Is pricing a **flat rate** or **tiered by weight**?
-Price is `stone type × weight`. But how exactly?
-- **Flat:** a single price-per-unit (per carat/gram) for each stone type. Total =
-  `weight × rate`.
-- **Tiered:** the rate changes across weight bands (e.g. first 5 ct at one rate,
-  above 5 ct at another).
 
-**Answer:**
+**Answer:** ✅ **Flat per stone type.** Each `StoneType` has one `StonePrice.price`;
+weight is recorded but does not change the amount charged.
 
 ---
 
 ### B3. What is the unit of weight — **carats or grams** (or both)?
-Does the business price and record weight in **carats**, **grams**, or does it
-vary by stone type? (The `SiUnit` reference table implies more than one unit —
-confirm which units are actually in use.)
 
-**Answer:**
+**Answer:** ✅ **Carat (default) or gram** — the `WeightUnit` enum (`ct`/`g`).
+There is no `SiUnit` table.
 
 ---
 
@@ -109,24 +108,24 @@ Draft based on the workflow — **please correct/complete**:
 ```
 1. received            (logged at reception)
 2. under_identification
-3. in_production        (optional)
-4. billed
-5. paid
-6. certified
-7. ready_for_collection
-8. collected
-   + cancelled / on_hold ?
+3. billed
+4. paid
+5. certified
+6. ready_for_collection
+7. collected
+   + cancelled / on_hold  (side states)
 ```
 
-**Answer / corrections:**
+**Answer / corrections:** ✅ The list above is the implemented `StoneStatus`
+(no `in_production`).
 
 ---
 
 ### B6. Can a stone **skip** stages?
-Production is described as optional. Can a stone go straight from
-identification → billing without production? Are any other stages skippable?
 
-**Answer:**
+**Answer:** ✅ Moot — with no production stage, the pipeline is
+type-identification → billing → findings → certificate. `on_hold` / `cancelled`
+remain available side states.
 
 ---
 
@@ -176,11 +175,11 @@ The system has a custom user model. What **roles** exist (receptionist,
 gemmologist, production staff, accountant, admin…), and which stages can each
 role act on? This drives the permissions layer.
 
-**Decided (provisional):** roles are **Django Groups** — receptionist,
-gemmologist, production, accountant, administrator — seeded by
-`python manage.py setup_roles`. Action-level custom permissions
-(`finalize_report`, `generate_bill`, `issue_certificate`, …) are defined on the
-models. The role→permission mapping lives in `apps/accounts/roles.py`; see
+**Decided ✅:** roles are **Django Groups** — receptionist, gemmologist,
+accountant, administrator — seeded by `python manage.py setup_roles`. Action-level
+custom permissions (`finalize_report`, `generate_bill`, `issue_certificate`, …)
+are defined on the models. The role→permission mapping lives in
+`apps/accounts/roles.py`; see
 [`../engineering/permissions.md`](../engineering/permissions.md).
 
 **Still needed from the team:** confirm/adjust which actions each role may
@@ -219,12 +218,12 @@ Customer 1──< Order 1──1 Bill 1──< BillItem >──1 Stone
                  └──< Stone ───────────────────────┘
                         │  status (fixed enum) + StatusHistory (audit)
                         │
-      ┌─────────────────┼──────────────────┐
-      │ 1               │ 1..* (B1?)        │ 1
- IdentificationReport   Production        Certificate
- (per stone)            (type field)      (per stone)
+      ┌─────────────────┴──────────────────┐
+      │ 1                                   │ 1
+ IdentificationReport                  Certificate
+ (per stone)                           (per stone)
       │
-      └─ FKs → core lookups: StoneType, Species, Variety, Color,
-               Transparency, Origin, Treatment, ShapeCut, OpticCharacter,
-               SiUnit, Instrument, StonePrice
+      └─ FKs → core lookups: StoneType, Species, Variety, Color, Origin,
+               ShapeCut, Instrument, StonePrice
+         + enums: NatureType, Transparency, Treatment, OpticCharacter
 ```

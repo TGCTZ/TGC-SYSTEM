@@ -6,7 +6,7 @@ from django.db.models import Q
 
 from apps.core.models import BaseModel
 
-from ..enums import Color, OpticCharacter, Transparency, Treatment
+from ..enums import NatureType, OpticCharacter, Transparency, Treatment
 
 
 class IdentificationReport(BaseModel):
@@ -19,20 +19,37 @@ class IdentificationReport(BaseModel):
 
     # Reference-table attributes (lookups).
     species = models.ForeignKey(
-        "core.Species", on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+        "core.Species",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="+",
     )
     variety = models.ForeignKey(
-        "core.Variety", on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+        "core.Variety",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="+",
     )
     origin = models.ForeignKey(
         "core.Origin", on_delete=models.PROTECT, null=True, blank=True, related_name="+"
     )
     shape_cut = models.ForeignKey(
-        "core.ShapeCut", on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+        "core.ShapeCut",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    color = models.ForeignKey(
+        "core.Color", on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
     )
 
     # Fixed-value attributes (enums).
-    color = models.CharField(max_length=20, choices=Color.choices, blank=True, default="")
+    nature_type = models.CharField(
+        max_length=20, choices=NatureType.choices, blank=True, default=""
+    )
     transparency = models.CharField(
         max_length=20, choices=Transparency.choices, blank=True, default=""
     )
@@ -44,6 +61,7 @@ class IdentificationReport(BaseModel):
     )
 
     # Measurements.
+    dimensions = models.CharField(max_length=50, blank=True, default="")
     refractive_index = models.CharField(max_length=50, blank=True, default="")
     specific_gravity = models.DecimalField(
         max_digits=10, decimal_places=3, null=True, blank=True
@@ -88,4 +106,8 @@ class InstrumentUsed(BaseModel):
     reading = models.CharField(max_length=100, blank=True, default="")
 
     def __str__(self) -> str:
-        return f"{self.instrument} ({self.reading})" if self.reading else str(self.instrument)
+        return (
+            f"{self.instrument} ({self.reading})"
+            if self.reading
+            else str(self.instrument)
+        )

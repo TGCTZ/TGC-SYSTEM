@@ -32,10 +32,9 @@ TablePartial audit {
 
 // ---------- Enums (code-defined; logic branches on these) ----------
 
-Enum stone_status {          // (open: B5 — exact list)
+Enum stone_status {
   received
   under_identification
-  in_production
   billed
   paid
   certified
@@ -51,19 +50,7 @@ Enum stone_category {
   diamond
 }
 
-Enum production_type {
-  sonara
-  carving
-  lapidary
-}
-
-Enum qa_result {
-  pending
-  passed
-  failed
-}
-
-Enum bill_status {           // (open: C2)
+Enum bill_status {           // (open: C2 — partial payments)
   pending
   partially_paid
   paid
@@ -81,40 +68,28 @@ Enum certificate_status {    // (open: C3)
 
 Enum transparency {
   transparent
-  semi_transparent
   translucent
   opaque
 }
 
-Enum optic_character {
-  isotropic
-  uniaxial_positive
-  uniaxial_negative
-  biaxial_positive
-  biaxial_negative
-  aggregate
+Enum optic_character {       // stored as the short code; label expands in code
+  sr                         // Singly refractive
+  adr                        // Anomalous double refractive
+  dr                         // Double refractive
+  agg                        // Aggregate
 }
 
-Enum weight_unit {           // legacy SiUnit; (open: B3)
+Enum nature_type {
+  natural
+  synthetic
+  treated
+  enhanced
+  artificial
+}
+
+Enum weight_unit {
   carat                      // symbol: ct
   gram                       // symbol: g
-}
-
-Enum color {                 // fixed set (draft — team to confirm values)
-  colorless
-  white
-  red
-  pink
-  orange
-  yellow
-  green
-  blue
-  violet
-  purple
-  brown
-  black
-  gray
-  multicolor
 }
 
 Enum treatment {             // fixed set (draft — team to confirm values)
@@ -126,6 +101,18 @@ Enum treatment {             // fixed set (draft — team to confirm values)
   fracture_filled
   bleached
   impregnated
+}
+
+// Color family grouping the `color` lookup into <optgroup>s on the findings
+// form. The GIA-style groups and their ~37 seeded values are ported from the
+// legacy finding form; the values live in the `color` TABLE below.
+Enum color_group {
+  white_grey_black
+  purple_violet
+  red_pink
+  orange_yellow
+  green
+  blue
 }
 
 
@@ -175,6 +162,15 @@ Table variety {
   species_id    bigint       [ref: > species.id, note: 'PROTECT']
   is_active     boolean      [not null, default: true]
   ~audit
+  indexes { (name, species_id) [unique, note: 'partial: WHERE deleted_at IS NULL'] }
+}
+
+Table color {                // GIA-style values, grouped by color_group
+  id            bigint      [pk, increment]
+  name          varchar(100) [not null, note: 'e.g. "Violetish Purple"']
+  "group"       color_group [not null]
+  is_active     boolean     [not null, default: true]
+  ~audit
 }
 
 Table origin {
@@ -193,17 +189,15 @@ Table shape_cut {
 
 Table instrument {
   id            bigint       [pk, increment]
-  name          varchar(150) [not null]
+  name          varchar(100) [not null]
   is_active     boolean      [not null, default: true]
   ~audit
 }
 
-Table stone_price {          // (open: B2 — flat vs tiered)
+Table stone_price {          // flat: one fixed price per stone type (A6, B2)
   id             bigint        [pk, increment]
-  stone_type_id  bigint        [not null, ref: > stone_type.id, note: 'PROTECT']
-  price_per_unit decimal(15,2) [not null]
-  unit           weight_unit   [not null]
-  is_active      boolean       [not null, default: true]
+  stone_type_id  bigint        [not null, unique, ref: - stone_type.id, note: 'OneToOne, PROTECT']
+  price          decimal(12,2) [not null, note: 'flat amount; weight-independent']
   ~audit
 }
 
@@ -217,7 +211,7 @@ Table customer {             // (open: C1)
   first_name    varchar(100) [not null]
   middle_name   varchar(100)
   last_name     varchar(100) [not null]
-  phone         varchar(20)  [not null]
+  phone         varchar(20)  [not null, note: 'unique (live)']
   email         varchar(254)
   company_name  varchar(255)
   region        varchar(100)
@@ -240,19 +234,19 @@ Table stone {
   id             bigint        [pk, increment]
   order_id       bigint        [not null, ref: > "order".id, note: 'CASCADE (soft, via service)']
   label          varchar(20)   [not null, note: 'e.g. A, B within the order']
-  stone_type_id  bigint        [not null, ref: > stone_type.id, note: 'PROTECT; set at identification']
-  weight         decimal(10,3) [not null, note: 'set at identification; (open: B3)']
-  weight_unit    weight_unit   [not null]
+  stone_type_id  bigint        [not null, ref: > stone_type.id, note: 'PROTECT; set at type identification']
+  weight         decimal(10,3) [note: 'null until findings are recorded (after payment)']
+  weight_unit    weight_unit   [not null, default: 'carat']
   status         stone_status  [not null, default: 'received']
   ~audit
-  Note: 'One record per physical stone, created at identification (add_stone); capped by order.stone_count.'
+  Note: 'One record per physical stone, created when its type is identified (add_stone); capped by order.stone_count. Weight and full findings are recorded later, after payment.'
   indexes { (status) }
 }
 
 Table status_history {       // APPEND-ONLY audit record (A9) — no soft delete
   id            bigint       [pk, increment]
   stone_id      bigint       [not null, ref: > stone.id, note: 'CASCADE']
-  from_status   stone_status [note: 'null on first entry']
+  from_status   stone_status [note: 'blank on first entry']
   to_status     stone_status [not null]
   changed_by    bigint       [note: 'FK > user.id, SET_NULL']
   changed_at    timestamptz  [not null]
@@ -263,6 +257,8 @@ Table status_history {       // APPEND-ONLY audit record (A9) — no soft delete
 
 // ============================================================
 // L3 — identification (one report per stone; A2)
+// Recorded AFTER payment: phase 1 sets the stone type (price),
+// then the customer pays, then the gemmologist records findings.
 // ============================================================
 
 Table identification_report {
@@ -273,15 +269,18 @@ Table identification_report {
   variety_id         bigint      [ref: > variety.id, note: 'PROTECT']
   origin_id          bigint      [ref: > origin.id, note: 'PROTECT']
   shape_cut_id       bigint      [ref: > shape_cut.id, note: 'PROTECT']
-  color              color           [note: 'enum']
+  color_id           bigint      [ref: > color.id, note: 'SET_NULL']
+  nature_type        nature_type     [note: 'enum']
   transparency       transparency    [note: 'enum']
   treatment          treatment       [note: 'enum']
   optic_character    optic_character [note: 'enum']
-  refractive_index   varchar(50) [note: 'refractive index']
+  dimensions         varchar(50) [note: 'L x W x D in mm, free text']
+  refractive_index   varchar(50)
   specific_gravity   decimal(10,3)
   is_polished        boolean     [not null, default: false]
   conclusion         text
   is_finalized       boolean     [not null, default: false, note: 'locks report; (open: C4)']
+  identified_by      bigint      [note: 'FK > user.id, SET_NULL']
   identified_at      timestamptz
   ~audit
 }
@@ -291,24 +290,6 @@ Table instrument_used {
   report_id     bigint       [not null, ref: > identification_report.id, note: 'CASCADE (soft)']
   instrument_id bigint       [not null, ref: > instrument.id, note: 'PROTECT']
   reading       varchar(100)
-  ~audit
-}
-
-
-// ============================================================
-// L3 — production (one model, type field; A10)
-// ============================================================
-
-Table production {
-  id             bigint          [pk, increment]
-  stone_id       bigint          [not null, ref: > stone.id, note: 'CASCADE (soft); many steps? (open: B1)']
-  type           production_type [not null]
-  assigned_to    bigint          [note: 'FK > user.id, SET_NULL']
-  started_at     timestamptz
-  finished_at    timestamptz
-  qa_result      qa_result       [not null, default: 'pending']
-  qa_by          bigint          [note: 'FK > user.id, SET_NULL']
-  notes          text
   ~audit
 }
 
@@ -333,34 +314,63 @@ Table bill {
   bill_number         varchar(50)   [not null, note: 'unique (live)']
   control_number      varchar(50)   [note: 'unique (live); from GePG']
   service_provider_id bigint        [ref: > service_provider.id, note: 'PROTECT']
-  total_amount        decimal(15,2) [not null, note: 'Σ bill_item.amount']
+  total_amount        decimal(15,2) [not null, default: 0, note: 'Σ bill_item.amount']
   currency            varchar(3)    [not null, default: 'TZS']
-  status              bill_status   [not null, default: 'pending']
+  status              bill_status   [not null, default: 'pending', note: 'domain state']
   issued_at           timestamptz
+  expiry_at           timestamptz
   due_date            date
+  bill_type           smallint      [not null, default: 1, note: 'GePG']
+  pay_type            smallint      [not null, default: 1, note: 'GePG']
+  status_code         varchar(30)   [note: 'GePG raw gateway state']
+  status_desc         varchar(255)  [note: 'GePG raw gateway state']
+  gepg_submitted      boolean       [not null, default: false]
+  gepg_submitted_at   timestamptz
   ~audit
 }
 
-Table bill_item {            // one per stone; prices SNAPSHOTTED
+Table bill_item {            // one per stone; price SNAPSHOTTED at billing
   id            bigint        [pk, increment]
   bill_id       bigint        [not null, ref: > bill.id, note: 'CASCADE (soft)']
   stone_id      bigint        [not null, ref: > stone.id, note: 'PROTECT']
   description   varchar(255)  [not null]
-  unit_price    decimal(15,2) [not null, note: 'SNAPSHOT of rate']
-  weight        decimal(10,3) [not null, note: 'SNAPSHOT at billing']
-  amount        decimal(15,2) [not null, note: 'SNAPSHOT = unit_price × weight']
+  unit_price    decimal(15,2) [not null, note: 'SNAPSHOT of the stone type''s flat price']
+  weight        decimal(10,3) [note: 'SNAPSHOT at billing (informational; price is flat)']
+  amount        decimal(15,2) [not null, note: 'SNAPSHOT = the flat price charged']
   gfs_code      varchar(20)   [note: 'GePG']
   item_ref      varchar(50)   [note: 'GePG']
   ~audit
 }
 
-Table payment {
+Table payment {              // one row per GePG payment notification (PmtTrxInf)
   id            bigint        [pk, increment]
-  bill_id       bigint        [not null, ref: > bill.id, note: 'PROTECT']
-  amount        decimal(15,2) [not null, note: 'supports partial (open: C2)']
-  paid_at       timestamptz   [not null]
-  channel       varchar(50)   [note: 'GePG / bank / cash']
-  reference     varchar(100)
+  bill_id       bigint        [ref: > bill.id, note: 'PROTECT']
+  req_id        varchar(100)  [note: 'PmtHdr']
+  grp_bill_id   varchar(100)
+  sp_grp_code   varchar(10)
+  cust_cntr_num varchar(12)   [note: 'customer control number']
+  entry_count   integer
+  sp_code       varchar(10)
+  gepg_bill_id  varchar(100)
+  bill_ctr_num  varchar(12)
+  psp_code      varchar(10)
+  psp_name      varchar(200)
+  trx_id        varchar(100)  [note: 'unique (live, non-blank)']
+  pay_ref_id    varchar(100)
+  bill_amount   decimal(15,2)
+  paid_amount   decimal(15,2)
+  bill_pay_opt  varchar(1)
+  currency      varchar(3)
+  coll_acc_num  varchar(50)
+  trx_dt_tm     timestamptz
+  usd_pay_chnl  varchar(50)   [note: 'payment channel used']
+  pyr_cell_num  varchar(15)
+  pyr_email     varchar(150)
+  pyr_name      varchar(200)
+  ack_id        varchar(100)  [note: 'acknowledgement we returned']
+  ack_sts_code  varchar(10)
+  processed     boolean       [not null, default: false]
+  raw_request   text          [note: 'raw callback payload']
   ~audit
 }
 
@@ -384,6 +394,7 @@ Table certificate {
   qr_code             varchar(100)
   pdf_file            varchar(100)
   status              certificate_status [not null, default: 'issued', note: '(open: C3)']
+  issued_by           bigint      [note: 'FK > user.id, SET_NULL']
   issued_at           timestamptz [not null]
   ~audit
 }

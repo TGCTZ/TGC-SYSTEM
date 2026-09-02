@@ -17,14 +17,13 @@
 | **L2** | `accounts` | Users, roles, permissions, authentication. |
 | **L3** | `orders` | Customers, orders, and the stones logged against them (intake). |
 | **L3** | `identification` | Gemmological examination — identification reports and findings. |
-| **L3** | `production` | Workshop processing (sonara / carving / lapidary) and quality assurance. |
 | **L3** | `billing` | Bills, line items, payments, GePG integration, reconciliation. |
 | **L3** | `certificates` | Certificate issuance, QR codes, public verification. |
 | **L4** | `reports` | Management reports and exports (reads across domain modules). |
 | **L4** | `dashboard` | Landing pages and navigation shells (thin entrypoints). |
 | **L4** | `adminpanel` | Generic model-admin, roles & permissions portal, and users management at `/manage/` + `/users/`. |
 
-**10 focused modules**, each with a single clear responsibility.
+**9 focused modules**, each with a single clear responsibility.
 
 ---
 
@@ -33,7 +32,7 @@
 ```
 L4   reports · dashboard · adminpanel   (read/aggregate; import ↓ only)
         │
-L3   orders · identification · production · billing · certificates
+L3   orders · identification · billing · certificates
         │                         (the business; import ↓ only)
 L2   accounts                     (import ↓ only)
         │
@@ -49,10 +48,11 @@ through sideways model imports.
 ## 3. Module details
 
 ### `core` (L1)
-**Owns:** the abstract `TimeStampedModel` base; the `StoneStatus` enum (fixed
-workflow stages, code-defined); reference lookups — `StoneType`, `Species`,
-`Variety`, `Color`, `Transparency`, `Origin`, `Treatment`, `ShapeCut`,
-`OpticCharacter`, `SiUnit`, `Instrument`; and `StonePrice` (price list).
+**Owns:** the abstract `BaseModel` base (audit columns + soft delete); code-defined
+**enums** — `StoneStatus`, `StoneCategory`, `WeightUnit`, `Transparency`,
+`OpticCharacter`, `NatureType`, `Treatment`, `ColorGroup`; admin-managed
+**reference lookups** — `StoneType`, `Species`, `Variety`, `Color`, `Origin`,
+`ShapeCut`, `Instrument`; and `StonePrice` (the flat price list).
 **Depends on:** nothing above it.
 
 ### `accounts` (L2)
@@ -67,11 +67,6 @@ stone status transitions).
 ### `identification` (L3)
 **Owns:** `IdentificationReport` (one per stone) and its findings; references
 `core` lookups for every attribute.
-**Depends on:** `core`, `accounts`, `orders`.
-
-### `production` (L3)
-**Owns:** the single `Production` model with a `type` field
-(sonara / carving / lapidary), assignment, and QA results.
 **Depends on:** `core`, `accounts`, `orders`.
 
 ### `billing` (L3)
@@ -117,7 +112,6 @@ model suffix).
 | `orders` | entity name | `reception`, `intake` | "the orders module" is unambiguous and maps to the `Order` model. |
 | `identification` | function name | `gemmology`, `analysis` | Describes what the module *does*; `gemmology` was too broad. |
 | `reports` | plural entity | `reporting` | Consistent with `orders`, `certificates`. |
-| `production` | function name | 3 workshop apps | One module, one `type` field — replaces sonara/carving/lapidary. |
 | `certificates` | plural entity | (buried in gemmology) | Promoted to its own module; owns QR + verification. |
 | `core` / `accounts` | conventional | — | Standard Django community names. |
 
@@ -131,7 +125,7 @@ Build **bottom-up** so each module's dependencies already exist:
 1. core          ← no dependencies; build first
 2. accounts      ← already scaffolded (custom User)
 3. orders        ← the spine (Customer → Order → Stone)
-4. identification / production / billing   ← attach to orders
+4. identification / billing   ← attach to orders
 5. certificates  ← needs identification
 6. reports / dashboard   ← read across everything; build last
 ```

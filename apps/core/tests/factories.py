@@ -3,8 +3,9 @@
 import factory
 from factory.fuzzy import FuzzyChoice
 
-from apps.core.enums import StoneCategory
+from apps.core.enums import ColorGroup, StoneCategory
 from apps.core.models import (
+    Color,
     Instrument,
     Origin,
     ShapeCut,
@@ -41,9 +42,21 @@ class VarietyFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Variety
+        django_get_or_create = ("name", "species")
 
     name = factory.Sequence(lambda n: f"Variety {n}")
     species = factory.SubFactory(SpeciesFactory)
+
+
+class ColorFactory(factory.django.DjangoModelFactory):
+    """Builds a color filed under a color family."""
+
+    class Meta:
+        model = Color
+        django_get_or_create = ("name",)
+
+    name = factory.Sequence(lambda n: f"Color {n}")
+    group = FuzzyChoice(ColorGroup.values)
 
 
 class OriginFactory(factory.django.DjangoModelFactory):

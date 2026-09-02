@@ -19,4 +19,10 @@ def action(label, icon, url, *, method="get", danger=False):
     Returns:
         A dict consumed by the ``row-actions`` / ``action-icon`` components.
     """
-    return {"label": label, "icon": icon, "url": url, "method": method, "danger": danger}
+    return {
+        "label": label,
+        "icon": icon,
+        "url": url,
+        "method": method,
+        "danger": danger,
+    }

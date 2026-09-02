@@ -105,11 +105,12 @@
         <div class="c-col">
           <div class="c-colhead">DESCRIPTION</div>
           <div class="c-colbody">
-            <div class="c-row"><span class="k">COLOR</span><span class="v">{{ report.get_color_display|default:"—" }}</span></div>
+            <div class="c-row"><span class="k">COLOR</span><span class="v">{{ report.color.name|default:"—" }}</span></div>
             <div class="c-row"><span class="k">SHAPE / CUT</span><span class="v">{{ report.shape_cut.name|default:"—" }}</span></div>
             <div class="c-row"><span class="k">WEIGHT</span><span class="v">{{ certificate.weight_snapshot }} {{ certificate.stone.weight_unit }}</span></div>
+            <div class="c-row"><span class="k">DIMENSIONS</span><span class="v">{{ report.dimensions|default:"—" }}</span></div>
             <div class="c-row"><span class="k">TRANSPARENCY</span><span class="v">{{ report.get_transparency_display|default:"—" }}</span></div>
-            <div class="c-row"><span class="k">OPTIC CHARACTER</span><span class="v">{{ report.get_optic_character_display|default:"—" }}</span></div>
+            <div class="c-row"><span class="k">OPTIC CHARACTER</span><span class="v">{{ report.optic_character|upper|default:"—" }}</span></div>
             <div class="c-row"><span class="k">R.I.</span><span class="v">{{ report.refractive_index|default:"—" }}</span></div>
             <div class="c-row"><span class="k">SPECIFIC GRAVITY</span><span class="v">{{ report.specific_gravity|default:"—" }}</span></div>
 
@@ -127,6 +128,7 @@
             <div class="c-subhead">IDENTIFICATION</div>
             <div class="c-row"><span class="k">GROUP / SPECIES</span><span class="v">{{ report.species.name|default:"—" }}</span></div>
             <div class="c-row"><span class="k">VARIETY</span><span class="v">{{ report.variety.name|default:"—" }}</span></div>
+            <div class="c-row"><span class="k">NATURE</span><span class="v">{{ report.get_nature_type_display|default:"—" }}</span></div>
             <div class="c-row"><span class="k">TREATMENT</span><span class="v">{{ report.get_treatment_display|default:"—" }}</span></div>
             <div class="c-row"><span class="k">ORIGIN</span><span class="v">{{ report.origin.name|default:"—" }}</span></div>
           </div>

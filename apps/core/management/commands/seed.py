@@ -16,15 +16,18 @@ from apps.billing.models import Bill, Payment
 from apps.billing.tests.factories import BillFactory, BillItemFactory, PaymentFactory
 from apps.certificates.models import Certificate
 from apps.certificates.tests.factories import CertificateFactory
-from apps.core.enums import StoneCategory, StoneStatus
+from apps.core.enums import ColorGroup, StoneCategory, StoneStatus
 from apps.core.tests.factories import (
+    ColorFactory,
     InstrumentFactory,
     OriginFactory,
     ShapeCutFactory,
     SpeciesFactory,
     StonePriceFactory,
     StoneTypeFactory,
+    VarietyFactory,
 )
+from apps.identification.enums import NatureType
 from apps.identification.models import IdentificationReport
 from apps.identification.tests.factories import IdentificationReportFactory
 from apps.orders.models import Customer, Order
@@ -77,10 +80,122 @@ class Command(BaseCommand):
             stone_types.append(st)
             price_of[st.pk] = price
 
-        species = [SpeciesFactory() for _ in range(5)]
-        origins = [OriginFactory() for _ in range(4)]
-        shapes = [ShapeCutFactory() for _ in range(4)]
-        [InstrumentFactory() for _ in range(4)]
+        # Real gemmological reference data — editable later at /manage/.
+        for name in (
+            "Color filter",
+            "Diamond tester",
+            "Dichroscope",
+            "Hardness pencil",
+            "Hydrostatic scale",
+            "Microscope",
+            "Polariscope",
+            "Refractometer",
+            "Spectroscope",
+            "UV fluorescence",
+        ):
+            InstrumentFactory(name=name)
+
+        origins = [
+            OriginFactory(name=name)
+            for name in (
+                "Tanzania",
+                "Sri Lanka",
+                "Myanmar",
+                "Mozambique",
+                "Madagascar",
+                "Zambia",
+                "Kenya",
+                "Thailand",
+                "Brazil",
+                "Colombia",
+            )
+        ]
+        shapes = [
+            ShapeCutFactory(name=name)
+            for name in (
+                "Round",
+                "Oval",
+                "Cushion",
+                "Emerald cut",
+                "Pear",
+                "Marquise",
+                "Princess",
+                "Heart",
+                "Trillion",
+                "Cabochon",
+            )
+        ]
+
+        # Species with their varieties (variety.species keeps the pair consistent).
+        species_specs = {
+            "Corundum": ["Ruby", "Sapphire"],
+            "Beryl": ["Emerald", "Aquamarine"],
+            "Tourmaline": ["Rubellite"],
+            "Quartz": ["Amethyst", "Citrine"],
+            "Garnet": [],
+            "Spinel": [],
+            "Chrysoberyl": [],
+            "Zircon": [],
+            "Topaz": [],
+            "Peridot": [],
+        }
+        varieties = []
+        for sp_name, var_names in species_specs.items():
+            sp = SpeciesFactory(name=sp_name)
+            varieties += [VarietyFactory(name=v, species=sp) for v in var_names]
+
+        # GIA-style color families, matching the legacy finding form.
+        color_specs = {
+            ColorGroup.WHITE_GREY_BLACK: ["Colourless", "White", "Grey", "Black"],
+            ColorGroup.PURPLE_VIOLET: [
+                "Purple",
+                "Reddish Purple",
+                "Red-Purple",
+                "Violetish Purple",
+                "Bluish Violet",
+                "Violet",
+            ],
+            ColorGroup.RED_PINK: [
+                "Strongly Purplish Red",
+                "Slightly Purplish Red",
+                "Red",
+                "Orangy Red",
+                "Red-Orange",
+                "Pink",
+                "Brown",
+            ],
+            ColorGroup.ORANGE_YELLOW: [
+                "Reddish Orange",
+                "Orange",
+                "Yellowish Orange",
+                "Orangy Yellow",
+                "Yellow",
+                "Greenish Yellow",
+            ],
+            ColorGroup.GREEN: [
+                "Yellow-Green",
+                "Strongly Yellowish Green",
+                "Yellowish Green",
+                "Slightly Yellowish Green",
+                "Green",
+                "Very Slightly Bluish Green",
+                "Bluish Green",
+                "Very Strongly Bluish Green",
+                "Green-Blue",
+            ],
+            ColorGroup.BLUE: [
+                "Very Strongly Greenish Blue",
+                "Greenish Blue",
+                "Very Slightly Greenish Blue",
+                "Blue",
+                "Violetish Blue",
+            ],
+        }
+        colors = [
+            ColorFactory(name=name, group=group)
+            for group, names in color_specs.items()
+            for name in names
+        ]
 
         buckets = {"typing": 0, "billable": 0, "findings": 0, "done": 0}
 
@@ -135,11 +250,20 @@ class Command(BaseCommand):
             for s in stones:
                 s.weight = Decimal(str(round(random.uniform(0.5, 12), 3)))
                 s.save(update_fields=["weight"])
+                variety = random.choice(varieties)
                 report = IdentificationReportFactory(
                     stone=s,
-                    species=random.choice(species),
+                    species=variety.species,
+                    variety=variety,
+                    color=random.choice(colors),
+                    nature_type=NatureType.NATURAL,
                     origin=random.choice(origins),
                     shape_cut=random.choice(shapes),
+                    dimensions=(
+                        f"{round(random.uniform(4, 9), 1)} x "
+                        f"{round(random.uniform(3, 7), 1)} x "
+                        f"{round(random.uniform(2, 5), 1)} mm"
+                    ),
                     is_finalized=True,
                 )
                 if random.random() < 0.6:

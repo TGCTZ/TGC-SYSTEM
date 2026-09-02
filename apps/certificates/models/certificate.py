@@ -35,7 +35,9 @@ class Certificate(BaseModel):
     pdf_file = models.CharField(max_length=100, blank=True, default="")
 
     status = models.CharField(
-        max_length=20, choices=CertificateStatus.choices, default=CertificateStatus.ISSUED
+        max_length=20,
+        choices=CertificateStatus.choices,
+        default=CertificateStatus.ISSUED,
     )
     issued_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

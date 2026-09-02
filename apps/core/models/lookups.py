@@ -3,7 +3,7 @@
 from django.db import models
 from django.db.models import Q
 
-from apps.core.enums import StoneCategory
+from apps.core.enums import ColorGroup, StoneCategory
 
 from .reference import ReferenceModel
 
@@ -37,6 +37,12 @@ class Variety(ReferenceModel):
                 name="%(app_label)s_%(class)s_unique_name_species",
             ),
         ]
+
+
+class Color(ReferenceModel):
+    """Observed stone color, filed under a broad color family."""
+
+    group = models.CharField(max_length=20, choices=ColorGroup.choices)
 
 
 class Origin(ReferenceModel):

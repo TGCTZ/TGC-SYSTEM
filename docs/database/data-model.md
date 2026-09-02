@@ -107,12 +107,18 @@ columns, and no one adds to it at runtime. Enums have no join cost.
 
 | Enum | Values | Notes |
 | --- | --- | --- |
-| **StoneStatus** | received · under_identification · in_production · billed · paid · certified · ready_for_collection · collected · on_hold · cancelled | workflow stages **(open: B5)** |
-| **Transparency** | transparent · semi_transparent · translucent · opaque | |
-| **OpticCharacter** | isotropic · uniaxial ± · biaxial ± · aggregate | |
-| **WeightUnit** | carat (ct) · gram (g) | symbol mapped in code **(open: B3)** |
-| **Color** | colorless, white, red, pink, orange, yellow, green, blue, violet, purple, brown, black, gray, multicolor | draft — team to confirm list |
+| **StoneStatus** | received · under_identification · billed · paid · certified · ready_for_collection · collected · on_hold · cancelled | workflow stages (B5 ✅) |
+| **StoneCategory** | precious · semi_precious · diamond | pricing tier of a `StoneType` |
+| **Transparency** | transparent · translucent · opaque | |
+| **OpticCharacter** | SR · ADR · DR · AGG | stored as the short code; full label ("SR — Singly refractive") expands in code |
+| **NatureType** | natural · synthetic · treated · enhanced · artificial | natural vs man-made/altered |
+| **WeightUnit** | carat (ct) · gram (g) | symbol mapped in code |
 | **Treatment** | none, heated, oiled, dyed, irradiated, fracture_filled, bleached, impregnated | draft — team to confirm list |
+| **ColorGroup** | white_grey_black · purple_violet · red_pink · orange_yellow · green · blue | groups the `Color` lookup into `<optgroup>`s (see below) |
+
+> **Color used to be an enum; it is now the `Color` lookup table** — the legacy
+> finding form offers ~37 GIA-style values, too many (and too editable) for a
+> code enum. See [Reference lookups](#reference-lookups-tables).
 
 ### Reference lookups *(tables)*
 
@@ -123,26 +129,37 @@ relationships, or is large. Admin-managed (decision A3).
 | --- | --- | --- |
 | **StoneType** | id `PK` · name · category (`precious`/`semi_precious`/`diamond`) · is_active | has metadata; drives pricing (A6) |
 | **Species** | id `PK` · name · is_active | large, growing; Variety FKs it |
-| **Variety** | id `PK` · name · species `FK→Species (PROTECT)` · is_active | relationship + large |
+| **Variety** | id `PK` · name · species `FK→Species (PROTECT)` · is_active | relationship + large; unique on `(name, species)` |
+| **Color** | id `PK` · name · group (`ColorGroup`) · is_active | ~37 GIA-style values, staff-editable; grouped into 6 families |
 | **Origin** | id `PK` · name · is_active | many mines/regions, grows |
 | **ShapeCut** | id `PK` · name · is_active | staff add new cuts |
 | **Instrument** | id `PK` · name · is_active | referenced with readings by `InstrumentUsed` |
 
 *(All lookup tables also carry the `core.BaseModel` audit columns.)*
 
+**Color families (`ColorGroup`).** The `Color` lookup mirrors the legacy finding
+form's grouped dropdown. The six groups and the ~37 seeded values are defined in
+[`seed.py`](../../apps/core/management/commands/seed.py) (not inlined here, so the
+list has one source of truth):
+
+| Group | Example values |
+| --- | --- |
+| White/Grey/Black | Colourless, White, Grey, Black |
+| Purple/Violet | Purple, Reddish Purple, Violetish Purple, Violet … |
+| Red/Pink | Red, Orangy Red, Red-Orange, Pink, Brown … |
+| Orange/Yellow | Orange, Yellowish Orange, Yellow, Greenish Yellow … |
+| Green | Green, Yellowish Green, Bluish Green, Green-Blue … |
+| Blue | Blue, Greenish Blue, Violetish Blue … |
+
 ### StonePrice
-The price list — `stone type → rate`. **(open: B2 flat vs tiered)**
+The price list — one **flat price per stone type** (B2 ✅ flat). Weight does **not**
+affect the price.
 
 | Column | Type | Notes |
 | --- | --- | --- |
 | id | PK | |
-| stone_type | FK→StoneType (PROTECT) `UQ` | one active rate per type |
-| price_per_unit | Decimal(15,2) | rate per weight unit |
-| unit | WeightUnit (enum) | the unit the rate is per **(open: B3)** |
-| is_active | bool | |
-
-> If pricing is tiered (B2), replace `price_per_unit` with a related
-> `StonePriceBand` table (min_weight, max_weight?, rate).
+| stone_type | OneToOne→StoneType (PROTECT) `UQ` | one price per type |
+| price | Decimal(12,2) | the flat amount charged for that type |
 
 ---
 
@@ -156,10 +173,10 @@ The price list — `stone type → rate`. **(open: B2 flat vs tiered)**
 | username, email, password, is_active, is_staff… | (from AbstractUser) | |
 
 **Roles & permissions use Django's built-in auth** — a `Group` is a role, and
-permissions attach to groups. No custom role table. Roles (receptionist,
-gemmologist, production, accountant, admin) are seeded as Groups. If "one role
-per user" must be enforced, do it by convention (one group per user) rather than
-a new model. *(Resolves C5.)*
+permissions attach to groups. No custom role table. The four roles
+(receptionist, gemmologist, accountant, administrator) are seeded as Groups. If
+"one role per user" must be enforced, do it by convention (one group per user)
+rather than a new model. *(Resolves C5.)*
 
 ---
 
@@ -173,9 +190,11 @@ a new model. *(Resolves C5.)*
 | first_name | Char(100) | |
 | middle_name | Char(100, blank) | optional |
 | last_name | Char(100) | |
-| phone | Char(20) | |
+| phone | Char(20) `UQ` | unique among live rows |
 | *(full_name)* | — | a computed `@property`, not stored |
 | email | Email (blank) | |
+| company_name | Char(255, blank) | for corporate customers |
+| region | Char(100, blank) | |
 | id_number | Char(50, blank) | national/tax ID **(open: C1)** |
 | address | Char(255, blank) | |
 
@@ -203,14 +222,15 @@ a new model. *(Resolves C5.)*
 | id | PK | |
 | order | FK→Order (CASCADE) | `related_name="stones"` |
 | label | Char(20) | e.g. "A", "B" within the order |
-| stone_type | FK→core.StoneType (PROTECT) | set at identification |
-| weight | Decimal(10,3) | set at identification **(open: B3 — unit)** |
-| weight_unit | Char (WeightUnit enum) | |
-| status | Char (StoneStatus enum) | default `received` |
+| stone_type | FK→core.StoneType (PROTECT) | set when the type is identified (phase 1) |
+| weight | Decimal(10,3) (?) | **null until findings** — recorded after payment |
+| weight_unit | Char (WeightUnit enum) | default `carat` |
+| status | Char (StoneStatus enum) | default `received`; indexed |
 
-> A `Stone` exists once a gemmologist registers it (service `add_stone`), which
-> refuses to exceed the order's `stone_count`. One record per physical stone (no
-> parcels).
+> A `Stone` exists once a gemmologist registers its **type** (service `add_stone`),
+> which refuses to exceed the order's `stone_count`. One record per physical stone
+> (no parcels). Its weight and full findings are filled in later, **after payment**
+> (phase 2) — so `weight` is nullable.
 
 ### StatusHistory  *(audit trail — decision A9)*
 
@@ -222,7 +242,7 @@ a new model. *(Resolves C5.)*
 | to_status | Char (StoneStatus) | |
 | changed_by | FK→User (SET_NULL, ?) | |
 | changed_at | DateTime | `auto_now_add` |
-| note | Char(255, blank) | e.g. "sent to lapidary" |
+| note | Char(255, blank) | e.g. "type identified: Ruby" |
 
 ---
 
@@ -234,17 +254,24 @@ a new model. *(Resolves C5.)*
 | --- | --- | --- |
 | id | PK | |
 | stone | OneToOne→orders.Stone (CASCADE) | one report per stone |
+| report_number | Char(50) `UQ` | e.g. `RPT-00042` |
 | species | FK→core.Species (PROTECT, ?) | |
 | variety | FK→core.Variety (PROTECT, ?) | |
 | origin | FK→core.Origin (PROTECT, ?) | |
 | shape_cut | FK→core.ShapeCut (PROTECT, ?) | |
-| color | Color (enum, ?) | |
-| transparency | Transparency (enum, ?) | |
-| treatment | Treatment (enum, ?) | |
-| optic_character | OpticCharacter (enum, ?) | |
+| color | FK→core.Color (SET_NULL, ?) | now a lookup, not an enum |
+| nature_type | NatureType (enum, blank) | natural / synthetic / … |
+| transparency | Transparency (enum, blank) | |
+| treatment | Treatment (enum, blank) | |
+| optic_character | OpticCharacter (enum, blank) | SR / ADR / DR / AGG |
+| dimensions | Char(50, blank) | L x W x D in mm (free text) |
+| refractive_index | Char(50, blank) | |
+| specific_gravity | Decimal(10,3) (?) | |
+| is_polished | bool | default false |
 | conclusion | Text (blank) | gemmologist's finding/summary |
 | is_finalized | bool | locks the report **(open: C4)** |
-| completed_at | DateTime (?) | |
+| identified_by | FK→User (SET_NULL, ?) | the gemmologist |
+| identified_at | DateTime (?) | set on finalize |
 
 ### InstrumentUsed  *(which instruments were used on a report)*
 
@@ -254,27 +281,6 @@ a new model. *(Resolves C5.)*
 | report | FK→IdentificationReport (CASCADE) | `related_name="instruments_used"` |
 | instrument | FK→core.Instrument (PROTECT) | |
 | reading | Char(100, blank) | measured value |
-
----
-
-## Module: `production`  *(one model, type field — decision A10)*
-
-### Production
-
-| Column | Type | Notes |
-| --- | --- | --- |
-| id | PK | |
-| stone | FK→orders.Stone (CASCADE) | `related_name="productions"` — **many? (open: B1)** |
-| type | Char (enum: sonara/carving/lapidary) | the workshop |
-| assigned_to | FK→User (SET_NULL, ?) | production staff |
-| started_at | DateTime (?) | |
-| finished_at | DateTime (?) | |
-| qa_result | Char (enum: pending/passed/failed) | quality assurance |
-| qa_by | FK→User (SET_NULL, ?) | |
-| notes | Text (blank) | |
-
-> FK (not OneToOne) allows multiple production steps per stone **if B1 = yes**.
-> If B1 = one step only, change to OneToOne.
 
 ---
 
@@ -297,13 +303,21 @@ a new model. *(Resolves C5.)*
 | id | PK | |
 | order | OneToOne→orders.Order (PROTECT) | one bill per order |
 | bill_number | Char(50) `UQ` | internal reference |
-| control_number | Char(50) `UQ` (?) | from GePG |
-| service_provider | FK→ServiceProvider (PROTECT) | |
-| total_amount | Decimal(15,2) | = Σ BillItem.amount (snapshot) |
+| control_number | Char(50, blank) `UQ` | from GePG (unique when non-blank) |
+| service_provider | FK→ServiceProvider (PROTECT, ?) | |
+| total_amount | Decimal(15,2) | = Σ BillItem.amount (snapshot); default 0 |
 | currency | Char(3) | default "TZS" |
-| status | Char (enum: pending/paid/partially_paid/cancelled/expired) | **(open: C2)** |
+| status | Char (BillStatus: pending/partially_paid/paid/cancelled/expired) | domain state **(open: C2)** |
 | issued_at | DateTime (?) | |
+| expiry_at | DateTime (?) | |
 | due_date | Date (?) | |
+| bill_type, pay_type | SmallInt | GePG submission params (default 1) |
+| status_code, status_desc | Char (blank) | raw GePG gateway state |
+| gepg_submitted | bool | default false |
+| gepg_submitted_at | DateTime (?) | |
+
+> `status` is the **domain** payment state; the `status_code`/`status_desc` and
+> `gepg_*` columns track the raw gateway exchange separately.
 
 ### BillItem  *(one per stone; price snapshotted — see §Stage 4)*
 
@@ -311,25 +325,37 @@ a new model. *(Resolves C5.)*
 | --- | --- | --- |
 | id | PK | |
 | bill | FK→Bill (CASCADE) | `related_name="items"` |
-| stone | FK→orders.Stone (PROTECT) | |
-| description | Char(255) | e.g. "Ruby, 3.20 ct" |
-| unit_price | Decimal(15,2) | **snapshot** of rate used |
-| weight | Decimal(10,3) | **snapshot** at billing time |
-| amount | Decimal(15,2) | **snapshot** = unit_price × weight |
+| stone | FK→orders.Stone (PROTECT) | `related_name="bill_items"` |
+| description | Char(255) | e.g. the stone type name |
+| unit_price | Decimal(15,2) | **snapshot** of the type's flat price |
+| weight | Decimal(10,3) (?) | **snapshot** at billing (informational) |
+| amount | Decimal(15,2) | **snapshot** = the flat price charged |
+| gfs_code, item_ref | Char (blank) | GePG line references |
 
-> The three snapshot columns freeze the calculation so later `StonePrice`
-> changes never alter an issued bill.
+> The snapshot columns freeze the charge so later `StonePrice` changes never
+> alter an issued bill. Pricing is **flat per stone type**, so `amount` equals the
+> type's price (weight is recorded but does not change it).
 
-### Payment
+### Payment  *(one row per GePG payment notification)*
+
+Mirrors the GePG payment-notification message (`PmtTrxInf`): the system stores the
+callback verbatim rather than a hand-rolled summary. Only the load-bearing columns
+are listed; the rest map 1:1 to GePG fields.
 
 | Column | Type | Notes |
 | --- | --- | --- |
 | id | PK | |
-| bill | FK→Bill (PROTECT) | `related_name="payments"` |
-| amount | Decimal(15,2) | supports partial payments **(open: C2)** |
-| paid_at | DateTime | |
-| channel | Char(50) | GePG / bank / cash **(open: C2)** |
-| reference | Char(100, blank) | transaction ref |
+| bill | FK→Bill (PROTECT, ?) | `related_name="payments"` |
+| cust_cntr_num | Char(12, blank) | customer control number |
+| trx_id | Char(100, blank) `UQ` | GePG transaction id (unique when non-blank) |
+| bill_amount / paid_amount | Decimal(15,2) (?) | billed vs actually paid |
+| usd_pay_chnl | Char(50, blank) | payment channel used |
+| trx_dt_tm | DateTime (?) | transaction timestamp |
+| pyr_name / pyr_cell_num / pyr_email | Char (blank) | payer details |
+| ack_id / ack_sts_code | Char (blank) | acknowledgement we returned |
+| processed | bool | whether we've applied it to the bill |
+| raw_request | Text (blank) | the raw callback payload |
+| *(req_id, sp_code, gepg_bill_id, psp_code, …)* | Char | other GePG header/detail fields |
 
 ---
 
@@ -344,9 +370,20 @@ a new model. *(Resolves C5.)*
 | report | FK→identification.IdentificationReport (PROTECT) | source data |
 | certificate_no | Char(30) `UQ` | human-readable **(open: C6)** |
 | verification_token | Char(64) `UQ` | for the public QR URL |
-| issued_at | DateTime | |
+| stone_type_snapshot | Char(100) | **frozen** at issue |
+| weight_snapshot | Decimal(10,3) | **frozen** at issue |
+| color_snapshot | Char(100, blank) | **frozen** at issue |
+| origin_snapshot | Char(100, blank) | **frozen** at issue |
+| gemmologist | Char(100, blank) | **frozen** examiner name |
+| qr_code | Char(100, blank) | stored QR artifact path |
+| pdf_file | Char(100, blank) | stored PDF artifact path |
+| status | Char (CertificateStatus: issued/revoked/reissued) | **(open: C3)** |
 | issued_by | FK→User (SET_NULL, ?) | |
-| status | Char (enum: issued/revoked/reissued) | **(open: C3)** |
+| issued_at | DateTime | |
+
+> The `*_snapshot` + `gemmologist` columns freeze the report data at issue time,
+> so later edits to the report never change an issued certificate (the one
+> intentional denormalization).
 
 ### CertificateAccessLog  *(who scanned/verified a certificate)*
 
@@ -372,10 +409,10 @@ orders.Customer 1─* orders.Order 1─1 billing.Bill 1─* billing.BillItem *�
                     orders.Stone ─────────────────────────────────────────────┘
                           │  status (enum) + orders.StatusHistory (audit)
                           │
-        ┌─────────────────┼──────────────────┬──────────────────┐
-        1                 *(B1?)              1                  1
-identification.        production.        certificates.     (billing via
-IdentificationReport   Production         Certificate        BillItem above)
+        ┌─────────────────────────────────────┬──────────────────┐
+        1                                     1                  1
+identification.                          certificates.     (billing via
+IdentificationReport                     Certificate        BillItem above)
         │                                      │
         *─ FK → core lookups                   └─ FK → IdentificationReport
         1─* InstrumentUsed
@@ -412,14 +449,14 @@ IdentificationReport   Production         Certificate        BillItem above)
 
 | Open Q | Column(s) affected |
 | --- | --- |
-| B1 | `Production.stone` — FK (many) vs OneToOne (one) |
-| B2 | `StonePrice` — single rate vs tiered `StonePriceBand` |
-| B3 | weight units throughout (`SiUnit` usage) |
+| ~~B1~~ | ✅ Resolved — no production module in the current build. |
+| ~~B2~~ | ✅ Resolved — pricing is flat per stone type (`StonePrice.price`). |
+| ~~B3~~ | ✅ Resolved — weight unit is `carat`/`gram` (`WeightUnit`); no `SiUnit`. |
 | B4 | whether Certificate creation checks Bill.status = paid |
-| B5 | `StoneStatus` enum values |
+| ~~B5~~ | ✅ Resolved — `StoneStatus` list settled (no `in_production`). |
 | C1 | `Customer` identity fields |
-| C2 | `Bill.status`, `Payment.channel`, partial-payment rules |
+| C2 | `Bill.status`, partial-payment rules |
 | C3 | `Certificate.status` (revoke/reissue) |
 | C4 | `IdentificationReport.is_finalized` locking rule |
-| ~~C5~~ | ✅ Resolved — roles = Django Groups; no custom table. Still need the team to name the roles and which stages each may act on. |
+| ~~C5~~ | ✅ Resolved — roles = Django Groups (receptionist, gemmologist, accountant, administrator); no custom table. |
 | C6 | reference-number formats (`Order`, `Certificate`) |

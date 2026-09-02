@@ -3,32 +3,22 @@
 from django.db import models
 
 
-class Color(models.TextChoices):
-    """Observed stone color."""
-
-    COLORLESS = ("colorless", "Colorless")
-    WHITE = ("white", "White")
-    RED = ("red", "Red")
-    PINK = ("pink", "Pink")
-    ORANGE = ("orange", "Orange")
-    YELLOW = ("yellow", "Yellow")
-    GREEN = ("green", "Green")
-    BLUE = ("blue", "Blue")
-    VIOLET = ("violet", "Violet")
-    PURPLE = ("purple", "Purple")
-    BROWN = ("brown", "Brown")
-    BLACK = ("black", "Black")
-    GRAY = ("gray", "Gray")
-    MULTICOLOR = ("multicolor", "Multicolor")
-
-
 class Transparency(models.TextChoices):
     """How light passes through the stone."""
 
     TRANSPARENT = ("transparent", "Transparent")
-    SEMI_TRANSPARENT = ("semi_transparent", "Semi-transparent")
     TRANSLUCENT = ("translucent", "Translucent")
     OPAQUE = ("opaque", "Opaque")
+
+
+class NatureType(models.TextChoices):
+    """Whether the stone is natural or man-made/altered."""
+
+    NATURAL = ("natural", "Natural")
+    SYNTHETIC = ("synthetic", "Synthetic")
+    TREATED = ("treated", "Treated")
+    ENHANCED = ("enhanced", "Enhanced")
+    ARTIFICIAL = ("artificial", "Artificial")
 
 
 class Treatment(models.TextChoices):
@@ -47,9 +37,7 @@ class Treatment(models.TextChoices):
 class OpticCharacter(models.TextChoices):
     """Optical behavior under polarized light."""
 
-    ISOTROPIC = ("isotropic", "Isotropic")
-    UNIAXIAL_POSITIVE = ("uniaxial_positive", "Uniaxial (+)")
-    UNIAXIAL_NEGATIVE = ("uniaxial_negative", "Uniaxial (−)")
-    BIAXIAL_POSITIVE = ("biaxial_positive", "Biaxial (+)")
-    BIAXIAL_NEGATIVE = ("biaxial_negative", "Biaxial (−)")
-    AGGREGATE = ("aggregate", "Aggregate")
+    SR = ("sr", "SR — Singly refractive")
+    ADR = ("adr", "ADR — Anomalous double refractive")
+    DR = ("dr", "DR — Double refractive")
+    AGG = ("agg", "AGG — Aggregate")

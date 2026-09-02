@@ -3,8 +3,8 @@
 import factory
 from factory.fuzzy import FuzzyChoice
 
-from apps.core.tests.factories import InstrumentFactory, SpeciesFactory
-from apps.identification.enums import Color, Transparency
+from apps.core.tests.factories import ColorFactory, InstrumentFactory, SpeciesFactory
+from apps.identification.enums import Transparency
 from apps.identification.models import IdentificationReport, InstrumentUsed
 from apps.orders.tests.factories import StoneFactory
 
@@ -18,7 +18,7 @@ class IdentificationReportFactory(factory.django.DjangoModelFactory):
     stone = factory.SubFactory(StoneFactory)
     report_number = factory.Sequence(lambda n: f"RPT-{n:05d}")
     species = factory.SubFactory(SpeciesFactory)
-    color = FuzzyChoice(Color.values)
+    color = factory.SubFactory(ColorFactory)
     transparency = FuzzyChoice(Transparency.values)
 
 

@@ -37,7 +37,9 @@ def issue_certificate(stone, *, user=None) -> Certificate:
 
     gemmologist = ""
     if report.identified_by is not None:
-        gemmologist = report.identified_by.get_full_name() or report.identified_by.username
+        gemmologist = (
+            report.identified_by.get_full_name() or report.identified_by.username
+        )
 
     certificate = Certificate(
         stone=stone,
@@ -46,7 +48,7 @@ def issue_certificate(stone, *, user=None) -> Certificate:
         verification_token=secrets.token_hex(32),
         stone_type_snapshot=stone.stone_type.name,
         weight_snapshot=stone.weight,
-        color_snapshot=report.get_color_display() if report.color else "",
+        color_snapshot=report.color.name if report.color else "",
         origin_snapshot=report.origin.name if report.origin else "",
         gemmologist=gemmologist,
         status=CertificateStatus.ISSUED,
@@ -57,7 +59,12 @@ def issue_certificate(stone, *, user=None) -> Certificate:
         certificate.created_by = user
     certificate.save()
 
-    transition_stone(stone, StoneStatus.CERTIFIED, user=user, note=f"Certified {certificate.certificate_no}")
+    transition_stone(
+        stone,
+        StoneStatus.CERTIFIED,
+        user=user,
+        note=f"Certified {certificate.certificate_no}",
+    )
     return certificate
 
 

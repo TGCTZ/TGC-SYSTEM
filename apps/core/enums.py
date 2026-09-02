@@ -25,6 +25,17 @@ class StoneCategory(models.TextChoices):
     DIAMOND = ("diamond", "Diamond")
 
 
+class ColorGroup(models.TextChoices):
+    """Broad color families used to group the color lookup (GIA-style)."""
+
+    WHITE_GREY_BLACK = ("white_grey_black", "White/Grey/Black")
+    PURPLE_VIOLET = ("purple_violet", "Purple/Violet")
+    RED_PINK = ("red_pink", "Red/Pink")
+    ORANGE_YELLOW = ("orange_yellow", "Orange/Yellow")
+    GREEN = ("green", "Green")
+    BLUE = ("blue", "Blue")
+
+
 class WeightUnit(models.TextChoices):
     """Unit for stone weight and pricing."""
 

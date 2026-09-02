@@ -15,30 +15,31 @@
 ## 1. The process at a glance
 
 ```
- ┌────────────┐   ┌────────────────┐   ┌────────────┐   ┌──────────┐   ┌──────────────┐
- │ RECEPTION  │──▶│ IDENTIFICATION │──▶│ PRODUCTION │──▶│ BILLING  │──▶│ CERTIFICATE  │
- │            │   │  & FINDINGS    │   │ (optional) │   │ & PAYMENT│   │  & HANDOVER  │
- └────────────┘   └────────────────┘   └────────────┘   └──────────┘   └──────────────┘
-   receptionist      gemmologist        production staff   accountant      receptionist
+ ┌────────────┐   ┌──────────────┐   ┌──────────┐   ┌────────────┐   ┌──────────────┐
+ │ RECEPTION  │──▶│ TYPE         │──▶│ BILLING  │──▶│ FINDINGS   │──▶│ CERTIFICATE  │
+ │            │   │ IDENTIFY     │   │ & PAYMENT│   │ (examine)  │   │  & HANDOVER  │
+ └────────────┘   └──────────────┘   └──────────┘   └────────────┘   └──────────────┘
+   receptionist     gemmologist        accountant     gemmologist       receptionist
 ```
 
 - An **Order** groups one or many **Stones** brought by one **Customer**.
 - Each **Stone** flows through the pipeline **independently** — one stone may be
-  certified while another in the same order is still in production.
+  certified while another in the same order is still awaiting findings.
+- **Findings are recorded after payment.** The gemmologist first assigns only the
+  stone's **type** (which fixes the price); the customer pays; then the full
+  gemmological findings are recorded and the report is finalized.
 - Billing happens once **per order**; certificates are issued **per stone**.
 
 ---
 
 ## 2. Roles (actors)
 
-> **(assumption)** — exact roles and their permissions are open question C5.
-> This is the working set implied by the workflow.
+The four seeded roles (C5 ✅ resolved — see [permissions.md](../engineering/permissions.md)):
 
 | Role | Responsible for |
 | --- | --- |
 | **Receptionist** | Registers customers, creates orders, logs stones, hands over finished certificates. |
-| **Gemmologist** | Examines each stone and produces its identification report. |
-| **Production staff** | Carries out sonara / carving / lapidary work and records QA. |
+| **Gemmologist** | Identifies each stone's type, then (after payment) records findings and finalizes the report. |
 | **Accountant** | Generates bills, handles GePG, confirms payment. |
 | **Administrator** | Manages reference data (lookups, prices) and users. |
 
@@ -61,54 +62,55 @@ identification.
 
 ---
 
-### Stage 2 — Identification & Findings
+### Stage 2 — Type identification
 **Who:** Gemmologist
 
-1. Take a physical stone and **register it** on the order (`add_stone`) —
-   recording its stone type, weight, and unit. This creates the `Stone` record
-   (`received`). The system caps registrations at the order's `stone_count`.
-2. Record findings on the stone's **Identification Report** — species, variety,
-   color, transparency, origin, treatment, shape/cut, optic character, and any
-   instrument readings (all chosen from admin-managed reference lists).
-3. Complete the report.
+1. Take a physical stone and **register it** on the order (`add_stone`),
+   assigning only its **stone type**. This creates the `Stone` record
+   (`received`) and, via the type, **fixes the price**. The system caps
+   registrations at the order's `stone_count`.
+2. Full gemmological findings are **not** recorded yet — they come after payment
+   (Stage 4).
 
-**Result:** each submitted stone becomes a `Stone` record with one completed
-identification report; status advances.
-
-> **(assumption)** Whether a report can still be edited after later stages is
-> open question C4.
+**Result:** each submitted stone becomes a `Stone` record with a known type (and
+therefore a known price); weight and findings are still blank.
 
 ---
 
-### Stage 3 — Production *(optional)*
-**Who:** Production staff
-
-1. If a stone needs processing, a **Production** record is opened with its
-   **type** — sonara, carving, or lapidary.
-2. Record assignment, start/finish, quality-assurance result, and notes.
-
-> **(assumption)** Whether a stone may go through **more than one** production
-> step (e.g. lapidary then carving) is open question B1. Whether a stone may
-> **skip** production entirely — going straight to billing — is open question B6.
-
-**Result:** processed stones have one or more production records; status advances.
-
----
-
-### Stage 4 — Billing & Payment
+### Stage 3 — Billing & Payment
 **Who:** Accountant
 
-1. Once an order's stones are ready to bill, generate **one Bill for the Order**.
-2. The bill has a **line item per stone**, priced by **stone type × weight**.
-   The computed amount and the unit price used are **frozen onto the line item**
-   at billing time, so later price-list changes never alter an issued bill.
+1. Once an order's stones are typed, generate **one Bill for the Order**.
+2. The bill has a **line item per stone**, priced by a **flat rate per stone
+   type** (weight does not change the price). The charge is **frozen onto the line
+   item** at billing time, so later price-list changes never alter an issued bill.
 3. Submit the bill to **GePG**, which returns a **control number**.
-4. The customer pays; payment is confirmed (synchronously or via GePG callback).
+4. The customer pays; payment is confirmed via the GePG callback (a dev
+   "simulate payment" path exists for local testing).
 
-> **(assumption)** Pricing shape (flat vs tiered) is B2; the unit of weight is
-> B3; partial payments and bill cancellation/reissue are C2.
+> **(assumption)** Partial payments and bill cancellation/reissue are open
+> question C2.
 
-**Result:** the order is billed and, once settled, marked paid.
+**Result:** the order is billed and, once settled, marked paid — which unlocks
+findings.
+
+---
+
+### Stage 4 — Findings
+**Who:** Gemmologist
+
+1. For each **paid** stone, record the full findings on its **Identification
+   Report** — weight, color (grouped GIA-style list), nature, species, variety,
+   origin, treatment, shape/cut, transparency, optic character, dimensions,
+   refractive index, specific gravity, and instrument readings (all chosen from
+   admin-managed reference lists).
+2. **Finalize** the report, which locks it against further edits.
+
+> **(assumption)** Whether a finalized report can still be edited is open
+> question C4.
+
+**Result:** each paid stone has one finalized identification report; status
+advances toward certification.
 
 ---
 
@@ -132,17 +134,13 @@ Each stone carries its **own status** (a fixed set defined in code), and every
 change is written to a **status-history audit trail** recording *who* moved it,
 *from* which status, *to* which status, *when*, and an optional note.
 
-> **(assumption)** The exact status list is open question B5. Draft below —
-> to be confirmed by the team.
+The status list (B5 ✅ resolved):
 
 ```
 received
    │
    ▼
 under_identification
-   │
-   ▼
-in_production ····· (skippable — B6)
    │
    ▼
 billed
@@ -168,27 +166,27 @@ collected
 | --- | --- |
 | Stone | Stone #A of Order ORD-2026-0042 |
 | From status | `under_identification` |
-| To status | `in_production` |
+| To status | `billed` |
 | Changed by | gemmologist J. Doe |
 | Changed at | 2026-08-27 14:05 |
-| Note | "sent to lapidary" |
+| Note | "type identified: Ruby" |
 
 ---
 
 ## 5. Key business rules (confirmed)
 
 1. **Reception records only a stone count** (`stone_count`); stones are created
-   later, at identification, one record per physical stone.
-2. A **report is produced per stone**.
+   later, at type identification, one record per physical stone.
+2. A **report is produced per stone**, and **findings are recorded after
+   payment** (type first → pay → findings → finalize).
 3. Reference data (colors, species, treatments, prices, …) is **admin-managed**;
    staff select from fixed lists, not free text.
 4. **One Bill per Order** — the customer pays once for the whole batch.
-5. Pricing is driven by **stone type and weight**.
+5. Pricing is a **flat rate per stone type** — weight does not change the price.
 6. A **certificate is issued per stone**.
 7. Each **stone moves independently** through the pipeline.
 8. Workflow **stages are fixed** (defined in code, not staff-editable).
 9. A **status audit trail is mandatory** — every transition is logged.
-10. Production is **one model with a type field** (sonara / carving / lapidary).
 
 *(These are the confirmed decisions — Part A of `domain-questions.md`.)*
 
@@ -200,15 +198,12 @@ Answers to these will update the stages above. See `domain-questions.md`.
 
 | Ref | Question | Affects |
 | --- | --- | --- |
-| B1 | Multiple production steps per stone? | Stage 3 |
-| B2 | Flat vs tiered pricing? | Stage 4 |
-| B3 | Weight unit (carats/grams)? | Stages 1, 4 |
-| B4 | Must a bill be paid before certification? | Stages 4→5 |
-| B5 | Exact status list? | §4 lifecycle |
-| B6 | Can stones skip production? | Stage 3 |
-| C2 | Partial payments, bill cancellation? | Stage 4 |
+| B4 | Must a bill be paid before certification? | Stages 3→5 |
+| C2 | Partial payments, bill cancellation? | Stage 3 |
 | C3 | Certificate re-issue / revocation? | Stage 5 |
-| C4 | Report editable after billing/cert? | Stage 2 |
-| C5 | Roles and permissions? | §2 actors |
+| C4 | Finalized report editable? | Stage 4 |
 | C6 | Human-readable order/certificate numbers? | Stages 1, 5 |
+
+*(Resolved and no longer open: B1/B6 production removed · B2 flat pricing ·
+B3 weight unit ct/g · B5 status list · C5 roles.)*
 ```

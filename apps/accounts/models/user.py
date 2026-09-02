@@ -17,5 +17,5 @@ class User(AbstractUser):
         verbose_name_plural = "Users"
         permissions = [
             ("verify_user", "Can verify user"),
-            ("approve_user", "Can approve user")
+            ("approve_user", "Can approve user"),
         ]

@@ -13,18 +13,22 @@ permissions through their group(s). No custom role table.
   | --- | --- |
   | `orders.transition_stone` | Stone |
   | `identification.finalize_report` | IdentificationReport |
-  | `production.record_qa` | Production |
   | `billing.generate_bill` | Bill |
   | `certificates.issue_certificate`, `certificates.revoke_certificate` | Certificate |
   | `accounts.verify_user`, `accounts.approve_user` | User |
 
 ## Roles
 
-Five seeded Groups: `receptionist`, `gemmologist`, `production`, `accountant`,
-`administrator`. The Group→permission mapping for these is the version-controlled
-baseline in [`apps/accounts/roles.py`](../../apps/accounts/roles.py)
-(`ROLE_PERMISSIONS`), where `administrator` also holds the `auth.*_group` and
-`accounts.*_user` permissions that gate the portals below.
+Four seeded Groups: `receptionist`, `gemmologist`, `accountant`, `administrator`.
+The Group→permission mapping for these is the version-controlled baseline in
+[`apps/accounts/roles.py`](../../apps/accounts/roles.py) (`ROLE_PERMISSIONS`),
+where `administrator` also holds the `auth.*_group` and `accounts.*_user`
+permissions that gate the portals below.
+
+> **Reference data:** the gemmologist gets **view** on every lookup
+> (`StoneType`, `Species`, `Variety`, `Color`, `Origin`, `ShapeCut`,
+> `Instrument`) and the administrator gets full CRUD on them + `StonePrice` —
+> assembled from the `_REFERENCE_VIEW` / `_REFERENCE_MANAGE` sets in `roles.py`.
 
 Seed or refresh the baseline Groups (idempotent):
 
