@@ -39,7 +39,7 @@ def _ready_stone(user, stone_type, number):
 def test_issue_certificate_success(user, priced_stone_type):
     stone = _ready_stone(user, priced_stone_type, "BILL-C-1")
     cert = issue_certificate(stone, user=user)
-    assert cert.certificate_no.startswith("CERT-")
+    assert cert.certificate_number.startswith("CERT-")
     assert cert.stone_type_snapshot == stone.stone_type.name
     stone.refresh_from_db()
     assert stone.status == StoneStatus.CERTIFIED

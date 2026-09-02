@@ -57,4 +57,4 @@ class PaymentFactory(factory.django.DjangoModelFactory):
     paid_amount = FuzzyDecimal(100_000, 5_000_000)
     currency = "TZS"
     trx_dt_tm = factory.LazyFunction(timezone.now)
-    processed = True
+    is_processed = True

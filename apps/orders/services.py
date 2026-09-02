@@ -42,7 +42,7 @@ def create_order(*, customer, stone_count: int, received_date=None, user=None) -
     properties) are created later during identification via :func:`add_stone`.
     """
     order = Order(
-        reference_no=generate_reference_number(Order, "reference_no", "ORD"),
+        reference_number=generate_reference_number(Order, "reference_number", "ORD"),
         customer=customer,
         received_date=received_date or timezone.now().date(),
         stone_count=stone_count,
@@ -66,7 +66,7 @@ def add_stone(
     registered = order.stones.count()
     if registered >= order.stone_count:
         raise ServiceError(
-            f"All {order.stone_count} stone(s) for {order.reference_no} are "
+            f"All {order.stone_count} stone(s) for {order.reference_number} are "
             f"already registered."
         )
     label = chr(65 + registered)

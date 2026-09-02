@@ -20,7 +20,7 @@ class Certificate(BaseModel):
         on_delete=models.PROTECT,
         related_name="certificates",
     )
-    certificate_no = models.CharField(max_length=30)
+    certificate_number = models.CharField(max_length=30)
     verification_token = models.CharField(max_length=64)
 
     # Snapshot of report data at issue time (intentionally frozen).
@@ -56,9 +56,9 @@ class Certificate(BaseModel):
         ]
         constraints = [
             models.UniqueConstraint(
-                fields=["certificate_no"],
+                fields=["certificate_number"],
                 condition=Q(deleted_at__isnull=True),
-                name="unique_active_certificate_no",
+                name="unique_active_certificate_number",
             ),
             models.UniqueConstraint(
                 fields=["verification_token"],
@@ -68,7 +68,7 @@ class Certificate(BaseModel):
         ]
 
     def __str__(self) -> str:
-        return self.certificate_no
+        return self.certificate_number
 
 
 class CertificateAccessLog(models.Model):

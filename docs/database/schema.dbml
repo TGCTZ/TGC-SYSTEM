@@ -222,7 +222,7 @@ Table customer {             // (open: C1)
 
 Table "order" {
   id            bigint       [pk, increment]
-  reference_no  varchar(30)  [not null, note: 'unique (live); (open: C6)']
+  reference_number  varchar(30)  [not null, note: 'unique (live); (open: C6)']
   customer_id   bigint       [not null, ref: > customer.id, note: 'PROTECT']
   received_date date         [not null]
   stone_count   integer      [not null, note: 'count submitted at reception']
@@ -324,7 +324,7 @@ Table bill {
   pay_type            smallint      [not null, default: 1, note: 'GePG']
   status_code         varchar(30)   [note: 'GePG raw gateway state']
   status_desc         varchar(255)  [note: 'GePG raw gateway state']
-  gepg_submitted      boolean       [not null, default: false]
+  is_gepg_submitted   boolean       [not null, default: false]
   gepg_submitted_at   timestamptz
   ~audit
 }
@@ -369,7 +369,7 @@ Table payment {              // one row per GePG payment notification (PmtTrxInf
   pyr_name      varchar(200)
   ack_id        varchar(100)  [note: 'acknowledgement we returned']
   ack_sts_code  varchar(10)
-  processed     boolean       [not null, default: false]
+  is_processed  boolean       [not null, default: false]
   raw_request   text          [note: 'raw callback payload']
   ~audit
 }
@@ -384,7 +384,7 @@ Table certificate {
   id                 bigint      [pk, increment]
   stone_id           bigint      [not null, unique, ref: - stone.id, note: 'OneToOne, PROTECT']
   report_id          bigint      [not null, ref: > identification_report.id, note: 'PROTECT (source)']
-  certificate_no     varchar(30) [not null, note: 'unique (live); (open: C6)']
+  certificate_number     varchar(30) [not null, note: 'unique (live); (open: C6)']
   verification_token varchar(64) [not null, note: 'unique (live); public QR URL']
   stone_type_snapshot varchar(100) [not null]
   weight_snapshot     decimal(10,3) [not null]

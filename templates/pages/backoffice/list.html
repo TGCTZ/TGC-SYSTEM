@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-semibold text-gray-900">{{ panel.verbose_name_plural }}</h2>
       {% if can_add %}
-        <a href="{% url 'manage:create' panel.app_label panel.model_name %}">
+        <a href="{% url 'backoffice:create' panel.app_label panel.model_name %}">
           <c-atoms.ui.button variant="primary"><c-atoms.ui.icon name="lucide:plus" size="sm" /> New</c-atoms.ui.button>
         </a>
       {% endif %}
@@ -28,7 +28,7 @@
             </thead>
             <tbody class="divide-y divide-gray-100 text-sm text-gray-700">
               {% for row in rows %}
-                <c-sections.table.row href="{% url 'manage:detail' panel.app_label panel.model_name row.obj.pk %}" :actions="row.actions">
+                <c-sections.table.row href="{% url 'backoffice:detail' panel.app_label panel.model_name row.obj.pk %}" :actions="row.actions">
                   {% for cell in row.cells %}
                     <td class="px-6 py-3">
                       {% if cell.kind == 'bool' %}

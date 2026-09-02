@@ -27,7 +27,7 @@ class OrderFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Order
 
-    reference_no = factory.Sequence(lambda n: f"ORD-{n:05d}")
+    reference_number = factory.Sequence(lambda n: f"ORD-{n:05d}")
     customer = factory.SubFactory(CustomerFactory)
     received_date = factory.Faker("date_this_year")
     stone_count = 1

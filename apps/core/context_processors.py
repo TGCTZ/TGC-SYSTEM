@@ -12,7 +12,7 @@ _SECTIONS = {
     "billing": ("Bills", "billing:index"),
     "certificates": ("Certificates", "certificates:index"),
     "users": ("Users", "users:index"),
-    "manage": ("Manage", "manage:index"),
+    "backoffice": ("Admin", "backoffice:index"),
 }
 
 

@@ -6,8 +6,8 @@
     <c-sections.table :headers="['Reference', 'Customer', 'Received', 'Identified']"
       count="{{ orders|length }}" empty="Nothing to identify.">
       {% for order in orders %}
-        <c-sections.table.row href="{% url 'identification:order' order.pk %}" :actions="order.row_actions">
-          <td class="px-6 py-3 font-medium">{{ order.reference_no }}</td>
+        <c-sections.table.row href="{% url 'identification:order_identify' order.pk %}" :actions="order.row_actions">
+          <td class="px-6 py-3 font-medium">{{ order.reference_number }}</td>
           <td class="px-6 py-3">{{ order.customer.full_name }}</td>
           <td class="px-6 py-3">{{ order.received_date }}</td>
           <td class="px-6 py-3">

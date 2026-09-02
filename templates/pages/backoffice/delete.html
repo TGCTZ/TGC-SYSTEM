@@ -7,7 +7,7 @@
     <form method="post" class="flex gap-2">
       {% csrf_token %}
       <c-atoms.ui.button type="submit" variant="danger">Delete</c-atoms.ui.button>
-      <a href="{% url 'manage:detail' panel.app_label panel.model_name object.pk %}"><c-atoms.ui.button type="button" variant="secondary">Cancel</c-atoms.ui.button></a>
+      <a href="{% url 'backoffice:detail' panel.app_label panel.model_name object.pk %}"><c-atoms.ui.button type="button" variant="secondary">Cancel</c-atoms.ui.button></a>
     </form>
   </div>
 </c-layouts.app>

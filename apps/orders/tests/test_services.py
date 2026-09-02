@@ -15,7 +15,7 @@ pytestmark = pytest.mark.django_db
 
 def test_create_order_records_count_only(user):
     order = create_order(customer=CustomerFactory(), stone_count=3, user=user)
-    assert order.reference_no.startswith("ORD-")
+    assert order.reference_number.startswith("ORD-")
     assert order.stone_count == 3
     assert order.stones.count() == 0  # stones are created later, at identification
     assert order.created_by == user

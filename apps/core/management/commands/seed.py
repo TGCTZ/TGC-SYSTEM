@@ -80,7 +80,7 @@ class Command(BaseCommand):
             stone_types.append(st)
             price_of[st.pk] = price
 
-        # Real gemmological reference data — editable later at /manage/.
+        # Real gemmological reference data — editable later at /backoffice/.
         for name in (
             "Color filter",
             "Diamond tester",

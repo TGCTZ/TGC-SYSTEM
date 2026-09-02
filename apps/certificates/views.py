@@ -41,11 +41,11 @@ class CertificateListView(LoginRequiredMixin, PermissionRequiredMixin, ListView)
         query = self.request.GET.get("q", "").strip()
         if query:
             qs = qs.filter(
-                Q(certificate_no__icontains=query)
+                Q(certificate_number__icontains=query)
                 | Q(status__icontains=query)
                 | Q(stone_type_snapshot__icontains=query)
                 | Q(stone__label__icontains=query)
-                | Q(stone__order__reference_no__icontains=query)
+                | Q(stone__order__reference_number__icontains=query)
                 | Q(stone__order__customer__first_name__icontains=query)
                 | Q(stone__order__customer__last_name__icontains=query)
             )
@@ -64,7 +64,7 @@ class CertificateListView(LoginRequiredMixin, PermissionRequiredMixin, ListView)
         return ctx
 
 
-class CertifiableStonesView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class CertificationWorklistView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     """Stones ready to certify: finalized report, paid bill, and no certificate yet."""
 
     permission_required = "certificates.issue_certificate"
@@ -81,7 +81,7 @@ class CertifiableStonesView(LoginRequiredMixin, PermissionRequiredMixin, ListVie
         query = self.request.GET.get("q", "").strip()
         if query:
             qs = qs.filter(
-                Q(order__reference_no__icontains=query)
+                Q(order__reference_number__icontains=query)
                 | Q(order__customer__first_name__icontains=query)
                 | Q(order__customer__last_name__icontains=query)
                 | Q(order__customer__company_name__icontains=query)
@@ -97,7 +97,7 @@ class CertifiableStonesView(LoginRequiredMixin, PermissionRequiredMixin, ListVie
 @login_required
 @permission_required("certificates.issue_certificate", raise_exception=True)
 @require_POST
-def issue(request, stone_pk):
+def certificate_issue(request, stone_pk):
     """Issue a certificate for a stone (validates report + payment in the service)."""
     stone = get_object_or_404(Stone, pk=stone_pk)
     try:
@@ -105,13 +105,13 @@ def issue(request, stone_pk):
     except ServiceError as exc:
         messages.error(request, str(exc))
         return redirect("certificates:worklist")
-    messages.success(request, f"Certificate {certificate.certificate_no} issued.")
+    messages.success(request, f"Certificate {certificate.certificate_number} issued.")
     return redirect("certificates:detail", pk=certificate.pk)
 
 
 @login_required
 @permission_required("certificates.view_certificate", raise_exception=True)
-def detail(request, pk):
+def certificate_detail(request, pk):
     """Certificate detail: snapshot data, verification link, and access log."""
     certificate = get_object_or_404(
         Certificate.objects.select_related("stone__order__customer", "issued_by"), pk=pk
@@ -136,7 +136,7 @@ def detail(request, pk):
 
 @login_required
 @permission_required("certificates.view_certificate", raise_exception=True)
-def print_certificate(request, pk):
+def certificate_print(request, pk):
     """Printable gemstone-identification-report document for a certificate."""
     certificate = get_object_or_404(
         Certificate.objects.select_related(
@@ -168,7 +168,7 @@ def print_certificate(request, pk):
 @login_required
 @permission_required("certificates.revoke_certificate", raise_exception=True)
 @require_POST
-def revoke(request, pk):
+def certificate_revoke(request, pk):
     """Revoke a certificate."""
     certificate = get_object_or_404(Certificate, pk=pk)
     try:
@@ -176,11 +176,13 @@ def revoke(request, pk):
     except ServiceError as exc:
         messages.error(request, str(exc))
     else:
-        messages.success(request, f"Certificate {certificate.certificate_no} revoked.")
+        messages.success(
+            request, f"Certificate {certificate.certificate_number} revoked."
+        )
     return redirect("certificates:detail", pk=certificate.pk)
 
 
-def verify(request, token):
+def certificate_verify(request, token):
     """Public certificate verification — no login. Logs each access."""
     certificate = (
         Certificate.objects.select_related("stone__order__customer")

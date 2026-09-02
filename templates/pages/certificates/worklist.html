@@ -9,7 +9,7 @@
       count="{{ stones|length }}" empty="No stones match — nothing ready to certify." actions="false">
       {% for stone in stones %}
         <tr class="transition-colors hover:bg-blue-100/70">
-          <td class="px-6 py-3 font-medium">{{ stone.order.reference_no }}</td>
+          <td class="px-6 py-3 font-medium">{{ stone.order.reference_number }}</td>
           <td class="px-6 py-3">{{ stone.order.customer.full_name }}</td>
           <td class="px-6 py-3">{{ stone.label }}</td>
           <td class="px-6 py-3">{{ stone.stone_type.name }}</td>

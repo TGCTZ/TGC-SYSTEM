@@ -1,5 +1,5 @@
 {% load static %}
-<c-layouts.base title="Certificate {{ certificate.certificate_no }}">
+<c-layouts.base title="Certificate {{ certificate.certificate_number }}">
   <style>
     :root { --ink:#1a1a1a; --line:#111; --muted:#555; --head:#f0f0f0; }
     body { background:#e9eaed; }
@@ -99,7 +99,7 @@
       </div>
 
       <div class="c-infobar">
-        <span><b>REPORT NO:</b> {{ certificate.certificate_no }}</span>
+        <span><b>REPORT NO:</b> {{ certificate.certificate_number }}</span>
         <span><b>DATE:</b> {{ certificate.issued_at|date:"j F Y" }}</span>
       </div>
 

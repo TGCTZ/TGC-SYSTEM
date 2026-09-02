@@ -14,20 +14,20 @@ def _superuser(django_user_model):
 def test_dashboard_renders(client, django_user_model):
     """Smoke: KPI cards + activity feed + a card per registered model."""
     client.force_login(_superuser(django_user_model))
-    resp = client.get("/manage/", SERVER_NAME="localhost")
+    resp = client.get("/backoffice/", SERVER_NAME="localhost")
     assert resp.status_code == 200
 
 
 def test_reference_list_renders(client, django_user_model):
     client.force_login(_superuser(django_user_model))
-    resp = client.get("/manage/core/species/", SERVER_NAME="localhost")
+    resp = client.get("/backoffice/core/species/", SERVER_NAME="localhost")
     assert resp.status_code == 200
 
 
 def test_reference_create(client, django_user_model):
     client.force_login(_superuser(django_user_model))
     resp = client.post(
-        "/manage/core/species/new/",
+        "/backoffice/core/species/new/",
         {"name": "Corundum", "is_active": "on"},
         SERVER_NAME="localhost",
     )
@@ -37,5 +37,5 @@ def test_reference_create(client, django_user_model):
 
 def test_unregistered_model_is_404(client, django_user_model):
     client.force_login(_superuser(django_user_model))
-    resp = client.get("/manage/orders/order/", SERVER_NAME="localhost")
+    resp = client.get("/backoffice/orders/order/", SERVER_NAME="localhost")
     assert resp.status_code == 404

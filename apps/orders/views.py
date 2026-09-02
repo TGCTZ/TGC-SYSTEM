@@ -34,7 +34,7 @@ class OrderListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         query = self.request.GET.get("q", "").strip()
         if query:
             qs = qs.filter(
-                Q(reference_no__icontains=query)
+                Q(reference_number__icontains=query)
                 | Q(customer__first_name__icontains=query)
                 | Q(customer__last_name__icontains=query)
                 | Q(customer__phone__icontains=query)
@@ -55,7 +55,7 @@ class OrderDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     """Order detail with its (identified) stones."""
 
     permission_required = "orders.view_order"
-    template_name = "pages/orders/show.html"
+    template_name = "pages/orders/detail.html"
     context_object_name = "order"
 
     def get_queryset(self):
@@ -83,7 +83,7 @@ class OrderDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
                 action(
                     "Findings",
                     "lucide:clipboard-list",
-                    reverse("identification:findings_stone", args=[stone.pk]),
+                    reverse("identification:findings_edit", args=[stone.pk]),
                 )
             )
         if (
@@ -121,7 +121,7 @@ def order_create(request):
             order = create_order(
                 customer=customer, stone_count=cd["stone_count"], user=request.user
             )
-        messages.success(request, f"Order {order.reference_no} created.")
+        messages.success(request, f"Order {order.reference_number} created.")
         return redirect("orders:detail", pk=order.pk)
 
     return render(request, "pages/orders/form.html", {"form": form})

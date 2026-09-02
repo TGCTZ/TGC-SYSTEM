@@ -12,17 +12,17 @@ pytestmark = pytest.mark.django_db
 
 def test_first_number_of_year():
     year = timezone.now().year
-    assert generate_reference_number(Order, "reference_no", "ORD") == f"ORD-{year}-0001"
+    assert generate_reference_number(Order, "reference_number", "ORD") == f"ORD-{year}-0001"
 
 
 def test_increments_from_existing():
     year = timezone.now().year
-    OrderFactory(reference_no=f"ORD-{year}-0005")
-    assert generate_reference_number(Order, "reference_no", "ORD") == f"ORD-{year}-0006"
+    OrderFactory(reference_number=f"ORD-{year}-0005")
+    assert generate_reference_number(Order, "reference_number", "ORD") == f"ORD-{year}-0006"
 
 
 def test_includes_soft_deleted():
     year = timezone.now().year
-    order = OrderFactory(reference_no=f"ORD-{year}-0009")
+    order = OrderFactory(reference_number=f"ORD-{year}-0009")
     order.delete()
-    assert generate_reference_number(Order, "reference_no", "ORD") == f"ORD-{year}-0010"
+    assert generate_reference_number(Order, "reference_number", "ORD") == f"ORD-{year}-0010"

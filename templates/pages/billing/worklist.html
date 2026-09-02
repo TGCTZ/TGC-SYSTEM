@@ -9,7 +9,7 @@
       count="{{ orders|length }}" empty="Nothing ready to bill." actions="false">
       {% for order in orders %}
         <tr class="transition-colors hover:bg-blue-100/70">
-          <td class="px-6 py-3 font-medium">{{ order.reference_no }}</td>
+          <td class="px-6 py-3 font-medium">{{ order.reference_number }}</td>
           <td class="px-6 py-3">{{ order.customer.full_name }}</td>
           <td class="px-6 py-3 text-gray-500">{{ order.received_date }}</td>
           <td class="px-6 py-3">{{ order.stone_count }}</td>

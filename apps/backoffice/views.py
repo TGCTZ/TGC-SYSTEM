@@ -55,7 +55,7 @@ def _has_field(panel, name):
         return False
 
 
-def render_cell(obj, name):
+def _render_cell(obj, name):
     """Render a value for a list/detail cell as {kind, value}."""
     getter = getattr(obj, f"get_{name}_display", None)
     value = getter() if callable(getter) else getattr(obj, name, None)
@@ -83,15 +83,17 @@ def _column_header(panel, name, current_sort):
 
 def _row_actions(user, panel, obj):
     args = [panel.app_label, panel.model_name, obj.pk]
-    acts = [action("View", "lucide:eye", reverse("manage:detail", args=args))]
+    acts = [action("View", "lucide:eye", reverse("backoffice:detail", args=args))]
     if user.has_perm(panel.perm("change")):
-        acts.append(action("Edit", "lucide:pencil", reverse("manage:edit", args=args)))
+        acts.append(
+            action("Edit", "lucide:pencil", reverse("backoffice:edit", args=args))
+        )
     if user.has_perm(panel.perm("delete")):
         acts.append(
             action(
                 "Delete",
                 "lucide:trash-2",
-                reverse("manage:delete", args=args),
+                reverse("backoffice:delete", args=args),
                 danger=True,
             )
         )
@@ -160,7 +162,9 @@ def index(request):
                 "panel": panel,
                 "count": qs.count(),
                 "delta": delta,
-                "url": reverse("manage:list", args=[panel.app_label, panel.model_name]),
+                "url": reverse(
+                    "backoffice:list", args=[panel.app_label, panel.model_name]
+                ),
             }
         )
 
@@ -172,7 +176,7 @@ def index(request):
     ]
     return render(
         request,
-        "pages/manage/index.html",
+        "pages/backoffice/index.html",
         {"stats": stats, "cards": cards, "recent": recent},
     )
 
@@ -185,7 +189,7 @@ def activity(request):
     page = Paginator(qs, 25).get_page(request.GET.get("page"))
     rows = [_activity_row(e) for e in page]
     return render(
-        request, "pages/manage/activity.html", {"rows": rows, "page_obj": page}
+        request, "pages/backoffice/activity.html", {"rows": rows, "page_obj": page}
     )
 
 
@@ -224,14 +228,14 @@ def object_list(request, app_label, model_name):
     rows = [
         {
             "obj": obj,
-            "cells": [render_cell(obj, c) for c in columns],
+            "cells": [_render_cell(obj, c) for c in columns],
             "actions": _row_actions(request.user, panel, obj),
         }
         for obj in page
     ]
     return render(
         request,
-        "pages/manage/list.html",
+        "pages/backoffice/list.html",
         {
             "panel": panel,
             "columns": [_column_header(panel, c, sort) for c in columns],
@@ -251,12 +255,12 @@ def object_detail(request, app_label, model_name, pk):
     _require(request.user, panel, "view")
     obj = get_object_or_404(panel.get_queryset(), pk=pk)
     fields = [
-        {"label": name.replace("_", " ").title(), "cell": render_cell(obj, name)}
+        {"label": name.replace("_", " ").title(), "cell": _render_cell(obj, name)}
         for name in panel.get_form_fields()
     ]
     return render(
         request,
-        "pages/manage/detail.html",
+        "pages/backoffice/detail.html",
         {
             "panel": panel,
             "object": obj,
@@ -278,10 +282,10 @@ def object_create(request, app_label, model_name):
     if request.method == "POST" and form.is_valid():
         obj = form.save()
         messages.success(request, f"{panel.verbose_name} created.")
-        return redirect("manage:detail", app_label, model_name, obj.pk)
+        return redirect("backoffice:detail", app_label, model_name, obj.pk)
     return render(
         request,
-        "pages/manage/form.html",
+        "pages/backoffice/form.html",
         {"panel": panel, "form": form, "mode": "create"},
     )
 
@@ -296,10 +300,10 @@ def object_edit(request, app_label, model_name, pk):
     if request.method == "POST" and form.is_valid():
         form.save()
         messages.success(request, f"{panel.verbose_name} updated.")
-        return redirect("manage:detail", app_label, model_name, obj.pk)
+        return redirect("backoffice:detail", app_label, model_name, obj.pk)
     return render(
         request,
-        "pages/manage/form.html",
+        "pages/backoffice/form.html",
         {"panel": panel, "form": form, "mode": "edit", "object": obj},
     )
 
@@ -313,5 +317,7 @@ def object_delete(request, app_label, model_name, pk):
     if request.method == "POST":
         obj.delete()
         messages.success(request, f"{panel.verbose_name} deleted.")
-        return redirect("manage:list", app_label, model_name)
-    return render(request, "pages/manage/delete.html", {"panel": panel, "object": obj})
+        return redirect("backoffice:list", app_label, model_name)
+    return render(
+        request, "pages/backoffice/delete.html", {"panel": panel, "object": obj}
+    )

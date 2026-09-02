@@ -1,7 +1,7 @@
-<c-layouts.app title="Identify · {{ order.reference_no }}">
+<c-layouts.app title="Identify · {{ order.reference_number }}">
   <div class="mx-auto max-w-3xl space-y-6">
     <div>
-      <h2 class="text-xl font-semibold text-gray-900">{{ order.reference_no }}</h2>
+      <h2 class="text-xl font-semibold text-gray-900">{{ order.reference_number }}</h2>
       <p class="text-sm text-gray-500">{{ order.customer.full_name }} · {{ order.stones.count }} of {{ order.stone_count }} identified</p>
     </div>
 

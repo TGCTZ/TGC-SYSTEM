@@ -31,7 +31,7 @@ class Stone(BaseModel):
         permissions = [("transition_stone", "Can change a stone's status")]
 
     def __str__(self) -> str:
-        return f"{self.order.reference_no} / {self.label}"
+        return f"{self.order.reference_number} / {self.label}"
 
 
 class StatusHistory(models.Model):

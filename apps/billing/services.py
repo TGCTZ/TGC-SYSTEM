@@ -45,7 +45,7 @@ def _price_for(stone) -> Decimal:
 def _create_local_bill(order, service_provider, user) -> Bill:
     """Create the bill and its snapshotted line items; mark stones billed."""
     if Bill.objects.filter(order=order).exists():
-        raise ServiceError(f"Order {order.reference_no} already has a bill.")
+        raise ServiceError(f"Order {order.reference_number} already has a bill.")
     stones = list(order.stones.all())
     if not stones:
         raise ServiceError("Order has no stones to bill.")
@@ -100,7 +100,7 @@ def generate_bill_for_order(order, *, service_provider=None, user=None) -> Bill:
     username = user.get_username() if user is not None else "System"
     result = submit_bill(bill, order.customer, username)
 
-    bill.gepg_submitted = True
+    bill.is_gepg_submitted = True
     bill.gepg_submitted_at = timezone.now()
     # Truncate to the columns' limits — gateway/connection errors can be verbose.
     bill.status_code = (result["status_code"] or "")[:30]
@@ -109,7 +109,7 @@ def generate_bill_for_order(order, *, service_provider=None, user=None) -> Bill:
         bill.control_number = result["control_number"]
     bill.save(
         update_fields=[
-            "gepg_submitted",
+            "is_gepg_submitted",
             "gepg_submitted_at",
             "status_code",
             "status_desc",
@@ -148,7 +148,7 @@ def _apply_payment(header: dict, txn: dict, raw: str) -> None:
     if bill is None:
         raise ServiceError(f"Bill '{txn['gepg_bill_id']}' not found.")
 
-    defaults = {**header, **txn, "bill": bill, "processed": True, "raw_request": raw}
+    defaults = {**header, **txn, "bill": bill, "is_processed": True, "raw_request": raw}
     defaults.pop("trx_id", None)
     payment, created = Payment.objects.get_or_create(
         trx_id=txn["trx_id"], defaults=defaults

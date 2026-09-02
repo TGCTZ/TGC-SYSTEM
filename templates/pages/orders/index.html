@@ -12,7 +12,7 @@
     <c-sections.table :headers="['Reference', 'Customer', 'Received', 'Stones']" count="{{ orders|length }}">
       {% for order in orders %}
         <c-sections.table.row href="{% url 'orders:detail' order.pk %}" :actions="order.row_actions">
-          <td class="px-6 py-3 font-medium">{{ order.reference_no }}</td>
+          <td class="px-6 py-3 font-medium">{{ order.reference_number }}</td>
           <td class="px-6 py-3">{{ order.customer.full_name }}</td>
           <td class="px-6 py-3">{{ order.received_date }}</td>
           <td class="px-6 py-3">{{ order.identified }} / {{ order.stone_count }}</td>

@@ -76,7 +76,7 @@ ROLE_PERMISSIONS: dict[str, list[str]] = {
         "accounts.delete_user",
         "accounts.verify_user",
         "accounts.approve_user",
-        # Roles & permissions portal (Groups) at /manage/roles/.
+        # Roles & permissions portal (Groups) at /backoffice/roles/.
         "auth.view_group",
         "auth.add_group",
         "auth.change_group",

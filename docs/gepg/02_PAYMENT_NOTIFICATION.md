@@ -160,7 +160,7 @@ def process_payment_notification(xml_content: str) -> str:
                 'pyr_name': pmt_dtl.findtext("PyrName", ""),
                 'pyr_email': pmt_dtl.findtext("PyrEmail", ""),
                 'trx_dt_tm': _parse_gepg_datetime(pmt_dtl.findtext("TrxDtTm", "")),
-                'processed': True,
+                'is_processed': True,
                 'raw_request': xml_content,
                 # Add missing fields from PmtHdr
                 'req_id': req_id,
@@ -340,7 +340,7 @@ class Payment(models.Model):
     # Acknowledgment Fields
     ack_id = models.CharField(max_length=100, blank=True, null=True)
     ack_sts_code = models.CharField(max_length=10, blank=True, null=True)
-    processed = models.BooleanField(default=False)
+    is_processed = models.BooleanField(default=False)
     raw_request = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -581,7 +581,7 @@ from billing_system_app.models import Payment, Bill
 # Check payment was created
 payment = Payment.objects.get(trx_id='TRX-TEST-001')
 print(f"Payment Amount: {payment.paid_amount}")
-print(f"Payment Status: {payment.processed}")
+print(f"Payment Status: {payment.is_processed}")
 
 # Check bill was updated
 bill = Bill.objects.get(bill_id='BILL-S-NO-001-47')
@@ -618,7 +618,7 @@ payments_today = Payment.objects.filter(
 )
 
 # Get unprocessed payments
-unprocessed = Payment.objects.filter(processed=False)
+unprocessed = Payment.objects.filter(is_processed=False)
 ```
 
 ---

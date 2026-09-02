@@ -8,10 +8,10 @@ app_name = "certificates"
 
 urlpatterns = [
     path("", views.CertificateListView.as_view(), name="index"),
-    path("worklist/", views.CertifiableStonesView.as_view(), name="worklist"),
-    path("stones/<int:stone_pk>/issue/", views.issue, name="issue"),
-    path("verify/<str:token>/", views.verify, name="verify"),
-    path("<int:pk>/", views.detail, name="detail"),
-    path("<int:pk>/print/", views.print_certificate, name="print"),
-    path("<int:pk>/revoke/", views.revoke, name="revoke"),
+    path("worklist/", views.CertificationWorklistView.as_view(), name="worklist"),
+    path("stones/<int:stone_pk>/issue/", views.certificate_issue, name="issue"),
+    path("verify/<str:token>/", views.certificate_verify, name="verify"),
+    path("<int:pk>/", views.certificate_detail, name="detail"),
+    path("<int:pk>/print/", views.certificate_print, name="print"),
+    path("<int:pk>/revoke/", views.certificate_revoke, name="revoke"),
 ]

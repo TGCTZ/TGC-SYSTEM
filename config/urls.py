@@ -12,9 +12,9 @@ urlpatterns = [
     path("orders/", include("apps.orders.urls")),
     path("identification/", include("apps.identification.urls")),
     path("certificates/", include("apps.certificates.urls")),
-    path("users/", include("apps.accounts.users_urls")),
-    path("manage/", include("apps.adminpanel.urls")),
-    path("", include("apps.accounts.urls")),
+    path("users/", include("apps.accounts.urls.users")),
+    path("backoffice/", include("apps.backoffice.urls")),
+    path("", include("apps.accounts.urls.auth")),
     path("", include("apps.dashboard.urls")),
 ]
 

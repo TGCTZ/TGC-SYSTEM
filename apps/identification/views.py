@@ -42,7 +42,7 @@ _REPORT_FIELDS = (
 
 
 # --- Phase 1: type identification ------------------------------------------
-class WorklistView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class IdentificationWorklistView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     """Orders with stones still to register and type."""
 
     permission_required = "identification.add_identificationreport"
@@ -60,7 +60,7 @@ class WorklistView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         query = self.request.GET.get("q", "").strip()
         if query:
             qs = qs.filter(
-                Q(reference_no__icontains=query)
+                Q(reference_number__icontains=query)
                 | Q(customer__first_name__icontains=query)
                 | Q(customer__last_name__icontains=query)
                 | Q(customer__company_name__icontains=query)
@@ -74,7 +74,7 @@ class WorklistView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
                 action(
                     "Identify",
                     "lucide:microscope",
-                    reverse("identification:order", args=[order.pk]),
+                    reverse("identification:order_identify", args=[order.pk]),
                 ),
             ]
         return ctx
@@ -100,7 +100,7 @@ def order_identify(request, order_pk):
             messages.success(
                 request, f"Identified stone {stone.label} ({stone.stone_type.name})."
             )
-            return redirect("identification:order", order_pk=order.pk)
+            return redirect("identification:order_identify", order_pk=order.pk)
     return render(
         request, "pages/identification/order.html", {"order": order, "form": form}
     )
@@ -127,7 +127,7 @@ class FindingsWorklistView(LoginRequiredMixin, PermissionRequiredMixin, ListView
             qs = qs.filter(
                 Q(label__icontains=query)
                 | Q(stone_type__name__icontains=query)
-                | Q(order__reference_no__icontains=query)
+                | Q(order__reference_number__icontains=query)
                 | Q(order__customer__first_name__icontains=query)
                 | Q(order__customer__last_name__icontains=query)
             )
@@ -136,7 +136,7 @@ class FindingsWorklistView(LoginRequiredMixin, PermissionRequiredMixin, ListView
 
 @login_required
 @permission_required("identification.change_identificationreport", raise_exception=True)
-def stone_findings(request, pk):
+def findings_edit(request, pk):
     """Record or edit a paid stone's findings (draft); finalizing is a separate step."""
     stone = get_object_or_404(
         Stone.objects.select_related("stone_type", "order"), pk=pk
@@ -169,7 +169,7 @@ def stone_findings(request, pk):
         for instrument in cd["instruments"]:
             InstrumentUsed.objects.create(report=report, instrument=instrument)
         messages.success(request, f"Findings saved for stone {stone.label}.")
-        return redirect("identification:findings_stone", pk=stone.pk)
+        return redirect("identification:findings_edit", pk=stone.pk)
 
     return render(
         request,
@@ -193,7 +193,7 @@ def _findings_initial(stone, report):
 @login_required
 @permission_required("identification.finalize_report", raise_exception=True)
 @require_POST
-def finalize(request, pk):
+def report_finalize(request, pk):
     """Lock a findings report; the stone then becomes ready for a certificate."""
     report = get_object_or_404(IdentificationReport, pk=pk)
     try:

@@ -44,7 +44,7 @@ def issue_certificate(stone, *, user=None) -> Certificate:
     certificate = Certificate(
         stone=stone,
         report=report,
-        certificate_no=generate_reference_number(Certificate, "certificate_no", "CERT"),
+        certificate_number=generate_reference_number(Certificate, "certificate_number", "CERT"),
         verification_token=secrets.token_hex(32),
         stone_type_snapshot=stone.stone_type.name,
         weight_snapshot=stone.weight,
@@ -63,7 +63,7 @@ def issue_certificate(stone, *, user=None) -> Certificate:
         stone,
         StoneStatus.CERTIFIED,
         user=user,
-        note=f"Certified {certificate.certificate_no}",
+        note=f"Certified {certificate.certificate_number}",
     )
     return certificate
 

@@ -5,7 +5,7 @@ import pytest
 from django.contrib.auth.models import Group, Permission
 
 from apps.accounts.tests.factories import UserFactory
-from apps.adminpanel.roles import GroupForm
+from apps.backoffice.roles import GroupForm
 
 pytestmark = pytest.mark.django_db
 
@@ -50,7 +50,7 @@ def test_role_create_view(client, django_user_model):
     su = django_user_model.objects.create_superuser("root", "root@x.com", "pw")
     client.force_login(su)
     resp = client.post(
-        "/manage/roles/new/",
+        "/backoffice/roles/new/",
         {"name": "reviewers", "permissions": [], "members": []},
         SERVER_NAME="localhost",
     )
@@ -62,7 +62,7 @@ def test_role_form_renders(client, django_user_model):
     """Smoke: the create form renders the permission matrix + users toggle-table."""
     su = django_user_model.objects.create_superuser("root", "root@x.com", "pw")
     client.force_login(su)
-    resp = client.get("/manage/roles/new/", SERVER_NAME="localhost")
+    resp = client.get("/backoffice/roles/new/", SERVER_NAME="localhost")
     assert resp.status_code == 200
 
 
@@ -70,5 +70,5 @@ def test_role_list_requires_permission(client, django_user_model):
     # A persisted usable password keeps force_login's session-auth-hash valid.
     user = django_user_model.objects.create_user("noperms", "n@x.com", "pw")
     client.force_login(user)
-    resp = client.get("/manage/roles/", SERVER_NAME="localhost")
+    resp = client.get("/backoffice/roles/", SERVER_NAME="localhost")
     assert resp.status_code == 403

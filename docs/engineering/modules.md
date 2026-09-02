@@ -21,7 +21,7 @@
 | **L3** | `certificates` | Certificate issuance, QR codes, public verification. |
 | **L4** | `reports` | Management reports and exports (reads across domain modules). |
 | **L4** | `dashboard` | Landing pages and navigation shells (thin entrypoints). |
-| **L4** | `adminpanel` | Generic model-admin, roles & permissions portal, and users management at `/manage/` + `/users/`. |
+| **L4** | `backoffice` | Generic model-admin, roles & permissions portal, and users management at `/backoffice/` + `/users/`. |
 
 **9 focused modules**, each with a single clear responsibility.
 
@@ -30,7 +30,7 @@
 ## 2. Dependency layers
 
 ```
-L4   reports · dashboard · adminpanel   (read/aggregate; import ↓ only)
+L4   reports · dashboard · backoffice   (read/aggregate; import ↓ only)
         │
 L3   orders · identification · billing · certificates
         │                         (the business; import ↓ only)
@@ -89,12 +89,12 @@ modules; holds little state of its own.
 **Owns:** landing pages, role-based navigation. No business logic.
 **Depends on:** domain modules (read-only).
 
-### `adminpanel` (L4)
+### `backoffice` (L4)
 **Owns:** the generic model-admin framework (a `ModelPanel` registry — apps register
 models in their own `panels.py`, getting styled list/detail/CRUD screens at
-`/manage/<app>/<model>/`), the **roles & permissions portal** (`/manage/roles/` — Group
+`/backoffice/<app>/<model>/`), the **roles & permissions portal** (`/backoffice/roles/` — Group
 CRUD with a live permission matrix), and an admin dashboard (KPI cards + audit-log
-activity feed). The bespoke **users module** (`/users/`, `accounts.users_views`) is a
+activity feed). The bespoke **users module** (`/users/`, `accounts.views.users`) is a
 sibling. Only safe reference models are registered (see `core/panels.py`); workflow
 models keep their service-driven flows. Django's `/admin/` remains available.
 **Depends on:** `core`, `accounts` (read/registry only).
@@ -113,6 +113,7 @@ model suffix).
 | `identification` | function name | `gemmology`, `analysis` | Describes what the module *does*; `gemmology` was too broad. |
 | `reports` | plural entity | `reporting` | Consistent with `orders`, `certificates`. |
 | `certificates` | plural entity | (buried in gemmology) | Promoted to its own module; owns QR + verification. |
+| `backoffice` | section name (noun) | `adminpanel`, `manage` | The internal staff admin area; a noun that matches its URL prefix, namespace, and templates (`/backoffice/`, `backoffice:`) — one name end-to-end. |
 | `core` / `accounts` | conventional | — | Standard Django community names. |
 
 ---

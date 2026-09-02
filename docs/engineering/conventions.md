@@ -164,12 +164,18 @@ HTTP.
 | Class            | `PascalCase`                               | `InvoiceService`        |
 | App package      | lowercase, plural, no `_app` suffix        | `orders`, `billing`     |
 | URL name         | `snake_case`, app-namespaced               | `billing:invoice_detail`|
-| Template         | `snake_case.html`                          | `invoice_detail.html`   |
+| Template         | `snake_case.html`; detail page = `detail.html` | `invoice_detail.html` |
 | Test file        | `test_*.py`                                | `test_services.py`      |
+| Function view    | `entity_action` (resource-first)           | `certificate_issue`, `bill_generate` |
+| List view class  | `<Entity>ListView`; task queue = `<Feature>WorklistView` | `BillListView`, `CertificationWorklistView` |
+| Service function | `action_entity` (verb-first)               | `create_order`, `issue_certificate` |
 
 - **No redundant type suffixes** (`OrderTB`, `orders_app`). A model is a table;
   an app is an app.
 - **Reverse relations read as plurals** via `related_name` (see Models).
+- **Views are named by resource, services by action.** A function view reads
+  `entity_action` (`certificate_revoke`); the service it calls reads `action_entity`
+  (`revoke_certificate`). Private module helpers take a leading `_`.
 - **Be consistent, not clever** — predictable names beat short ones.
 
 ---

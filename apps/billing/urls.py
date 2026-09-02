@@ -9,12 +9,12 @@ app_name = "billing"
 urlpatterns = [
     # Staff-facing
     path("", views.BillListView.as_view(), name="index"),
-    path("worklist/", views.BillableOrdersView.as_view(), name="worklist"),
+    path("worklist/", views.BillingWorklistView.as_view(), name="worklist"),
     path("payments/", views.PaymentListView.as_view(), name="payments"),
     path("payments/<int:pk>/", views.payment_detail, name="payment_detail"),
-    path("orders/<int:order_pk>/generate/", views.generate_bill, name="generate"),
+    path("orders/<int:order_pk>/generate/", views.bill_generate, name="generate"),
     path("<int:pk>/", views.bill_detail, name="detail"),
-    path("<int:pk>/simulate-payment/", views.simulate_payment, name="simulate_payment"),
+    path("<int:pk>/simulate-payment/", views.payment_simulate, name="simulate_payment"),
     # GePG inbound webhooks
     path(
         "api/payments/notification/",

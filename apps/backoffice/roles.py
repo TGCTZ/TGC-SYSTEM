@@ -160,7 +160,7 @@ def role_list(request):
         group.row_actions = _role_actions(request.user, group)
     return render(
         request,
-        "pages/manage/roles/index.html",
+        "pages/backoffice/roles/index.html",
         {"groups": groups, "can_add": request.user.has_perm("auth.add_group")},
     )
 
@@ -172,7 +172,7 @@ def role_detail(request, pk):
     group = get_object_or_404(Group, pk=pk)
     return render(
         request,
-        "pages/manage/roles/detail.html",
+        "pages/backoffice/roles/detail.html",
         {
             "group": group,
             "users": group.user_set.order_by("username"),
@@ -194,10 +194,10 @@ def role_create(request):
     if request.method == "POST" and form.is_valid():
         group = form.save()
         messages.success(request, f"Role {group.name} created.")
-        return redirect("manage:role_detail", pk=group.pk)
+        return redirect("backoffice:role_detail", pk=group.pk)
     return render(
         request,
-        "pages/manage/roles/form.html",
+        "pages/backoffice/roles/form.html",
         {
             "form": form,
             "mode": "create",
@@ -216,10 +216,10 @@ def role_edit(request, pk):
     if request.method == "POST" and form.is_valid():
         form.save()
         messages.success(request, f"Role {group.name} updated.")
-        return redirect("manage:role_detail", pk=group.pk)
+        return redirect("backoffice:role_detail", pk=group.pk)
     return render(
         request,
-        "pages/manage/roles/form.html",
+        "pages/backoffice/roles/form.html",
         {
             "form": form,
             "mode": "edit",
@@ -239,18 +239,20 @@ def role_delete(request, pk):
         name = group.name
         group.delete()
         messages.success(request, f"Role {name} deleted.")
-        return redirect("manage:roles")
-    return render(request, "pages/manage/roles/delete.html", {"group": group})
+        return redirect("backoffice:role_list")
+    return render(request, "pages/backoffice/roles/delete.html", {"group": group})
 
 
 def _role_actions(user, group):
     acts = [
-        action("View", "lucide:eye", reverse("manage:role_detail", args=[group.pk]))
+        action("View", "lucide:eye", reverse("backoffice:role_detail", args=[group.pk]))
     ]
     if user.has_perm("auth.change_group"):
         acts.append(
             action(
-                "Edit", "lucide:pencil", reverse("manage:role_edit", args=[group.pk])
+                "Edit",
+                "lucide:pencil",
+                reverse("backoffice:role_edit", args=[group.pk]),
             )
         )
     if user.has_perm("auth.delete_group"):
@@ -258,7 +260,7 @@ def _role_actions(user, group):
             action(
                 "Delete",
                 "lucide:trash-2",
-                reverse("manage:role_delete", args=[group.pk]),
+                reverse("backoffice:role_delete", args=[group.pk]),
                 danger=True,
             )
         )

@@ -8,13 +8,13 @@ from django.urls import path
 
 from . import roles, views
 
-app_name = "manage"
+app_name = "backoffice"
 
 urlpatterns = [
     path("", views.index, name="index"),
     path("activity/", views.activity, name="activity"),
     # Roles & permissions portal
-    path("roles/", roles.role_list, name="roles"),
+    path("roles/", roles.role_list, name="role_list"),
     path("roles/new/", roles.role_create, name="role_create"),
     path("roles/<int:pk>/", roles.role_detail, name="role_detail"),
     path("roles/<int:pk>/edit/", roles.role_edit, name="role_edit"),

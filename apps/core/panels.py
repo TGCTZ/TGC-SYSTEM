@@ -1,13 +1,13 @@
 """Admin-panel registrations for core reference data.
 
 Only the simple, safe lookup/reference models are registered here, so the generic
-``/manage/`` admin can manage them out of the box. Workflow models (orders, stones,
+``/backoffice/`` admin can manage them out of the box. Workflow models (orders, stones,
 bills, reports) are deliberately left to their bespoke, service-driven flows —
 their state machines must not be bypassed by generic create/edit forms.
 """
 
-from apps.adminpanel.panels import ModelPanel
-from apps.adminpanel.registry import site
+from apps.backoffice.panels import ModelPanel
+from apps.backoffice.registry import site
 
 from .models import (
     Color,

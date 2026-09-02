@@ -1,11 +1,11 @@
-<c-layouts.app title="Findings · {{ stone.label }} · {{ stone.order.reference_no }}">
+<c-layouts.app title="Findings · {{ stone.label }} · {{ stone.order.reference_number }}">
   <div class="mx-auto max-w-4xl space-y-6">
     <div>
       <h2 class="text-xl font-semibold text-gray-900">{{ stone.stone_type.name }} · Stone {{ stone.label }}</h2>
-      <p class="text-sm text-gray-500">{{ stone.order.reference_no }} · {{ stone.order.customer.full_name }}</p>
+      <p class="text-sm text-gray-500">{{ stone.order.reference_number }} · {{ stone.order.customer.full_name }}</p>
     </div>
 
-    <form method="post" action="{% url 'identification:findings_stone' stone.pk %}" class="space-y-6">
+    <form method="post" action="{% url 'identification:findings_edit' stone.pk %}" class="space-y-6">
       {% csrf_token %}
       {% if form.non_field_errors %}
         <c-atoms.ui.alert variant="danger">{{ form.non_field_errors|join:", " }}</c-atoms.ui.alert>

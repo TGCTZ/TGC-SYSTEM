@@ -155,7 +155,7 @@ The GEPG integration is configured via environment variables in `.env`:
 - `amount`: Bill amount
 - `status`: PENDING, PAID, CANCELLED, EXPIRED
 - `bill_type`: IDENTIFICATION, PRODUCTION_SHOP
-- `gepg_submitted`: Boolean flag
+- `is_gepg_submitted`: Boolean flag
 - `gepg_submission_date`: Timestamp
 
 ### Payment Table

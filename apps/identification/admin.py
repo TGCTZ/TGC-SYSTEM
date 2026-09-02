@@ -27,6 +27,6 @@ class IdentificationReportAdmin(BaseModelAdmin):
         "identified_at",
     )
     list_filter = ("is_finalized", "treatment", "transparency")
-    search_fields = ("report_number", "stone__order__reference_no")
+    search_fields = ("report_number", "stone__order__reference_number")
     list_select_related = ("stone", "species")
     inlines = [InstrumentUsedInline]

@@ -1,12 +1,8 @@
-"""User-management URLs (namespaced ``users``).
-
-Kept separate from ``urls.py`` (which owns the unnamespaced ``login``/``logout``)
-so the CRUD module gets its own ``users:`` namespace.
-"""
+"""User-management URLs (namespaced ``users``)."""
 
 from django.urls import path
 
-from . import users_views as views
+from apps.accounts.views import users as views
 
 app_name = "users"
 

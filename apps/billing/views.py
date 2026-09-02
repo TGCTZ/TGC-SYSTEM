@@ -58,7 +58,7 @@ class BillListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
                 Q(bill_number__icontains=query)
                 | Q(control_number__icontains=query)
                 | Q(status__icontains=query)
-                | Q(order__reference_no__icontains=query)
+                | Q(order__reference_number__icontains=query)
                 | Q(order__customer__first_name__icontains=query)
                 | Q(order__customer__last_name__icontains=query)
                 | Q(order__customer__company_name__icontains=query)
@@ -76,7 +76,7 @@ class BillListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         return ctx
 
 
-class BillableOrdersView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class BillingWorklistView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     """Orders fully identified (every stone's report finalized) and not yet billed."""
 
     permission_required = "billing.generate_bill"
@@ -96,7 +96,7 @@ class BillableOrdersView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         query = self.request.GET.get("q", "").strip()
         if query:
             qs = qs.filter(
-                Q(reference_no__icontains=query)
+                Q(reference_number__icontains=query)
                 | Q(customer__first_name__icontains=query)
                 | Q(customer__last_name__icontains=query)
                 | Q(customer__company_name__icontains=query)
@@ -107,7 +107,7 @@ class BillableOrdersView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 @login_required
 @permission_required("billing.generate_bill", raise_exception=True)
 @require_POST
-def generate_bill(request, order_pk):
+def bill_generate(request, order_pk):
     """Create a bill for an order and submit it to GePG for a control number."""
     order = get_object_or_404(Order, pk=order_pk)
     try:
@@ -154,7 +154,7 @@ def bill_detail(request, pk):
 @login_required
 @permission_required("billing.generate_bill", raise_exception=True)
 @require_POST
-def simulate_payment(request, pk):
+def payment_simulate(request, pk):
     """Dev-only: settle a bill via a simulated GePG payment. Absent in production."""
     if not settings.DEBUG:
         raise Http404

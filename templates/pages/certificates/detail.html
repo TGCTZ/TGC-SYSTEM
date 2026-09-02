@@ -1,9 +1,9 @@
-<c-layouts.app title="Certificate {{ certificate.certificate_no }}">
+<c-layouts.app title="Certificate {{ certificate.certificate_number }}">
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-xl font-semibold text-gray-900">{{ certificate.certificate_no }}</h2>
-        <p class="text-sm text-gray-500">Stone {{ certificate.stone.label }} · {{ certificate.stone.order.reference_no }} · {{ certificate.stone.order.customer.full_name }}</p>
+        <h2 class="text-xl font-semibold text-gray-900">{{ certificate.certificate_number }}</h2>
+        <p class="text-sm text-gray-500">Stone {{ certificate.stone.label }} · {{ certificate.stone.order.reference_number }} · {{ certificate.stone.order.customer.full_name }}</p>
       </div>
       <div class="flex items-center gap-3">
         <a href="{% url 'certificates:print' certificate.pk %}" target="_blank" rel="noopener">
@@ -59,7 +59,7 @@
 
   {% if can_revoke %}
     <c-atoms.ui.modal id="revoke" title="Revoke certificate?">
-      Revoking <span class="font-medium text-gray-900">{{ certificate.certificate_no }}</span> marks it invalid — public verification will show it as revoked. This cannot be undone.
+      Revoking <span class="font-medium text-gray-900">{{ certificate.certificate_number }}</span> marks it invalid — public verification will show it as revoked. This cannot be undone.
       <c-slot name="footer">
         <c-atoms.ui.button type="button" variant="secondary" size="sm" x-on:click="open = false">Cancel</c-atoms.ui.button>
         <form method="post" action="{% url 'certificates:revoke' certificate.pk %}">

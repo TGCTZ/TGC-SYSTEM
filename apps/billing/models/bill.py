@@ -38,7 +38,7 @@ class Bill(BaseModel):
     pay_type = models.PositiveSmallIntegerField(default=1)
     status_code = models.CharField(max_length=30, blank=True, default="")
     status_desc = models.CharField(max_length=255, blank=True, default="")
-    gepg_submitted = models.BooleanField(default=False)
+    is_gepg_submitted = models.BooleanField(default=False)
     gepg_submitted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
@@ -119,7 +119,7 @@ class Payment(BaseModel):
     # Acknowledgement we returned + raw payload
     ack_id = models.CharField(max_length=100, blank=True, default="")
     ack_sts_code = models.CharField(max_length=10, blank=True, default="")
-    processed = models.BooleanField(default=False)
+    is_processed = models.BooleanField(default=False)
     raw_request = models.TextField(blank=True, default="")
 
     class Meta:

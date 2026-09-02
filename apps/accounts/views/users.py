@@ -13,8 +13,8 @@ from django.views.generic import DetailView, ListView
 from apps.core.exceptions import ServiceError
 from apps.core.row_actions import action
 
-from .forms import UserCreateForm, UserUpdateForm
-from .services import create_user, delete_user, set_active, update_user
+from ..forms import UserCreateForm, UserUpdateForm
+from ..services import create_user, delete_user, set_active, update_user
 
 User = get_user_model()
 
@@ -85,7 +85,7 @@ class UserDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     """A user's detail page. Uses `user_obj` so it never shadows `request.user`."""
 
     permission_required = "accounts.view_user"
-    template_name = "pages/users/show.html"
+    template_name = "pages/users/detail.html"
     context_object_name = "user_obj"
 
     def get_queryset(self):

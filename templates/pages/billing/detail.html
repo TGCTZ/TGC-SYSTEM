@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between">
       <div>
         <h2 class="text-xl font-semibold text-gray-900">{{ bill.bill_number }}</h2>
-        <p class="text-sm text-gray-500">Order {{ bill.order.reference_no }} · {{ bill.order.customer.full_name }}</p>
+        <p class="text-sm text-gray-500">Order {{ bill.order.reference_number }} · {{ bill.order.customer.full_name }}</p>
       </div>
       <c-atoms.ui.badge variant="{{ status_variant }}" dot="true">{{ bill.get_status_display }}</c-atoms.ui.badge>
     </div>

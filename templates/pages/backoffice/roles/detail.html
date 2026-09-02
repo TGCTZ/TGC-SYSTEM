@@ -3,8 +3,8 @@
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-semibold text-gray-900">{{ group.name }}</h2>
       <div class="flex gap-2">
-        {% if can_change %}<a href="{% url 'manage:role_edit' group.pk %}"><c-atoms.ui.button variant="outline" size="sm">Edit</c-atoms.ui.button></a>{% endif %}
-        {% if can_delete %}<a href="{% url 'manage:role_delete' group.pk %}"><c-atoms.ui.button variant="danger" size="sm">Delete</c-atoms.ui.button></a>{% endif %}
+        {% if can_change %}<a href="{% url 'backoffice:role_edit' group.pk %}"><c-atoms.ui.button variant="outline" size="sm">Edit</c-atoms.ui.button></a>{% endif %}
+        {% if can_delete %}<a href="{% url 'backoffice:role_delete' group.pk %}"><c-atoms.ui.button variant="danger" size="sm">Delete</c-atoms.ui.button></a>{% endif %}
       </div>
     </div>
 

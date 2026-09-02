@@ -7,7 +7,7 @@
       {% for field in form %}<c-atoms.forms.formfield :field="field" />{% endfor %}
       <div class="flex gap-2">
         <c-atoms.ui.button type="submit" variant="primary">Save</c-atoms.ui.button>
-        <a href="{% url 'manage:list' panel.app_label panel.model_name %}"><c-atoms.ui.button type="button" variant="secondary">Cancel</c-atoms.ui.button></a>
+        <a href="{% url 'backoffice:list' panel.app_label panel.model_name %}"><c-atoms.ui.button type="button" variant="secondary">Cancel</c-atoms.ui.button></a>
       </div>
     </form>
   </div>

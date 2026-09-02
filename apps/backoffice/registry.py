@@ -2,7 +2,7 @@
 
 Apps register their models in ``<app>/panels.py``:
 
-    from apps.adminpanel.registry import site
+    from apps.backoffice.registry import site
     site.register(MyModel, MyModelPanel)
 """
 

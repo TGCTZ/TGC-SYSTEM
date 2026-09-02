@@ -11,7 +11,7 @@ from .customer import Customer
 class Order(BaseModel):
     """A batch of stones received from a customer. Status lives on each stone."""
 
-    reference_no = models.CharField(max_length=30)
+    reference_number = models.CharField(max_length=30)
     customer = models.ForeignKey(
         Customer, on_delete=models.PROTECT, related_name="orders"
     )
@@ -24,9 +24,9 @@ class Order(BaseModel):
         ordering = ["-received_date"]
         constraints = [
             models.UniqueConstraint(
-                fields=["reference_no"],
+                fields=["reference_number"],
                 condition=Q(deleted_at__isnull=True),
-                name="unique_active_order_reference_no",
+                name="unique_active_order_reference_number",
             ),
         ]
 
@@ -36,4 +36,4 @@ class Order(BaseModel):
         return self.stones.count()
 
     def __str__(self) -> str:
-        return self.reference_no
+        return self.reference_number

@@ -14,11 +14,11 @@
                              active_when="orders" perm="orders.view_order"/>
         <c-atoms.ui.nav-item href="{% url 'identification:index' %}"
                              icon="lucide:microscope" label="Identification"
-                             active_when="identification" active_names="index,order"
+                             active_when="identification" active_names="index,order_identify"
                              perm="identification.add_identificationreport"/>
         <c-atoms.ui.nav-item href="{% url 'identification:findings' %}"
                              icon="lucide:clipboard-list" label="Findings"
-                             active_when="identification" active_names="findings,findings_stone,finalize"
+                             active_when="identification" active_names="findings,findings_edit,finalize"
                              perm="identification.change_identificationreport"/>
         <c-atoms.ui.nav-item href="{% url 'billing:index' %}" icon="lucide:banknote"
                              label="Billing" active_when="billing" perm="billing.view_bill"/>
@@ -26,8 +26,8 @@
                              label="Certificates" active_when="certificates" perm="certificates.view_certificate"/>
         <c-atoms.ui.nav-item href="{% url 'users:index' %}" icon="lucide:users" label="Users"
                              active_when="users" perm="accounts.view_user"/>
-        <c-atoms.ui.nav-item href="{% url 'manage:index' %}" icon="lucide:layout-grid"
-                             label="Manage" active_when="manage" staff_only="true"/>
+        <c-atoms.ui.nav-item href="{% url 'backoffice:index' %}" icon="lucide:layout-grid"
+                             label="Admin" active_when="backoffice" staff_only="true"/>
     </nav>
 
     <!-- Account footer: identity + quick actions. The name/role block links to the

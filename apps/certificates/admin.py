@@ -11,9 +11,9 @@ from .models import Certificate, CertificateAccessLog
 class CertificateAdmin(BaseModelAdmin):
     """Admin for certificates."""
 
-    list_display = ("certificate_no", "stone", "status", "issued_at", "issued_by")
+    list_display = ("certificate_number", "stone", "status", "issued_at", "issued_by")
     list_filter = ("status",)
-    search_fields = ("certificate_no", "stone__order__reference_no")
+    search_fields = ("certificate_number", "stone__order__reference_number")
     list_select_related = ("stone", "issued_by")
 
 

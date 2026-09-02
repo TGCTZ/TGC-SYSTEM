@@ -21,7 +21,7 @@
         <c-sections.table.row href="{% url 'billing:detail' bill.pk %}" :actions="bill.row_actions">
           <td class="px-6 py-3">
             <p class="font-medium text-gray-900">{{ bill.bill_number }}</p>
-            <p class="text-xs text-gray-500">{{ bill.order.reference_no }}</p>
+            <p class="text-xs text-gray-500">{{ bill.order.reference_number }}</p>
           </td>
           <td class="px-6 py-3">{{ bill.order.customer.full_name }}</td>
           <td class="px-6 py-3 tabular-nums">{{ bill.total_amount|floatformat:2|intcomma }} {{ bill.currency }}</td>

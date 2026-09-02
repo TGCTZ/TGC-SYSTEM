@@ -20,7 +20,7 @@ class PaymentInline(admin.TabularInline):
 
     model = Payment
     extra = 0
-    fields = ("trx_id", "paid_amount", "psp_name", "trx_dt_tm", "processed")
+    fields = ("trx_id", "paid_amount", "psp_name", "trx_dt_tm", "is_processed")
     readonly_fields = fields
 
 
@@ -38,6 +38,6 @@ class BillAdmin(BaseModelAdmin):
 
     list_display = ("bill_number", "order", "total_amount", "status", "control_number")
     list_filter = ("status", "currency")
-    search_fields = ("bill_number", "control_number", "order__reference_no")
+    search_fields = ("bill_number", "control_number", "order__reference_number")
     list_select_related = ("order",)
     inlines = [BillItemInline, PaymentInline]

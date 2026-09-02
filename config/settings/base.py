@@ -56,7 +56,7 @@ LOCAL_APPS = [
     "apps.billing",  # L3 — bills, payments, GePG
     "apps.certificates",  # L3 — certificates, verification
     "apps.dashboard",  # L4 — shell, nav, styleguide
-    "apps.adminpanel",  # L4 — generic back-office at /manage/
+    "apps.backoffice",  # L4 — generic back-office at /backoffice/
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

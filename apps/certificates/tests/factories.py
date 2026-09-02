@@ -17,7 +17,7 @@ class CertificateFactory(factory.django.DjangoModelFactory):
 
     stone = factory.SubFactory(StoneFactory)
     report = factory.SubFactory(IdentificationReportFactory)
-    certificate_no = factory.Sequence(lambda n: f"CERT-{n:05d}")
+    certificate_number = factory.Sequence(lambda n: f"CERT-{n:05d}")
     verification_token = factory.Faker("uuid4")
     stone_type_snapshot = factory.Faker("word")
     weight_snapshot = FuzzyDecimal(0.5, 50, precision=3)

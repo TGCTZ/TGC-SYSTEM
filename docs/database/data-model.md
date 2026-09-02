@@ -203,7 +203,7 @@ rather than a new model. *(Resolves C5.)*
 | Column | Type | Notes |
 | --- | --- | --- |
 | id | PK | |
-| reference_no | Char(30) `UQ` | human-readable, e.g. `ORD-2026-0042` **(open: C6)** |
+| reference_number | Char(30) `UQ` | human-readable, e.g. `ORD-2026-0042` **(open: C6)** |
 | customer | FK→Customer (PROTECT) | `related_name="orders"` |
 | received_date | Date | |
 | stone_count | PositiveInteger | how many stones the customer submitted (recorded at reception) |
@@ -313,7 +313,7 @@ rather than a new model. *(Resolves C5.)*
 | due_date | Date (?) | |
 | bill_type, pay_type | SmallInt | GePG submission params (default 1) |
 | status_code, status_desc | Char (blank) | raw GePG gateway state |
-| gepg_submitted | bool | default false |
+| is_gepg_submitted | bool | default false |
 | gepg_submitted_at | DateTime (?) | |
 
 > `status` is the **domain** payment state; the `status_code`/`status_desc` and
@@ -353,7 +353,7 @@ are listed; the rest map 1:1 to GePG fields.
 | trx_dt_tm | DateTime (?) | transaction timestamp |
 | pyr_name / pyr_cell_num / pyr_email | Char (blank) | payer details |
 | ack_id / ack_sts_code | Char (blank) | acknowledgement we returned |
-| processed | bool | whether we've applied it to the bill |
+| is_processed | bool | whether we've applied it to the bill |
 | raw_request | Text (blank) | the raw callback payload |
 | *(req_id, sp_code, gepg_bill_id, psp_code, …)* | Char | other GePG header/detail fields |
 
@@ -368,7 +368,7 @@ are listed; the rest map 1:1 to GePG fields.
 | id | PK | |
 | stone | OneToOne→orders.Stone (PROTECT) | one certificate per stone |
 | report | FK→identification.IdentificationReport (PROTECT) | source data |
-| certificate_no | Char(30) `UQ` | human-readable **(open: C6)** |
+| certificate_number | Char(30) `UQ` | human-readable **(open: C6)** |
 | verification_token | Char(64) `UQ` | for the public QR URL |
 | stone_type_snapshot | Char(100) | **frozen** at issue |
 | weight_snapshot | Decimal(10,3) | **frozen** at issue |

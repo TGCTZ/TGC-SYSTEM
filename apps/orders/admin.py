@@ -27,8 +27,8 @@ class CustomerAdmin(BaseModelAdmin):
 class OrderAdmin(BaseModelAdmin):
     """Admin for orders."""
 
-    list_display = ("reference_no", "customer", "received_date", "stone_count")
-    search_fields = ("reference_no", "customer__first_name", "customer__last_name")
+    list_display = ("reference_number", "customer", "received_date", "stone_count")
+    search_fields = ("reference_number", "customer__first_name", "customer__last_name")
     list_select_related = ("customer",)
     inlines = [StoneInline]
 
@@ -39,7 +39,7 @@ class StoneAdmin(BaseModelAdmin):
 
     list_display = ("__str__", "stone_type", "weight", "weight_unit", "status")
     list_filter = ("status", "stone_type")
-    search_fields = ("order__reference_no", "label")
+    search_fields = ("order__reference_number", "label")
     list_select_related = ("order", "stone_type")
 
 

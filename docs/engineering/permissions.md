@@ -37,7 +37,7 @@ python manage.py setup_roles
 ```
 
 Beyond the baseline, roles are managed at runtime through the **roles & permissions
-portal** (`/manage/roles/`, `adminpanel` module): create Groups and toggle their
+portal** (`/backoffice/roles/`, `backoffice` module): create Groups and toggle their
 permissions on a per-model matrix, and add/remove members. Assign users to groups
 there or in the **users module** (`/users/`) — the Django admin remains available too.
 
