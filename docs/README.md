@@ -17,6 +17,7 @@ docs/
 | [engineering/conventions.md](engineering/conventions.md) | Django & Python coding standards and the pre-commit checklist. |
 | [engineering/project-structure.md](engineering/project-structure.md) | Annotated folder/file layout. |
 | [engineering/permissions.md](engineering/permissions.md) | Roles, custom permissions, and how to seed/enforce them. |
+| [engineering/request-lifecycle.md](engineering/request-lifecycle.md) | How a request flows (middleware → routing → view → service → model → template), with diagrams and a full URL catalog. |
 | [engineering/tech-stack.md](engineering/tech-stack.md) | The tools in use and the purpose of each. |
 | [engineering/modules.md](engineering/modules.md) | The module (app) catalog — names, responsibilities, and dependency layers. |
 

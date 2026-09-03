@@ -215,7 +215,7 @@ sequenceDiagram
 
 1. `CsrfViewMiddleware` verifies the `{% csrf_token %}` from the form.
 2. [`orders.views.order_create`](../../apps/orders/views.py) binds
-   [`OrderForm`](../../apps/orders/forms.py); `form.is_valid()` runs field/`clean()` validation.
+   [`OrderCreateForm`](../../apps/orders/forms.py); `form.is_valid()` runs field/`clean()` validation.
 3. On valid, the view calls [`orders.services.create_order`](../../apps/orders/services.py) inside
    the request; the service wraps writes in `@transaction.atomic`, saves the `Customer`/`Order`
    (`BaseModel.save()` stamps `created_by` from the contextvar).
