@@ -1,7 +1,7 @@
 <!-- Pagination: pass a Django page_obj. Preserves other query params (?q=). -->
 <c-vars page_obj />
 {% if page_obj.paginator.num_pages > 1 %}
-  <nav class="flex items-center justify-between border-t border-gray-200 pt-3 text-sm text-gray-600">
+  <nav class="flex items-center justify-between border-t pt-3 text-sm text-muted-foreground">
     <span>
       Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
       · {{ page_obj.paginator.count }} total
@@ -9,15 +9,15 @@
     <div class="flex gap-1">
       {% if page_obj.has_previous %}
         <a href="{% querystring page=page_obj.previous_page_number %}"
-          class="rounded-md px-3 py-1.5 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Previous</a>
+          class="rounded-md border border-input bg-background px-3 py-1.5 text-foreground shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground">Previous</a>
       {% else %}
-        <span class="rounded-md px-3 py-1.5 text-gray-300 ring-1 ring-inset ring-gray-200">Previous</span>
+        <span class="rounded-md border border-input px-3 py-1.5 text-muted-foreground/50">Previous</span>
       {% endif %}
       {% if page_obj.has_next %}
         <a href="{% querystring page=page_obj.next_page_number %}"
-          class="rounded-md px-3 py-1.5 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Next</a>
+          class="rounded-md border border-input bg-background px-3 py-1.5 text-foreground shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground">Next</a>
       {% else %}
-        <span class="rounded-md px-3 py-1.5 text-gray-300 ring-1 ring-inset ring-gray-200">Next</span>
+        <span class="rounded-md border border-input px-3 py-1.5 text-muted-foreground/50">Next</span>
       {% endif %}
     </div>
   </nav>

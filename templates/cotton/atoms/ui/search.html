@@ -2,15 +2,15 @@
      value (the current query). Submits to the current URL on Enter. -->
 <c-vars placeholder="Search…" value="" />
 <form method="get" role="search" class="relative w-full max-w-lg">
-  <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+  <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
     <c-atoms.ui.icon name="lucide:search" size="sm" />
   </span>
   <input type="search" name="q" value="{{ value }}" placeholder="{{ placeholder }}"
-    class="block w-full rounded-md border-0 bg-gray-50 py-1.5 pl-9 pr-9 text-sm text-gray-900 ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-inset focus:ring-blue-600"
+    class="block h-9 w-full rounded-md border border-input bg-background py-1.5 pl-9 pr-9 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
     {{ attrs }}>
   {% if value %}
     <a href="?" aria-label="Clear search"
-      class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
+      class="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground transition-colors hover:text-foreground">
       <c-atoms.ui.icon name="lucide:x" size="sm" />
     </a>
   {% endif %}

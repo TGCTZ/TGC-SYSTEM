@@ -5,13 +5,13 @@
   <form method="post" action="{{ action.url }}" class="inline">
     {% csrf_token %}
     <button type="submit" title="{{ action.label }}" aria-label="{{ action.label }}"
-      class="inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 {% if action.danger %}text-red-600 hover:bg-red-50{% else %}text-gray-500 hover:bg-gray-100{% endif %}">
+      class="inline-flex rounded-md p-1.5 transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none {% if action.danger %}text-destructive hover:bg-destructive/10{% else %}text-muted-foreground hover:bg-accent hover:text-foreground{% endif %}">
       <c-atoms.ui.icon name="{{ action.icon }}" size="sm" />
     </button>
   </form>
 {% else %}
   <a href="{{ action.url }}" title="{{ action.label }}" aria-label="{{ action.label }}"
-    class="inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 {% if action.danger %}text-red-600 hover:bg-red-50{% else %}text-gray-500 hover:bg-gray-100{% endif %}">
+    class="inline-flex rounded-md p-1.5 transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none {% if action.danger %}text-destructive hover:bg-destructive/10{% else %}text-muted-foreground hover:bg-accent hover:text-foreground{% endif %}">
     <c-atoms.ui.icon name="{{ action.icon }}" size="sm" />
   </a>
 {% endif %}

@@ -1,17 +1,17 @@
 <c-layouts.app title="Generate bills" search_placeholder="Search reference, customer…">
   <div class="space-y-6">
     <div>
-      <h2 class="text-xl font-semibold text-gray-900">Ready to bill</h2>
-      <p class="text-sm text-gray-500">Orders whose stones are all identified and not yet billed.</p>
+      <h2 class="text-xl font-semibold text-foreground">Ready to bill</h2>
+      <p class="text-sm text-muted-foreground">Orders whose stones are all identified and not yet billed.</p>
     </div>
 
     <c-sections.table :headers="['Reference', 'Customer', 'Received', 'Stones', '']"
       count="{{ orders|length }}" empty="Nothing ready to bill." actions="false">
       {% for order in orders %}
-        <tr class="transition-colors hover:bg-blue-100/70">
+        <tr class="transition-colors hover:bg-muted/50">
           <td class="px-6 py-3 font-medium">{{ order.reference_number }}</td>
           <td class="px-6 py-3">{{ order.customer.full_name }}</td>
-          <td class="px-6 py-3 text-gray-500">{{ order.received_date }}</td>
+          <td class="px-6 py-3 text-muted-foreground">{{ order.received_date }}</td>
           <td class="px-6 py-3">{{ order.stone_count }}</td>
           <td class="px-6 py-3">
             <div class="flex justify-end">

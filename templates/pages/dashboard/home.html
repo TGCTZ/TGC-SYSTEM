@@ -1,26 +1,26 @@
 <c-layouts.app title="Dashboard">
   <div class="space-y-6">
     <div>
-      <h2 class="text-xl font-semibold text-gray-900">Welcome, {{ request.user.get_username }}</h2>
-      <p class="text-sm text-gray-500">Here's an overview of activity.</p>
+      <h2 class="text-xl font-semibold text-foreground">Welcome, {{ request.user.get_username }}</h2>
+      <p class="text-sm text-muted-foreground">Here's an overview of activity.</p>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <c-atoms.ui.card title="Orders">
-        <p class="text-2xl font-semibold text-gray-900">—</p>
-        <p class="text-xs text-gray-500">Open orders</p>
+        <p class="text-2xl font-semibold text-foreground">—</p>
+        <p class="text-xs text-muted-foreground">Open orders</p>
       </c-atoms.ui.card>
       <c-atoms.ui.card title="Identification">
-        <p class="text-2xl font-semibold text-gray-900">—</p>
-        <p class="text-xs text-gray-500">Awaiting report</p>
+        <p class="text-2xl font-semibold text-foreground">—</p>
+        <p class="text-xs text-muted-foreground">Awaiting report</p>
       </c-atoms.ui.card>
       <c-atoms.ui.card title="Billing">
-        <p class="text-2xl font-semibold text-gray-900">—</p>
-        <p class="text-xs text-gray-500">Unpaid bills</p>
+        <p class="text-2xl font-semibold text-foreground">—</p>
+        <p class="text-xs text-muted-foreground">Unpaid bills</p>
       </c-atoms.ui.card>
       <c-atoms.ui.card title="Certificates">
-        <p class="text-2xl font-semibold text-gray-900">—</p>
-        <p class="text-xs text-gray-500">Issued this month</p>
+        <p class="text-2xl font-semibold text-foreground">—</p>
+        <p class="text-xs text-muted-foreground">Issued this month</p>
       </c-atoms.ui.card>
     </div>
 

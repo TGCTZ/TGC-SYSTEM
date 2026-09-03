@@ -6,8 +6,8 @@
   {% endif %}
   <div class="{% if label %}mt-1{% endif %}">{{ slot }}</div>
   {% if error %}
-    <p class="mt-1 text-xs text-red-600">{{ error }}</p>
+    <p class="mt-1 text-xs text-destructive">{{ error }}</p>
   {% elif help %}
-    <p class="mt-1 text-xs text-gray-500">{{ help }}</p>
+    <p class="mt-1 text-xs text-muted-foreground">{{ help }}</p>
   {% endif %}
 </div>

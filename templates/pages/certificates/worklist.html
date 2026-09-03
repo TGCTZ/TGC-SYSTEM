@@ -1,14 +1,14 @@
 <c-layouts.app title="Issue certificates" search_placeholder="Search customer or order…">
   <div class="space-y-6">
     <div>
-      <h2 class="text-xl font-semibold text-gray-900">Ready to certify</h2>
-      <p class="text-sm text-gray-500">Stones with a finalized report and a fully paid bill, not yet certified.</p>
+      <h2 class="text-xl font-semibold text-foreground">Ready to certify</h2>
+      <p class="text-sm text-muted-foreground">Stones with a finalized report and a fully paid bill, not yet certified.</p>
     </div>
 
     <c-sections.table :headers="['Order', 'Customer', 'Label', 'Type', 'Weight', '']"
       count="{{ stones|length }}" empty="No stones match — nothing ready to certify." actions="false">
       {% for stone in stones %}
-        <tr class="transition-colors hover:bg-blue-100/70">
+        <tr class="transition-colors hover:bg-muted/50">
           <td class="px-6 py-3 font-medium">{{ stone.order.reference_number }}</td>
           <td class="px-6 py-3">{{ stone.order.customer.full_name }}</td>
           <td class="px-6 py-3">{{ stone.label }}</td>

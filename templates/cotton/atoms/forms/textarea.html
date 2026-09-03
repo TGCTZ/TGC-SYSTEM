@@ -1,7 +1,6 @@
-<!-- Textarea: rows, error=bool -->
+<!-- Textarea (shadcn): rows, error=bool -->
 <c-vars rows="3" error="false" />
 <textarea rows="{{ rows }}"
-  class="block w-full rounded-md border-0 px-3 py-1.5 text-sm text-gray-900 shadow-sm
-         ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset
-         {% if error == 'true' or error == True %}ring-red-400 focus:ring-red-500{% else %}ring-gray-300 focus:ring-blue-600{% endif %}"
+  class="flex min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-sm text-foreground shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50
+         {% if error == 'true' or error == True %}border-destructive focus-visible:ring-destructive/30{% else %}border-input focus-visible:border-ring{% endif %}"
   {{ attrs }}>{{ slot }}</textarea>

@@ -2,7 +2,7 @@
 <c-layouts.app title="Bills" search_placeholder="Search bills, customer, status…">
   <div class="space-y-6">
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-semibold text-gray-900">Bills</h2>
+      <h2 class="text-xl font-semibold text-foreground">Bills</h2>
       <div class="flex items-center gap-2">
         {% if perms.billing.view_payment %}
           <a href="{% url 'billing:payments' %}"><c-atoms.ui.button variant="secondary">Payments</c-atoms.ui.button></a>
@@ -20,14 +20,14 @@
       {% for bill in bills %}
         <c-sections.table.row href="{% url 'billing:detail' bill.pk %}" :actions="bill.row_actions">
           <td class="px-6 py-3">
-            <p class="font-medium text-gray-900">{{ bill.bill_number }}</p>
-            <p class="text-xs text-gray-500">{{ bill.order.reference_number }}</p>
+            <p class="font-medium text-foreground">{{ bill.bill_number }}</p>
+            <p class="text-xs text-muted-foreground">{{ bill.order.reference_number }}</p>
           </td>
           <td class="px-6 py-3">{{ bill.order.customer.full_name }}</td>
           <td class="px-6 py-3 tabular-nums">{{ bill.total_amount|floatformat:2|intcomma }} {{ bill.currency }}</td>
           <td class="px-6 py-3"><c-atoms.ui.badge variant="{{ bill.status_variant }}" dot="true">{{ bill.get_status_display }}</c-atoms.ui.badge></td>
           <td class="px-6 py-3">{{ bill.control_number|default:"—" }}</td>
-          <td class="px-6 py-3 text-gray-500">{{ bill.issued_at|date:"M j, Y"|default:"—" }}</td>
+          <td class="px-6 py-3 text-muted-foreground">{{ bill.issued_at|date:"M j, Y"|default:"—" }}</td>
         </c-sections.table.row>
       {% endfor %}
     </c-sections.table>

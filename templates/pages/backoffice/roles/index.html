@@ -2,7 +2,7 @@
   <div class="space-y-6">
 
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-semibold text-gray-900">Roles &amp; permissions</h2>
+      <h2 class="text-xl font-semibold text-foreground">Roles &amp; permissions</h2>
       {% if can_add %}
         <a href="{% url 'backoffice:role_create' %}">
           <c-atoms.ui.button variant="primary"><c-atoms.ui.icon name="lucide:plus" size="sm" /> New role</c-atoms.ui.button>

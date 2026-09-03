@@ -1,13 +1,13 @@
-<!-- Card: title (optional), named slots: header, footer; default slot = body -->
+<!-- Card (shadcn): title (optional), named slots: header, footer; default slot = body -->
 <c-vars title="" />
-<div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm" {{ attrs }}>
+<div class="rounded-xl border bg-card text-card-foreground shadow-sm" {{ attrs }}>
   {% if title or header %}
-    <div class="border-b border-gray-200 px-5 py-3">
-      {% if header %}{{ header }}{% else %}<h3 class="text-sm font-semibold text-gray-900">{{ title }}</h3>{% endif %}
+    <div class="border-b px-5 py-3">
+      {% if header %}{{ header }}{% else %}<h3 class="text-sm font-semibold">{{ title }}</h3>{% endif %}
     </div>
   {% endif %}
   <div class="px-5 py-4">{{ slot }}</div>
   {% if footer %}
-    <div class="border-t border-gray-200 bg-gray-50 px-5 py-3">{{ footer }}</div>
+    <div class="border-t bg-muted/40 px-5 py-3">{{ footer }}</div>
   {% endif %}
 </div>

@@ -2,21 +2,21 @@
   <div class="space-y-6">
     <div class="grid gap-4 lg:grid-cols-3">
       <c-atoms.ui.card title="Customer">
-        <p class="font-medium text-gray-900">{{ order.customer.full_name }}</p>
-        <p class="text-sm text-gray-500">{{ order.customer.phone }}</p>
-        {% if order.customer.email %}<p class="text-sm text-gray-500">{{ order.customer.email }}</p>{% endif %}
-        {% if order.customer.region %}<p class="text-sm text-gray-500">{{ order.customer.region }}</p>{% endif %}
+        <p class="font-medium text-foreground">{{ order.customer.full_name }}</p>
+        <p class="text-sm text-muted-foreground">{{ order.customer.phone }}</p>
+        {% if order.customer.email %}<p class="text-sm text-muted-foreground">{{ order.customer.email }}</p>{% endif %}
+        {% if order.customer.region %}<p class="text-sm text-muted-foreground">{{ order.customer.region }}</p>{% endif %}
       </c-atoms.ui.card>
       <c-atoms.ui.card title="Order">
-        <p class="text-sm"><span class="text-gray-500">Reference:</span> {{ order.reference_number }}</p>
-        <p class="text-sm"><span class="text-gray-500">Received:</span> {{ order.received_date }}</p>
-        <p class="text-sm"><span class="text-gray-500">Stones submitted:</span> {{ order.stone_count }}</p>
-        <p class="text-sm"><span class="text-gray-500">Identified:</span> {{ order.stones.count }} of {{ order.stone_count }}</p>
+        <p class="text-sm"><span class="text-muted-foreground">Reference:</span> {{ order.reference_number }}</p>
+        <p class="text-sm"><span class="text-muted-foreground">Received:</span> {{ order.received_date }}</p>
+        <p class="text-sm"><span class="text-muted-foreground">Stones submitted:</span> {{ order.stone_count }}</p>
+        <p class="text-sm"><span class="text-muted-foreground">Identified:</span> {{ order.stones.count }} of {{ order.stone_count }}</p>
       </c-atoms.ui.card>
     </div>
 
     <div>
-      <h3 class="mb-3 text-lg font-semibold text-gray-900">Stones</h3>
+      <h3 class="mb-3 text-lg font-semibold text-foreground">Stones</h3>
       <c-sections.table :headers="['Label', 'Type', 'Weight', 'Status']" :count="order.stones.count"
         empty="No stones identified yet.">
         {% for stone in order.stones.all %}

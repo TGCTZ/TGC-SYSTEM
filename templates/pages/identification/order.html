@@ -1,15 +1,15 @@
 <c-layouts.app title="Identify · {{ order.reference_number }}">
   <div class="mx-auto max-w-3xl space-y-6">
     <div>
-      <h2 class="text-xl font-semibold text-gray-900">{{ order.reference_number }}</h2>
-      <p class="text-sm text-gray-500">{{ order.customer.full_name }} · {{ order.stones.count }} of {{ order.stone_count }} identified</p>
+      <h2 class="text-xl font-semibold text-foreground">{{ order.reference_number }}</h2>
+      <p class="text-sm text-muted-foreground">{{ order.customer.full_name }} · {{ order.stones.count }} of {{ order.stone_count }} identified</p>
     </div>
 
     {# Identified stones (type assigned; findings recorded after payment) #}
     <c-sections.table :headers="['Label', 'Type']"
       count="{{ order.stones.count }}" empty="No stones identified yet." actions="false">
       {% for stone in order.stones.all %}
-        <tr class="transition-colors hover:bg-blue-100/70">
+        <tr class="transition-colors hover:bg-muted/50">
           <td class="px-6 py-3 font-medium">{{ stone.label }}</td>
           <td class="px-6 py-3">{{ stone.stone_type.name }}</td>
         </tr>
@@ -24,7 +24,7 @@
         {% endif %}
         <c-atoms.ui.card title="Identify stone — assign type">
           <div class="max-w-sm"><c-atoms.forms.formfield :field="form.stone_type" /></div>
-          <p class="mt-2 text-xs text-gray-500">Weight and the full findings are recorded after payment.</p>
+          <p class="mt-2 text-xs text-muted-foreground">Weight and the full findings are recorded after payment.</p>
         </c-atoms.ui.card>
         <div class="flex justify-end">
           <c-atoms.ui.button type="submit" variant="primary">Identify stone</c-atoms.ui.button>

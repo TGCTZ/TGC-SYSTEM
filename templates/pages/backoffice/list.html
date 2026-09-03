@@ -2,7 +2,7 @@
   <div class="space-y-6">
 
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-semibold text-gray-900">{{ panel.verbose_name_plural }}</h2>
+      <h2 class="text-xl font-semibold text-foreground">{{ panel.verbose_name_plural }}</h2>
       {% if can_add %}
         <a href="{% url 'backoffice:create' panel.app_label panel.model_name %}">
           <c-atoms.ui.button variant="primary"><c-atoms.ui.icon name="lucide:plus" size="sm" /> New</c-atoms.ui.button>
@@ -11,22 +11,22 @@
     </div>
 
     {% if rows %}
-      <div class="w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div class="w-full overflow-hidden rounded-xl border border-border bg-card shadow-sm">
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50/80">
+          <table class="min-w-full divide-y divide-border">
+            <thead class="bg-muted/50">
               <tr>
                 {% for col in columns %}
-                  <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
                     {% if col.orderable %}
-                      <a href="{% querystring sort=col.next %}" class="inline-flex items-center gap-1 hover:text-gray-700">{{ col.label }} <span>{{ col.indicator }}</span></a>
+                      <a href="{% querystring sort=col.next %}" class="inline-flex items-center gap-1 hover:text-foreground">{{ col.label }} <span>{{ col.indicator }}</span></a>
                     {% else %}{{ col.label }}{% endif %}
                   </th>
                 {% endfor %}
                 <th class="px-6 py-3"><span class="sr-only">Actions</span></th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 text-sm text-gray-700">
+            <tbody class="divide-y divide-border text-sm text-foreground">
               {% for row in rows %}
                 <c-sections.table.row href="{% url 'backoffice:detail' panel.app_label panel.model_name row.obj.pk %}" :actions="row.actions">
                   {% for cell in row.cells %}

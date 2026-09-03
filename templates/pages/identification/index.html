@@ -1,7 +1,7 @@
 <c-layouts.app title="Identification" search_placeholder="Search reference, customer…">
   <div class="space-y-6">
-    <h2 class="text-xl font-semibold text-gray-900">Identification worklist</h2>
-    <p class="text-sm text-gray-500">Orders with stones still to identify.</p>
+    <h2 class="text-xl font-semibold text-foreground">Identification worklist</h2>
+    <p class="text-sm text-muted-foreground">Orders with stones still to identify.</p>
 
     <c-sections.table :headers="['Reference', 'Customer', 'Received', 'Identified']"
       count="{{ orders|length }}" empty="Nothing to identify.">

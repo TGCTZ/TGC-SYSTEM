@@ -2,12 +2,21 @@
 
 from django import forms
 
+# shadcn input/select styling on the design tokens (mirrors the cotton form atoms).
 CONTROL_CLASSES = (
-    "block w-full rounded-md border-0 px-3 py-1.5 text-sm text-gray-900 shadow-sm "
-    "ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 "
-    "focus:ring-2 focus:ring-inset focus:ring-blue-600"
+    "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm "
+    "text-foreground shadow-xs transition-colors placeholder:text-muted-foreground "
+    "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 "
+    "focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 )
-CHECKBOX_CLASSES = "h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+# Textareas grow with `rows`, so no fixed height.
+TEXTAREA_CLASSES = CONTROL_CLASSES.replace("flex h-9 ", "flex min-h-16 ").replace(
+    "px-3 py-1 ", "px-3 py-2 "
+)
+CHECKBOX_CLASSES = (
+    "h-4 w-4 rounded border-input accent-primary "
+    "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+)
 
 
 class StyledFormMixin:
@@ -26,7 +35,7 @@ class StyledFormMixin:
                 widget.attrs.setdefault("class", CONTROL_CLASSES)
                 widget.attrs.setdefault("data-search", "")
             elif isinstance(widget, forms.Textarea):
-                widget.attrs.setdefault("class", CONTROL_CLASSES)
+                widget.attrs.setdefault("class", TEXTAREA_CLASSES)
                 widget.attrs.setdefault("rows", 3)
             else:
                 widget.attrs.setdefault("class", CONTROL_CLASSES)

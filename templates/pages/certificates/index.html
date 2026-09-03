@@ -1,7 +1,7 @@
 <c-layouts.app title="Certificates" search_placeholder="Search certificate, stone, customer, status…">
   <div class="space-y-6">
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-semibold text-gray-900">Certificates</h2>
+      <h2 class="text-xl font-semibold text-foreground">Certificates</h2>
       {% if can_issue %}
         <a href="{% url 'certificates:worklist' %}">
           <c-atoms.ui.button variant="primary"><c-atoms.ui.icon name="lucide:plus" size="sm" /> Issue certificates</c-atoms.ui.button>
@@ -14,13 +14,13 @@
       {% for cert in certificates %}
         <c-sections.table.row href="{% url 'certificates:detail' cert.pk %}" :actions="cert.row_actions">
           <td class="px-6 py-3">
-            <p class="font-medium text-gray-900">{{ cert.certificate_number }}</p>
-            <p class="text-xs text-gray-500">{{ cert.stone_type_snapshot }}</p>
+            <p class="font-medium text-foreground">{{ cert.certificate_number }}</p>
+            <p class="text-xs text-muted-foreground">{{ cert.stone_type_snapshot }}</p>
           </td>
           <td class="px-6 py-3">{{ cert.stone.label }} · {{ cert.stone.order.reference_number }}</td>
           <td class="px-6 py-3">{{ cert.stone.order.customer.full_name }}</td>
           <td class="px-6 py-3"><c-atoms.ui.badge variant="{{ cert.status_variant }}" dot="true">{{ cert.get_status_display }}</c-atoms.ui.badge></td>
-          <td class="px-6 py-3 text-gray-500">{{ cert.issued_at|date:"M j, Y" }}</td>
+          <td class="px-6 py-3 text-muted-foreground">{{ cert.issued_at|date:"M j, Y" }}</td>
         </c-sections.table.row>
       {% endfor %}
     </c-sections.table>

@@ -1,8 +1,8 @@
-<!-- Dropdown (Alpine): label, align=left|right. Menu items go in the slot. -->
+<!-- Dropdown (shadcn menu, Alpine): label, align=left|right. Menu items go in the slot. -->
 <c-vars label="Options" align="left" />
 <div x-data="{ open: false }" class="relative inline-block">
   <button type="button" @click="open = !open"
-    class="flex items-center gap-1 rounded-md px-3 py-2 text-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+    class="inline-flex items-center gap-1 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
     {{ attrs }}>
     {{ label }}<c-atoms.ui.icon name="lucide:chevron-down" size="sm" />
   </button>
@@ -10,7 +10,7 @@
     x-transition:enter="transition ease-out duration-100"
     x-transition:enter-start="opacity-0 scale-95"
     x-transition:enter-end="opacity-100 scale-100"
-    class="absolute z-10 mt-1 min-w-[11rem] rounded-md border border-gray-200 bg-white py-1 shadow-lg
+    class="absolute z-10 mt-1 min-w-[11rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md
     {% if align == 'right' %}right-0{% else %}left-0{% endif %}">
     {{ slot }}
   </div>

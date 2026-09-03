@@ -1,6 +1,6 @@
 <!-- Label: for, required=bool -->
 <c-vars for="" required="false" />
 <label {% if for %}for="{{ for }}"{% endif %}
-  class="block text-sm font-medium text-gray-700" {{ attrs }}>
-  {{ slot }}{% if required == 'true' or required == True %}<span class="text-red-500"> *</span>{% endif %}
+  class="block text-sm font-medium text-foreground" {{ attrs }}>
+  {{ slot }}{% if required == 'true' or required == True %}<span class="text-destructive"> *</span>{% endif %}
 </label>

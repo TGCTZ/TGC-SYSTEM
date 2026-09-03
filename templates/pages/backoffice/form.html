@@ -1,6 +1,6 @@
 <c-layouts.app title="{% if mode == 'edit' %}Edit{% else %}New{% endif %} {{ panel.verbose_name }}">
   <div class="mx-auto max-w-2xl space-y-6">
-    <h2 class="text-xl font-semibold text-gray-900">{% if mode == 'edit' %}Edit{% else %}New{% endif %} {{ panel.verbose_name }}</h2>
+    <h2 class="text-xl font-semibold text-foreground">{% if mode == 'edit' %}Edit{% else %}New{% endif %} {{ panel.verbose_name }}</h2>
     <form method="post" class="space-y-4">
       {% csrf_token %}
       {% if form.non_field_errors %}<c-atoms.ui.alert variant="danger">{{ form.non_field_errors|join:" " }}</c-atoms.ui.alert>{% endif %}

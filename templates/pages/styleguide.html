@@ -2,9 +2,9 @@
   <div class="mx-auto max-w-5xl space-y-12">
 
     <c-atoms.ui.breadcrumb>
-      <li><a href="#" class="hover:text-gray-700">Home</a></li>
+      <li><a href="#" class="hover:text-foreground">Home</a></li>
       <li><c-atoms.ui.icon name="lucide:chevron-right" size="sm" /></li>
-      <li class="font-medium text-gray-700">Styleguide</li>
+      <li class="font-medium text-foreground">Styleguide</li>
     </c-atoms.ui.breadcrumb>
 
     {# Buttons #}
@@ -120,7 +120,7 @@
     {# Table #}
     <section class="space-y-4">
       <h2 class="text-lg font-semibold">Table</h2>
-      <p class="text-sm text-gray-500">
+      <p class="text-sm text-muted-foreground">
         Rows are <code>table.row</code> components. Row 1 (clickable) has two actions shown
         inline as icons; row 2 has five, so three show inline and the rest collapse into a
         <code>⋮</code> menu. The actions column and header are added automatically.
@@ -137,7 +137,7 @@
           <td class="px-6 py-3"><c-atoms.ui.badge variant="warning" dot="true">Pending</c-atoms.ui.badge></td>
         </c-sections.table.row>
       </c-sections.table>
-      <p class="text-sm text-gray-500">Empty state:</p>
+      <p class="text-sm text-muted-foreground">Empty state:</p>
       <c-sections.table :headers="table_headers" :count="0" empty="No orders yet." />
     </section>
 
@@ -152,15 +152,15 @@
       <h2 class="text-lg font-semibold">List</h2>
       <c-sections.list>
         <div class="flex items-center justify-between px-4 py-3">
-          <span class="text-sm text-gray-700">Refractometer</span>
+          <span class="text-sm text-foreground">Refractometer</span>
           <c-atoms.ui.badge variant="success">In use</c-atoms.ui.badge>
         </div>
         <div class="flex items-center justify-between px-4 py-3">
-          <span class="text-sm text-gray-700">Polariscope</span>
+          <span class="text-sm text-foreground">Polariscope</span>
           <c-atoms.ui.badge>Idle</c-atoms.ui.badge>
         </div>
         <div class="flex items-center justify-between px-4 py-3">
-          <span class="text-sm text-gray-700">Spectroscope</span>
+          <span class="text-sm text-foreground">Spectroscope</span>
           <c-atoms.ui.badge variant="warning">Maintenance</c-atoms.ui.badge>
         </div>
       </c-sections.list>
@@ -169,7 +169,7 @@
     {# Toasts #}
     <section id="toasts" class="space-y-4">
       <h2 class="text-lg font-semibold">Toasts</h2>
-      <p class="text-sm text-gray-500">
+      <p class="text-sm text-muted-foreground">
         Driven by Django messages and shown top-right. Click to fire one; success, info and
         warning auto-dismiss after 10s, while errors stay until closed.
       </p>
@@ -186,9 +186,9 @@
       <h2 class="text-lg font-semibold">Overlays &amp; misc</h2>
       <div class="flex flex-wrap items-center gap-4">
         <c-atoms.ui.dropdown label="Actions">
-          <a href="#" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Edit</a>
-          <a href="#" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Duplicate</a>
-          <a href="#" class="block px-3 py-2 text-sm text-red-600 hover:bg-gray-50">Delete</a>
+          <a href="#" class="block px-3 py-2 text-sm text-foreground hover:bg-muted/40">Edit</a>
+          <a href="#" class="block px-3 py-2 text-sm text-foreground hover:bg-muted/40">Duplicate</a>
+          <a href="#" class="block px-3 py-2 text-sm text-destructive hover:bg-muted/40">Delete</a>
         </c-atoms.ui.dropdown>
 
         <c-atoms.ui.button variant="outline" onclick="window.dispatchEvent(new CustomEvent('open-demo-modal'))">
@@ -221,7 +221,7 @@
         hx-get="{% url 'dashboard:htmx_demo' %}" hx-target="#htmx-out" hx-swap="innerHTML">
         Load via HTMX
       </c-atoms.ui.button>
-      <div id="htmx-out" class="text-sm text-gray-500">Nothing loaded yet.</div>
+      <div id="htmx-out" class="text-sm text-muted-foreground">Nothing loaded yet.</div>
     </section>
 
   </div>

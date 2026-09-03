@@ -1,14 +1,14 @@
 <c-layouts.app title="Findings" search_placeholder="Search reference, customer, label, type…">
   <div class="space-y-6">
     <div>
-      <h2 class="text-xl font-semibold text-gray-900">Findings worklist</h2>
-      <p class="text-sm text-gray-500">Paid stones awaiting their gemmological findings.</p>
+      <h2 class="text-xl font-semibold text-foreground">Findings worklist</h2>
+      <p class="text-sm text-muted-foreground">Paid stones awaiting their gemmological findings.</p>
     </div>
 
     <c-sections.table :headers="['Order', 'Customer', 'Label', 'Type', '']"
       count="{{ stones|length }}" empty="No stones awaiting findings." actions="false">
       {% for stone in stones %}
-        <tr class="transition-colors hover:bg-blue-100/70" data-href="{% url 'identification:findings_edit' stone.pk %}">
+        <tr class="transition-colors hover:bg-muted/50" data-href="{% url 'identification:findings_edit' stone.pk %}">
           <td class="px-6 py-3 font-medium">{{ stone.order.reference_number }}</td>
           <td class="px-6 py-3">{{ stone.order.customer.full_name }}</td>
           <td class="px-6 py-3">{{ stone.label }}</td>

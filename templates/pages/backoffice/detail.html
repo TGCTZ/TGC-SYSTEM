@@ -2,7 +2,7 @@
   <div class="space-y-6">
 
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-semibold text-gray-900">{{ object }}</h2>
+      <h2 class="text-xl font-semibold text-foreground">{{ object }}</h2>
       <div class="flex gap-2">
         {% if can_change %}<a href="{% url 'backoffice:edit' panel.app_label panel.model_name object.pk %}"><c-atoms.ui.button variant="outline" size="sm">Edit</c-atoms.ui.button></a>{% endif %}
         {% if can_delete %}<a href="{% url 'backoffice:delete' panel.app_label panel.model_name object.pk %}"><c-atoms.ui.button variant="danger" size="sm">Delete</c-atoms.ui.button></a>{% endif %}
@@ -10,11 +10,11 @@
     </div>
 
     <c-atoms.ui.card>
-      <dl class="divide-y divide-gray-100">
+      <dl class="divide-y divide-border">
         {% for field in fields %}
           <div class="grid grid-cols-3 gap-4 py-3">
-            <dt class="text-sm text-gray-500">{{ field.label }}</dt>
-            <dd class="col-span-2 text-sm text-gray-900">{% if field.cell.kind == 'bool' %}{{ field.cell.value|yesno:"Yes,No" }}{% else %}{{ field.cell.value }}{% endif %}</dd>
+            <dt class="text-sm text-muted-foreground">{{ field.label }}</dt>
+            <dd class="col-span-2 text-sm text-foreground">{% if field.cell.kind == 'bool' %}{{ field.cell.value|yesno:"Yes,No" }}{% else %}{{ field.cell.value }}{% endif %}</dd>
           </div>
         {% endfor %}
       </dl>

@@ -2,8 +2,8 @@
   <form method="post" class="space-y-4">
     {% csrf_token %}
     <div>
-      <h2 class="text-base font-semibold text-gray-900">Sign in</h2>
-      <p class="text-sm text-gray-500">Use your TGC account.</p>
+      <h2 class="text-base font-semibold text-foreground">Sign in</h2>
+      <p class="text-sm text-muted-foreground">Use your TGC account.</p>
     </div>
 
     {% if form.non_field_errors %}

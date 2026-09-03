@@ -2,8 +2,8 @@
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-xl font-semibold text-gray-900">{{ certificate.certificate_number }}</h2>
-        <p class="text-sm text-gray-500">Stone {{ certificate.stone.label }} · {{ certificate.stone.order.reference_number }} · {{ certificate.stone.order.customer.full_name }}</p>
+        <h2 class="text-xl font-semibold text-foreground">{{ certificate.certificate_number }}</h2>
+        <p class="text-sm text-muted-foreground">Stone {{ certificate.stone.label }} · {{ certificate.stone.order.reference_number }} · {{ certificate.stone.order.customer.full_name }}</p>
       </div>
       <div class="flex items-center gap-3">
         <a href="{% url 'certificates:print' certificate.pk %}" target="_blank" rel="noopener">
@@ -19,21 +19,21 @@
     <div class="grid gap-4 lg:grid-cols-2">
       <c-atoms.ui.card title="Certificate details">
         <dl class="space-y-2 text-sm">
-          <div class="flex items-baseline gap-3"><dt class="w-32 shrink-0 text-gray-500">Stone type</dt><dd class="text-gray-900">{{ certificate.stone_type_snapshot }}</dd></div>
-          <div class="flex items-baseline gap-3"><dt class="w-32 shrink-0 text-gray-500">Weight</dt><dd class="text-gray-900 tabular-nums">{{ certificate.weight_snapshot }} {{ certificate.stone.weight_unit }}</dd></div>
-          <div class="flex items-baseline gap-3"><dt class="w-32 shrink-0 text-gray-500">Colour</dt><dd class="text-gray-900">{{ certificate.color_snapshot|default:"—" }}</dd></div>
-          <div class="flex items-baseline gap-3"><dt class="w-32 shrink-0 text-gray-500">Origin</dt><dd class="text-gray-900">{{ certificate.origin_snapshot|default:"—" }}</dd></div>
-          <div class="flex items-baseline gap-3"><dt class="w-32 shrink-0 text-gray-500">Gemmologist</dt><dd class="text-gray-900">{{ certificate.gemmologist|default:"—" }}</dd></div>
-          <div class="flex items-baseline gap-3"><dt class="w-32 shrink-0 text-gray-500">Issued by</dt><dd class="text-gray-900">{{ certificate.issued_by.get_full_name|default:certificate.issued_by.username|default:"—" }}</dd></div>
-          <div class="flex items-baseline gap-3"><dt class="w-32 shrink-0 text-gray-500">Issued at</dt><dd class="text-gray-900">{{ certificate.issued_at|date:"M j, Y H:i" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-32 shrink-0 text-muted-foreground">Stone type</dt><dd class="text-foreground">{{ certificate.stone_type_snapshot }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-32 shrink-0 text-muted-foreground">Weight</dt><dd class="text-foreground tabular-nums">{{ certificate.weight_snapshot }} {{ certificate.stone.weight_unit }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-32 shrink-0 text-muted-foreground">Colour</dt><dd class="text-foreground">{{ certificate.color_snapshot|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-32 shrink-0 text-muted-foreground">Origin</dt><dd class="text-foreground">{{ certificate.origin_snapshot|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-32 shrink-0 text-muted-foreground">Gemmologist</dt><dd class="text-foreground">{{ certificate.gemmologist|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-32 shrink-0 text-muted-foreground">Issued by</dt><dd class="text-foreground">{{ certificate.issued_by.get_full_name|default:certificate.issued_by.username|default:"—" }}</dd></div>
+          <div class="flex items-baseline gap-3"><dt class="w-32 shrink-0 text-muted-foreground">Issued at</dt><dd class="text-foreground">{{ certificate.issued_at|date:"M j, Y H:i" }}</dd></div>
         </dl>
       </c-atoms.ui.card>
 
       <c-atoms.ui.card title="Public verification">
-        <p class="text-sm text-gray-600">Share this link (or a QR of it) so anyone can verify the certificate.</p>
+        <p class="text-sm text-muted-foreground">Share this link (or a QR of it) so anyone can verify the certificate.</p>
         <div class="mt-3 flex items-center gap-2">
           <input type="text" readonly value="{{ verify_url }}"
-            class="min-w-0 flex-1 rounded-md border-0 bg-gray-50 px-3 py-1.5 text-xs text-gray-700 ring-1 ring-inset ring-gray-300"
+            class="min-w-0 flex-1 rounded-md border border-input bg-muted/40 px-3 py-1.5 font-mono text-xs text-foreground shadow-xs focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
             onclick="this.select()">
           <a href="{{ verify_url }}" target="_blank" rel="noopener">
             <c-atoms.ui.button variant="outline" size="sm"><c-atoms.ui.icon name="lucide:external-link" size="sm" /> Open</c-atoms.ui.button>
@@ -43,14 +43,14 @@
     </div>
 
     <div class="space-y-3">
-      <p class="text-sm font-medium text-gray-700">Verification log ({{ access_logs|length }})</p>
+      <p class="text-sm font-medium text-foreground">Verification log ({{ access_logs|length }})</p>
       <c-sections.table :headers="['When', 'IP address', 'Device']"
         :count="access_logs|length" empty="No public verifications yet." actions="false">
         {% for log in access_logs %}
-          <tr class="transition-colors hover:bg-blue-100/70">
-            <td class="px-6 py-3 text-gray-500">{{ log.accessed_at|date:"M j, Y H:i" }}</td>
+          <tr class="transition-colors hover:bg-muted/50">
+            <td class="px-6 py-3 text-muted-foreground">{{ log.accessed_at|date:"M j, Y H:i" }}</td>
             <td class="px-6 py-3">{{ log.ip_address|default:"—" }}</td>
-            <td class="px-6 py-3 max-w-md truncate text-gray-500">{{ log.user_agent|default:"—" }}</td>
+            <td class="px-6 py-3 max-w-md truncate text-muted-foreground">{{ log.user_agent|default:"—" }}</td>
           </tr>
         {% endfor %}
       </c-sections.table>
@@ -59,7 +59,7 @@
 
   {% if can_revoke %}
     <c-atoms.ui.modal id="revoke" title="Revoke certificate?">
-      Revoking <span class="font-medium text-gray-900">{{ certificate.certificate_number }}</span> marks it invalid — public verification will show it as revoked. This cannot be undone.
+      Revoking <span class="font-medium text-foreground">{{ certificate.certificate_number }}</span> marks it invalid — public verification will show it as revoked. This cannot be undone.
       <c-slot name="footer">
         <c-atoms.ui.button type="button" variant="secondary" size="sm" x-on:click="open = false">Cancel</c-atoms.ui.button>
         <form method="post" action="{% url 'certificates:revoke' certificate.pk %}">

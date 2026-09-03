@@ -1,9 +1,9 @@
 {% load static %}
 <!-- Sidebar: role navigation. Links are placeholders until feature pages exist. -->
-<aside class="hidden w-64 shrink-0 flex-col border-r border-gray-200 bg-white md:flex">
-    <div class="flex h-16 items-center gap-2 border-b border-gray-200 px-5">
+<aside class="hidden w-64 shrink-0 flex-col border-r bg-card md:flex">
+    <div class="flex h-16 items-center gap-2 border-b px-5">
         <img src="{% static 'src/img/TGC-logo.png' %}" alt="TGC" class="h-9 w-9 shrink-0 object-contain">
-        <span class="text-sm font-semibold text-gray-900">TGC System</span>
+        <span class="text-sm font-semibold text-foreground">TGC System</span>
     </div>
     <nav class="flex-1 space-y-1 p-3 text-sm">
         <c-atoms.ui.nav-item href="{% url 'dashboard:home' %}"
@@ -32,22 +32,28 @@
 
     <!-- Account footer: identity + quick actions. The name/role block links to the
          profile page (full details live there); the icon signs out. -->
-    <div class="border-t border-gray-200 p-3">
+    <div class="border-t p-3">
         <div class="flex items-center gap-2">
             <a href="#" title="View profile"
-               class="flex min-w-0 flex-1 items-center gap-3 rounded-md px-2 py-1.5 hover:bg-gray-100">
+               class="flex min-w-0 flex-1 items-center gap-3 rounded-md px-2 py-1.5 transition-colors hover:bg-accent">
                 <c-atoms.ui.avatar
                         initials="{{ request.user.get_username|slice:':2'|upper }}"
                         size="sm"/>
                 <div class="min-w-0">
-                    <p class="truncate text-sm font-medium text-gray-900">{{ request.user.get_full_name|default:request.user.get_username }}</p>
-                    <p class="truncate text-xs text-gray-500">{% if request.user.is_superuser %}Administrator{% else %}{{ request.user.groups.first.name|default:"Member" }}{% endif %}</p>
+                    <p class="truncate text-sm font-medium text-foreground">{{ request.user.get_full_name|default:request.user.get_username }}</p>
+                    <p class="truncate text-xs text-muted-foreground">{% if request.user.is_superuser %}Administrator{% else %}{{ request.user.groups.first.name|default:"Member" }}{% endif %}</p>
                 </div>
             </a>
+            <button type="button" title="Toggle theme" aria-label="Toggle theme" x-data
+                    @click="const d = document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', d ? 'dark' : 'light')"
+                    class="shrink-0 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
+                <span class="hidden dark:inline"><c-atoms.ui.icon name="lucide:sun" size="sm"/></span>
+                <span class="inline dark:hidden"><c-atoms.ui.icon name="lucide:moon" size="sm"/></span>
+            </button>
             <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}
                 <button type="submit" title="Sign out" aria-label="Sign out"
-                        class="shrink-0 rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        class="shrink-0 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
                     <c-atoms.ui.icon name="lucide:log-out" size="sm"/>
                 </button>
             </form>

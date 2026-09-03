@@ -17,7 +17,7 @@
       class="inline-block text-left">
       <button x-ref="trigger" type="button" @click.stop="open = !open; if (open) place()"
         title="More actions" aria-label="More actions"
-        class="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        class="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
         <c-atoms.ui.icon name="lucide:ellipsis-vertical" size="sm" />
       </button>
       <template x-teleport="body">
@@ -28,19 +28,19 @@
           x-transition:enter-start="opacity-0 scale-95"
           x-transition:enter-end="opacity-100 scale-100"
           :style="`top: ${my}px; left: ${mx}px`"
-          class="fixed z-50 min-w-[11rem] -translate-x-full rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+          class="fixed z-50 min-w-[11rem] -translate-x-full rounded-md border bg-popover p-1 text-popover-foreground shadow-md">
           {% for action in actions %}
             {% if action.method == "post" %}
               <form method="post" action="{{ action.url }}">
                 {% csrf_token %}
                 <button type="submit"
-                  class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm {% if action.danger %}text-red-600 hover:bg-red-50{% else %}text-gray-700 hover:bg-gray-50{% endif %}">
+                  class="flex w-full items-center gap-2 rounded-sm px-3 py-2 text-left text-sm transition-colors {% if action.danger %}text-destructive hover:bg-destructive/10{% else %}hover:bg-accent hover:text-accent-foreground{% endif %}">
                   <c-atoms.ui.icon name="{{ action.icon }}" size="sm" /> {{ action.label }}
                 </button>
               </form>
             {% else %}
               <a href="{{ action.url }}"
-                class="flex items-center gap-2 px-3 py-2 text-sm {% if action.danger %}text-red-600 hover:bg-red-50{% else %}text-gray-700 hover:bg-gray-50{% endif %}">
+                class="flex items-center gap-2 rounded-sm px-3 py-2 text-sm transition-colors {% if action.danger %}text-destructive hover:bg-destructive/10{% else %}hover:bg-accent hover:text-accent-foreground{% endif %}">
                 <c-atoms.ui.icon name="{{ action.icon }}" size="sm" /> {{ action.label }}
               </a>
             {% endif %}

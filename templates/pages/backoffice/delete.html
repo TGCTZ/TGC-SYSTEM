@@ -1,6 +1,6 @@
 <c-layouts.app title="Delete {{ panel.verbose_name }}">
   <div class="mx-auto max-w-lg space-y-6">
-    <h2 class="text-xl font-semibold text-gray-900">Delete {{ panel.verbose_name }}</h2>
+    <h2 class="text-xl font-semibold text-foreground">Delete {{ panel.verbose_name }}</h2>
     <c-atoms.ui.alert variant="warning" title="Are you sure?">
       This will {% if panel.is_soft_delete %}archive{% else %}permanently delete{% endif %} “{{ object }}”.
     </c-atoms.ui.alert>

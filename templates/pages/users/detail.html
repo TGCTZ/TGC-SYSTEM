@@ -6,25 +6,25 @@
         <div class="flex items-center gap-3">
           <c-atoms.ui.avatar initials="{{ user_obj.get_username|slice:':2'|upper }}" />
           <div class="min-w-0">
-            <p class="font-medium text-gray-900">{{ user_obj.get_full_name|default:user_obj.get_username }}</p>
-            <p class="truncate text-sm text-gray-500">{{ user_obj.email|default:"No email" }}</p>
+            <p class="font-medium text-foreground">{{ user_obj.get_full_name|default:user_obj.get_username }}</p>
+            <p class="truncate text-sm text-muted-foreground">{{ user_obj.email|default:"No email" }}</p>
           </div>
         </div>
       </c-atoms.ui.card>
 
       <c-atoms.ui.card title="Details">
         <p class="text-sm">
-          <span class="text-gray-500">Status:</span>
+          <span class="text-muted-foreground">Status:</span>
           {% if user_obj.is_active %}<c-atoms.ui.badge variant="success">Active</c-atoms.ui.badge>
           {% else %}<c-atoms.ui.badge variant="danger">Inactive</c-atoms.ui.badge>{% endif %}
         </p>
         <p class="text-sm">
-          <span class="text-gray-500">Roles:</span>
+          <span class="text-muted-foreground">Roles:</span>
           {% for g in user_obj.groups.all %}{{ g.name }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}
         </p>
-        <p class="text-sm"><span class="text-gray-500">Staff:</span> {{ user_obj.is_staff|yesno:"Yes,No" }}</p>
-        <p class="text-sm"><span class="text-gray-500">Joined:</span> {{ user_obj.date_joined|date:"M j, Y" }}</p>
-        <p class="text-sm"><span class="text-gray-500">Last login:</span> {{ user_obj.last_login|default:"Never" }}</p>
+        <p class="text-sm"><span class="text-muted-foreground">Staff:</span> {{ user_obj.is_staff|yesno:"Yes,No" }}</p>
+        <p class="text-sm"><span class="text-muted-foreground">Joined:</span> {{ user_obj.date_joined|date:"M j, Y" }}</p>
+        <p class="text-sm"><span class="text-muted-foreground">Last login:</span> {{ user_obj.last_login|default:"Never" }}</p>
       </c-atoms.ui.card>
 
       <c-atoms.ui.card title="Actions">

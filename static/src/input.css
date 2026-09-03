@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Class-based dark mode: `dark:` variants apply under a `.dark` ancestor. */
+@custom-variant dark (&:is(.dark *));
+
 /* Scan Django templates (incl. django-cotton components) for classes. */
 @source "../../templates";
 @source "../../apps";
@@ -12,9 +15,121 @@
   src: url("../fonts/inter-variable.woff2") format("woff2");
 }
 
+/*
+ * shadcn/ui design tokens — Slate neutral, TGC-blue primary.
+ * Light values on :root, dark overrides on .dark. Components reference the
+ * semantic utilities (bg-background, text-foreground, border-border, …), so
+ * theming lives here in one place.
+ */
+:root {
+  --radius: 0.625rem;
+
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.129 0.042 264.695);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.129 0.042 264.695);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.129 0.042 264.695);
+
+  /* Primary = TGC blue (blue-600) instead of shadcn's near-black. */
+  --primary: oklch(0.546 0.245 262.881);
+  --primary-foreground: oklch(0.984 0.003 247.858);
+
+  --secondary: oklch(0.968 0.007 247.896);
+  --secondary-foreground: oklch(0.208 0.042 265.755);
+  --muted: oklch(0.968 0.007 247.896);
+  --muted-foreground: oklch(0.554 0.046 257.417);
+  --accent: oklch(0.968 0.007 247.896);
+  --accent-foreground: oklch(0.208 0.042 265.755);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.984 0.003 247.858);
+
+  /* Status colors (subtle bg via /10, solid text) — beyond shadcn's default. */
+  --success: oklch(0.627 0.194 149.214);
+  --warning: oklch(0.666 0.179 58.318);
+  --info: oklch(0.546 0.245 262.881);
+
+  --border: oklch(0.929 0.013 255.508);
+  --input: oklch(0.929 0.013 255.508);
+  --ring: oklch(0.546 0.245 262.881);
+}
+
+.dark {
+  --background: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.984 0.003 247.858);
+  --card: oklch(0.208 0.042 265.755);
+  --card-foreground: oklch(0.984 0.003 247.858);
+  --popover: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.984 0.003 247.858);
+
+  --primary: oklch(0.623 0.214 259.815);
+  --primary-foreground: oklch(0.984 0.003 247.858);
+
+  --secondary: oklch(0.279 0.041 260.031);
+  --secondary-foreground: oklch(0.984 0.003 247.858);
+  --muted: oklch(0.279 0.041 260.031);
+  --muted-foreground: oklch(0.704 0.04 256.788);
+  --accent: oklch(0.279 0.041 260.031);
+  --accent-foreground: oklch(0.984 0.003 247.858);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.984 0.003 247.858);
+
+  --success: oklch(0.723 0.192 149.579);
+  --warning: oklch(0.769 0.188 70.08);
+  --info: oklch(0.623 0.214 259.815);
+
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.623 0.214 259.815);
+}
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     sans-serif;
+}
+
+/* Expose the tokens as Tailwind color/radius utilities (react to .dark). */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  /* Default border/ring colors come from the tokens (shadcn convention). */
+  *,
+  ::after,
+  ::before {
+    border-color: var(--border);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
 }
 
 /* Alpine: hide x-cloak elements until Alpine initializes them. */
@@ -27,46 +142,63 @@ tr[data-href] {
   cursor: pointer;
 }
 
-/* Tom Select: align the combobox with our form inputs. */
+/* Tom Select: match the shadcn input/select + popover on the tokens. */
 .ts-wrapper {
   font-size: 0.875rem;
 }
 .ts-control {
   min-height: 2.25rem;
-  border: 1px solid rgb(209 213 219);
-  border-radius: 0.375rem;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-md);
+  background-color: var(--background);
+  color: var(--foreground);
   padding: 0.25rem 2.25rem 0.25rem 0.75rem;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   /* Chevron caret (like a native select), so it reads as a dropdown. */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.6rem center;
   background-size: 1.1rem;
 }
+.ts-control,
+.ts-control input,
+.ts-dropdown {
+  color: var(--foreground);
+}
+.ts-control input::placeholder {
+  color: var(--muted-foreground);
+}
 .ts-wrapper.focus .ts-control {
-  border-color: rgb(37 99 235);
-  box-shadow: 0 0 0 1px rgb(37 99 235);
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 50%, transparent);
 }
 .ts-dropdown {
-  border: 1px solid rgb(229 231 235);
-  border-radius: 0.375rem;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.15);
   font-size: 0.875rem;
 }
 .ts-dropdown .active {
-  background-color: rgb(239 246 255);
-  color: rgb(29 78 216);
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+.ts-dropdown .optgroup-header {
+  color: var(--muted-foreground);
+  background-color: var(--popover);
+  font-weight: 600;
 }
 .ts-control .item {
-  background-color: rgb(239 246 255);
-  color: rgb(29 78 216);
-  border-radius: 0.25rem;
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+  border-radius: var(--radius-sm);
 }
 
 /* Django form field error state (via form.error_css_class = "has-error"). */
 .has-error :is(input, select, textarea) {
-  box-shadow: 0 0 0 1px rgb(239 68 68);
+  box-shadow: 0 0 0 1px var(--destructive);
 }
 .has-error .ts-control {
-  border-color: rgb(248 113 113);
+  border-color: var(--destructive);
 }

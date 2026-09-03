@@ -1,10 +1,10 @@
-<!-- Alert: variant=info|success|warning|danger, title (optional), slot = body -->
+<!-- Alert (shadcn): variant=info|success|warning|danger, title (optional), slot = body -->
 <c-vars variant="info" title="" />
-<div role="alert" class="flex gap-3 rounded-md border p-4
-  {% if variant == 'success' %}border-green-200 bg-green-50 text-green-800
-  {% elif variant == 'warning' %}border-yellow-200 bg-yellow-50 text-yellow-800
-  {% elif variant == 'danger' %}border-red-200 bg-red-50 text-red-800
-  {% else %}border-blue-200 bg-blue-50 text-blue-800{% endif %}"
+<div role="alert" class="flex gap-3 rounded-lg border px-4 py-3
+  {% if variant == 'success' %}border-success/20 bg-success/10 text-success
+  {% elif variant == 'warning' %}border-warning/20 bg-warning/10 text-warning
+  {% elif variant == 'danger' %}border-destructive/20 bg-destructive/10 text-destructive
+  {% else %}border-info/20 bg-info/10 text-info{% endif %}"
   {{ attrs }}>
   <div class="shrink-0">
     {% if variant == 'success' %}<c-atoms.ui.icon name="lucide:circle-check" />
@@ -13,7 +13,7 @@
     {% else %}<c-atoms.ui.icon name="lucide:info" />{% endif %}
   </div>
   <div class="text-sm">
-    {% if title %}<p class="font-medium">{{ title }}</p>{% endif %}
-    <div class="{% if title %}mt-0.5{% endif %}">{{ slot }}</div>
+    {% if title %}<p class="font-medium tracking-tight">{{ title }}</p>{% endif %}
+    <div class="{% if title %}mt-0.5 opacity-90{% endif %}">{{ slot }}</div>
   </div>
 </div>

@@ -1,6 +1,6 @@
 <c-layouts.app title="{% if mode == 'edit' %}Edit role{% else %}New role{% endif %}">
   <div class="space-y-6">
-    <h2 class="text-xl font-semibold text-gray-900">{% if mode == 'edit' %}Edit role{% else %}New role{% endif %}</h2>
+    <h2 class="text-xl font-semibold text-foreground">{% if mode == 'edit' %}Edit role{% else %}New role{% endif %}</h2>
 
     <form method="post" class="space-y-6">
       {% csrf_token %}
@@ -9,7 +9,7 @@
       <div class="max-w-md"><c-atoms.forms.formfield :field="form.name" /></div>
 
       <div class="space-y-3">
-        <p class="text-sm font-medium text-gray-700">Permissions</p>
+        <p class="text-sm font-medium text-foreground">Permissions</p>
         <c-sections.permission-matrix :matrix="matrix" />
       </div>
 
@@ -17,7 +17,7 @@
       <!-- membership survives (a server-side ?q= reload would discard the form). -->
       <div class="space-y-3" x-data="{ q: '' }">
         <div class="flex items-center justify-between gap-3">
-          <p class="text-sm font-medium text-gray-700">Users</p>
+          <p class="text-sm font-medium text-foreground">Users</p>
           <div class="w-64"><c-atoms.forms.input placeholder="Search users…" x-model="q" /></div>
         </div>
         <c-sections.table :headers="['In role', 'Username', 'Full name', 'Email', 'Status']"
@@ -25,9 +25,9 @@
           {% for u in users %}
             <c-sections.table.row x-show="!q || $el.dataset.search.includes(q.toLowerCase())" data-search="{{ u.get_username|lower }} {{ u.get_full_name|lower }} {{ u.email|lower }}">
               <td class="px-6 py-3"><c-atoms.forms.toggle name="members" value="{{ u.pk }}" :checked="u.in_role" /></td>
-              <td class="px-6 py-3 font-medium text-gray-900">{{ u.get_username }}</td>
-              <td class="px-6 py-3 text-gray-700">{{ u.get_full_name|default:"—" }}</td>
-              <td class="px-6 py-3 text-gray-500">{{ u.email|default:"—" }}</td>
+              <td class="px-6 py-3 font-medium text-foreground">{{ u.get_username }}</td>
+              <td class="px-6 py-3 text-foreground">{{ u.get_full_name|default:"—" }}</td>
+              <td class="px-6 py-3 text-muted-foreground">{{ u.email|default:"—" }}</td>
               <td class="px-6 py-3">
                 {% if u.is_active %}<c-atoms.ui.badge variant="success" dot="true">Active</c-atoms.ui.badge>{% else %}<c-atoms.ui.badge variant="danger" dot="true">Inactive</c-atoms.ui.badge>{% endif %}
               </td>

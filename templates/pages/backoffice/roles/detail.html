@@ -1,7 +1,7 @@
 <c-layouts.app title="Role {{ group.name }}">
   <div class="space-y-6">
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-semibold text-gray-900">{{ group.name }}</h2>
+      <h2 class="text-xl font-semibold text-foreground">{{ group.name }}</h2>
       <div class="flex gap-2">
         {% if can_change %}<a href="{% url 'backoffice:role_edit' group.pk %}"><c-atoms.ui.button variant="outline" size="sm">Edit</c-atoms.ui.button></a>{% endif %}
         {% if can_delete %}<a href="{% url 'backoffice:role_delete' group.pk %}"><c-atoms.ui.button variant="danger" size="sm">Delete</c-atoms.ui.button></a>{% endif %}
@@ -9,19 +9,19 @@
     </div>
 
     <div class="space-y-3">
-      <p class="text-sm font-medium text-gray-700">Permissions ({{ perm_count }})</p>
+      <p class="text-sm font-medium text-foreground">Permissions ({{ perm_count }})</p>
       <c-sections.permission-matrix :matrix="matrix" readonly="true" />
     </div>
 
     <div class="space-y-3">
-      <p class="text-sm font-medium text-gray-700">Users ({{ users|length }})</p>
+      <p class="text-sm font-medium text-foreground">Users ({{ users|length }})</p>
       <c-sections.table :headers="['Username', 'Full name', 'Email', 'Status']"
         :count="users|length" empty="No users in this role.">
         {% for u in users %}
           <c-sections.table.row href="{% url 'users:detail' u.pk %}">
-            <td class="px-6 py-3 font-medium text-gray-900">{{ u.get_username }}</td>
-            <td class="px-6 py-3 text-gray-700">{{ u.get_full_name|default:"—" }}</td>
-            <td class="px-6 py-3 text-gray-500">{{ u.email|default:"—" }}</td>
+            <td class="px-6 py-3 font-medium text-foreground">{{ u.get_username }}</td>
+            <td class="px-6 py-3 text-foreground">{{ u.get_full_name|default:"—" }}</td>
+            <td class="px-6 py-3 text-muted-foreground">{{ u.email|default:"—" }}</td>
             <td class="px-6 py-3">
               {% if u.is_active %}<c-atoms.ui.badge variant="success" dot="true">Active</c-atoms.ui.badge>{% else %}<c-atoms.ui.badge variant="danger" dot="true">Inactive</c-atoms.ui.badge>{% endif %}
             </td>

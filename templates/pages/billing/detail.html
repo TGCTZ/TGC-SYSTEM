@@ -3,8 +3,8 @@
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-xl font-semibold text-gray-900">{{ bill.bill_number }}</h2>
-        <p class="text-sm text-gray-500">Order {{ bill.order.reference_number }} · {{ bill.order.customer.full_name }}</p>
+        <h2 class="text-xl font-semibold text-foreground">{{ bill.bill_number }}</h2>
+        <p class="text-sm text-muted-foreground">Order {{ bill.order.reference_number }} · {{ bill.order.customer.full_name }}</p>
       </div>
       <c-atoms.ui.badge variant="{{ status_variant }}" dot="true">{{ bill.get_status_display }}</c-atoms.ui.badge>
     </div>
@@ -23,27 +23,27 @@
 
     <c-atoms.ui.card title="Summary">
       <dl class="grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
-        <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">Total</dt><dd class="font-semibold text-gray-900 tabular-nums">{{ bill.total_amount|floatformat:2|intcomma }} {{ bill.currency }}</dd></div>
-        <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">Control number</dt><dd class="text-gray-900">{{ bill.control_number|default:"—" }}</dd></div>
-        <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">Issued</dt><dd class="text-gray-900">{{ bill.issued_at|date:"M j, Y"|default:"—" }}</dd></div>
-        <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">Expires</dt><dd class="text-gray-900">{{ bill.expiry_at|date:"M j, Y"|default:"—" }}</dd></div>
-        <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">Service provider</dt><dd class="text-gray-900">{{ bill.service_provider|default:"—" }}</dd></div>
-        <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">Submitted to GePG</dt><dd class="text-gray-900">{{ bill.gepg_submitted|yesno:"Yes,No" }}</dd></div>
+        <div class="flex justify-between border-b border-border pb-2"><dt class="text-muted-foreground">Total</dt><dd class="font-semibold text-foreground tabular-nums">{{ bill.total_amount|floatformat:2|intcomma }} {{ bill.currency }}</dd></div>
+        <div class="flex justify-between border-b border-border pb-2"><dt class="text-muted-foreground">Control number</dt><dd class="text-foreground">{{ bill.control_number|default:"—" }}</dd></div>
+        <div class="flex justify-between border-b border-border pb-2"><dt class="text-muted-foreground">Issued</dt><dd class="text-foreground">{{ bill.issued_at|date:"M j, Y"|default:"—" }}</dd></div>
+        <div class="flex justify-between border-b border-border pb-2"><dt class="text-muted-foreground">Expires</dt><dd class="text-foreground">{{ bill.expiry_at|date:"M j, Y"|default:"—" }}</dd></div>
+        <div class="flex justify-between border-b border-border pb-2"><dt class="text-muted-foreground">Service provider</dt><dd class="text-foreground">{{ bill.service_provider|default:"—" }}</dd></div>
+        <div class="flex justify-between border-b border-border pb-2"><dt class="text-muted-foreground">Submitted to GePG</dt><dd class="text-foreground">{{ bill.gepg_submitted|yesno:"Yes,No" }}</dd></div>
       </dl>
     </c-atoms.ui.card>
 
     <div class="space-y-3">
-      <p class="text-sm font-medium text-gray-700">Line items</p>
+      <p class="text-sm font-medium text-foreground">Line items</p>
       <c-sections.table :headers="['Label', 'Type', 'Amount']"
         count="{{ items|length }}" empty="No items." actions="false">
         {% for item in items %}
-          <tr class="transition-colors hover:bg-blue-100/70">
+          <tr class="transition-colors hover:bg-muted/50">
             <td class="px-6 py-3 font-medium">{{ item.stone.label }}</td>
             <td class="px-6 py-3">{{ item.stone.stone_type.name }}</td>
             <td class="px-6 py-3 tabular-nums">{{ item.amount|floatformat:2|intcomma }}</td>
           </tr>
         {% endfor %}
-        <tr class="border-t-2 border-gray-200 bg-gray-50/60 font-semibold text-gray-900">
+        <tr class="border-t-2 border-border bg-muted/40 font-semibold text-foreground">
           <td class="px-6 py-3 text-right" colspan="2">Total</td>
           <td class="px-6 py-3 tabular-nums">{{ bill.total_amount|floatformat:2|intcomma }} {{ bill.currency }}</td>
         </tr>
@@ -52,16 +52,16 @@
 
     {% if payments is not None %}
       <div class="space-y-3">
-        <p class="text-sm font-medium text-gray-700">Payments</p>
+        <p class="text-sm font-medium text-foreground">Payments</p>
         <c-sections.table :headers="['Payer', 'Channel', 'Amount', 'Transaction', 'Date']"
           :count="payments|length" empty="No payments received yet." actions="false">
           {% for p in payments %}
-            <tr class="transition-colors hover:bg-blue-100/70" data-href="{% url 'billing:payment_detail' p.pk %}">
+            <tr class="transition-colors hover:bg-muted/50" data-href="{% url 'billing:payment_detail' p.pk %}">
               <td class="px-6 py-3">{{ p.pyr_name|default:"—" }}</td>
               <td class="px-6 py-3">{{ p.psp_name|default:"—" }}</td>
               <td class="px-6 py-3 tabular-nums">{{ p.paid_amount|floatformat:2|intcomma }} {{ p.currency }}</td>
               <td class="px-6 py-3">{{ p.trx_id|default:"—" }}</td>
-              <td class="px-6 py-3 text-gray-500">{{ p.trx_dt_tm|date:"M j, Y H:i"|default:"—" }}</td>
+              <td class="px-6 py-3 text-muted-foreground">{{ p.trx_dt_tm|date:"M j, Y H:i"|default:"—" }}</td>
             </tr>
           {% endfor %}
         </c-sections.table>

@@ -1,7 +1,6 @@
-<!-- Input: type, error=bool. Pass name/value/placeholder/hx-* via attrs. -->
+<!-- Input (shadcn): type, error=bool. Pass name/value/placeholder/hx-* via attrs. -->
 <c-vars type="text" error="false" />
 <input type="{{ type }}"
-  class="block w-full rounded-md border-0 px-3 py-1.5 text-sm text-gray-900 shadow-sm
-         ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset
-         {% if error == 'true' or error == True %}ring-red-400 focus:ring-red-500{% else %}ring-gray-300 focus:ring-blue-600{% endif %}"
+  class="flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-sm text-foreground shadow-xs transition-colors outline-none placeholder:text-muted-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50
+         {% if error == 'true' or error == True %}border-destructive focus-visible:ring-destructive/30{% else %}border-input focus-visible:border-ring{% endif %}"
   {{ attrs }}>

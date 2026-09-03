@@ -2,7 +2,7 @@
 <c-layouts.app title="Payments" search_placeholder="Search payer, transaction, bill…">
   <div class="space-y-6">
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-semibold text-gray-900">Payments</h2>
+      <h2 class="text-xl font-semibold text-foreground">Payments</h2>
       <a href="{% url 'billing:index' %}"><c-atoms.ui.button variant="secondary" size="sm">Bills</c-atoms.ui.button></a>
     </div>
 
@@ -14,8 +14,8 @@
     <c-sections.table :headers="['Date', 'Payer', 'Channel', 'Bill', 'Amount', 'Transaction']"
       count="{{ payments|length }}" empty="No payments found." actions="false">
       {% for p in payments %}
-        <tr class="transition-colors hover:bg-blue-100/70" data-href="{% url 'billing:payment_detail' p.pk %}">
-          <td class="px-6 py-3 text-gray-500">{{ p.trx_dt_tm|date:"M j, Y H:i"|default:"—" }}</td>
+        <tr class="transition-colors hover:bg-muted/50" data-href="{% url 'billing:payment_detail' p.pk %}">
+          <td class="px-6 py-3 text-muted-foreground">{{ p.trx_dt_tm|date:"M j, Y H:i"|default:"—" }}</td>
           <td class="px-6 py-3">{{ p.pyr_name|default:"—" }}</td>
           <td class="px-6 py-3">{{ p.psp_name|default:"—" }}</td>
           <td class="px-6 py-3">{% if p.bill %}{{ p.bill.bill_number }}{% else %}—{% endif %}</td>
